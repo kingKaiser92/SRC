@@ -73,29 +73,42 @@
     .image-scroll-wrapper{height:100%;width:130%;will-change:transform}
     .image-scroll-wrapper img{width:100%;height:100%;object-fit:cover}
     .image-column-right{height:80vh;border-radius:20px;overflow:hidden}
-    .image-column-right .zoom-image{width:130%;height:100%;object-fit:cover}
+    .image-column-right .zoom-image{width:130%;height:100%;object-fit:cover;transform:translateX(0) scale(1.0);will-change:transform}
 
-    /* ---------- Full-bleed stacked gallery ---------- */
-    .bleed-gallery{display:flex;flex-direction:column;gap:1rem;background-color:var(--bg-color-light);padding:1rem}
-    .bleed-row.full .tile{width:100%}
-    .bleed-row.full img{display:block;width:100%;height:auto;border-radius:16px}
-    .final-section{height:20vh;background:var(--bg-color-light)}
+    /* ---------- Full-bleed gallery ---------- */
+    .bleed-gallery{width:100vw;margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);background:var(--bg-color-light)}
+    .bleed-row{display:block;width:100vw;overflow:hidden}
+    .bleed-row.full .tile{overflow:hidden}
+    .bleed-row.full img{display:block;width:100%;height:60vh;object-fit:cover;transform:scale(1);transition:transform 320ms ease}
+    .bleed-row.split{display:grid;grid-template-columns:1fr 1fr}
+    .bleed-row.split .tile{overflow:hidden}
+    .bleed-row.split img{display:block;width:100%;height:50vh;object-fit:cover;transform:scale(1);transition:transform 320ms ease}
+    .bleed-gallery .tile:hover img,.bleed-gallery .tile:focus-within img{transform:scale(1.06)}
+    @media (prefers-reduced-motion:reduce){.bleed-row img{transition:none!important}}
 
-    /* ===== Mobile optimizations ===== */
-    @media (max-width: 768px){
-      /* Hero: switch from slices to a simple full-bleed */
-      .sliced-image-container{ display:none; }
+    @media (max-width:900px){
+      .image-column-center,.image-column-right{height:60vh}
+      .bleed-row.full img{height:45vh}
+      .bleed-row.split img{height:40vh}
+    }
+
+    .final-section{height:40vh;background-color:var(--bg-color-dark)}
+
+    /* ===== Mobile-only: stack hero + grid; gallery unchanged ===== */
+    @media (max-width:768px){
+      /* Keep the gallery exactly as defined above (no overrides here) */
+
+      /* Hero: switch to simple full-bleed image on phones */
+      .sliced-image-container{display:none;}
       .hero-section{
         height:70vh;
         background-image:url('./assets/img/hero/running.webp');
         background-size:cover;
         background-position:center;
       }
-      .hero-text-center{
-        font-size:clamp(3rem, 18vw, 8rem);
-      }
+      .hero-text-center{font-size:clamp(3rem,18vw,8rem);}
 
-      /* Grid: collapse to one column, normalize images */
+      /* Grid: single column, normalize images */
       .sticky-grid{
         grid-template-columns:1fr;
         gap:1rem;
@@ -107,29 +120,26 @@
         border-radius:16px;
         overflow:hidden;
       }
-      .image-scroll-wrapper{ width:100%; height:auto; }
-      .image-scroll-wrapper img{ width:100%; height:auto; object-fit:cover; object-position:center; }
-      .image-column-right .zoom-image{
-        width:100%;
-        height:auto;
-        transform:none !important;
-        object-fit:cover;
-        object-position:center;
+      .image-scroll-wrapper{width:100%;height:auto;}
+      .image-scroll-wrapper img{
+        width:100%;height:auto;object-fit:cover;object-position:center;
       }
-
-      /* Optional: consistent tile heights on small screens */
-      .bleed-row.full img{ height:42vh; object-fit:cover; object-position:center; }
-
-      /* Footer breathing room on small screens */
-      .footer-ui{left:1rem;right:1rem;bottom:1rem}
+      .image-column-right .zoom-image{
+        width:100%;height:auto;transform:none !important;
+        object-fit:cover;object-position:center;
+      }
     }
   </style>
 </head>
 <body>
+  <header class="logo">
+    <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M40 25 C20 25, 20 75, 40 75 M60 25 C80 25, 80 75, 60 75 M25 50 H75" stroke="white" stroke-width="4"/>
+    </svg>
+  </header>
 
-  <main class="hero-section" aria-label="Hero">
-    <div class="sliced-image-container" aria-hidden="true">
-      <div class="slice" aria-hidden="true"></div><div class="divider" aria-hidden="true"></div>
+  <main class="hero-section">
+    <div class="sliced-image-container">
       <div class="slice" aria-hidden="true"></div><div class="divider" aria-hidden="true"></div>
       <div class="slice" aria-hidden="true"></div><div class="divider" aria-hidden="true"></div>
       <div class="slice" aria-hidden="true"></div><div class="divider" aria-hidden="true"></div>
@@ -184,14 +194,115 @@
       </figure>
     </figure>
 
-    <figure class="bleed-row full">
-      <figure class="tile" tabindex="0">
-        <img src="./assets/img/gallery/bodyimg2.webp" alt="Gallery image 2" loading="lazy" decoding="async">
-      </figure>
-    </figure>
+    <div class="bleed-row split">
+      <figure class="tile" tabindex="0"><img src="./assets/img/gallery/bodyimg2.webp" alt="Gallery image 2" loading="lazy" decoding="async"></figure>
+      <figure class="tile" tabindex="0"><img src="./assets/img/gallery/bodyimg3.webp" alt="Gallery image 3" loading="lazy" decoding="async"></figure>
+    </div>
 
     <figure class="bleed-row full">
       <figure class="tile" tabindex="0">
-        <img src="./assets/img/gallery/bodyimg3.webp" alt="Gallery image 3" loading="lazy" decoding="async">
+        <img src="./assets/img/gallery/bodyimg4.webp" alt="Gallery image 4" loading="lazy" decoding="async">
       </figure>
     </figure>
+  </section>
+
+  <div class="final-section"></div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const heroText = document.querySelector('.hero-text-center');
+      const typingContainer = document.getElementById('saints-typing-container');
+      const dividers = document.querySelectorAll('.divider');
+
+      const gridSection = document.getElementById('grid-section');
+      const ericWrapper = document.getElementById('eric-wrapper');
+      const alexImage   = document.getElementById('alex-image');
+
+      // Mobile guard
+      const mobile = window.matchMedia('(max-width: 768px)');
+
+      // Cache geometry on resize
+      let vh = window.innerHeight;
+      let sectionTop = 0;
+      let sectionHeight = 0;
+      function measure(){
+        vh = window.innerHeight;
+        if (gridSection){
+          const rect = gridSection.getBoundingClientRect();
+          sectionTop = window.scrollY + rect.top;
+          sectionHeight = gridSection.offsetHeight;
+        }
+      }
+
+      // rAF-throttled scroll
+      let ticking = false;
+      function onScroll(){
+        const y  = window.scrollY;
+
+        if(!mobile.matches){
+          // open the slice dividers over first viewport (desktop only)
+          const f = Math.min(1, y / vh);
+          const initialWidth = 20;
+          const w = Math.max(0, initialWidth * (1 - f));
+          dividers.forEach(d => d.style.width = w + 'px');
+
+          // SRC fade/scale (desktop only)
+          heroText.style.opacity = Math.max(0, 1 - f * 1.5);
+          heroText.style.transform = `translate(-50%, -50%) scale(${1 + f * 0.2})`;
+        } else {
+          // Reset hero on mobile (slices are hidden)
+          heroText.style.opacity = 1;
+          heroText.style.transform = `translate(-50%, -50%)`;
+        }
+
+        // Eric / Alex movement (desktop only)
+        if(!mobile.matches && gridSection){
+          const progressRaw = (y + vh - sectionTop) / (sectionHeight + vh);
+          const p = Math.max(0, Math.min(1, progressRaw));
+          ericWrapper && (ericWrapper.style.transform = `translateX(${p * -20}%)`);
+          alexImage && (alexImage.style.transform   = `translateX(${p * 20}%) scale(${1 + p * 0.15})`);
+        } else {
+          // Clear transforms on mobile
+          ericWrapper && (ericWrapper.style.transform = 'none');
+          alexImage && (alexImage.style.transform = 'none');
+        }
+      }
+
+      function requestTick(){
+        if(!ticking){
+          requestAnimationFrame(() => { onScroll(); ticking = false; });
+          ticking = true;
+        }
+      }
+      window.addEventListener('scroll', requestTick, {passive:true});
+      window.addEventListener('resize', () => { measure(); requestTick(); }, {passive:true});
+
+      measure();
+      onScroll();
+
+      // Typing effect
+      const typingTextElement = document.getElementById('saints-typing-text');
+      const textToType = "Saints Run Club";
+      let i = 0, typed = false;
+      function typeWriter(){
+        if(i < textToType.length){
+          typingTextElement.textContent += textToType.charAt(i++);
+          setTimeout(typeWriter, 150);
+        } else {
+          typingContainer.querySelector('.saints-cursor').style.display = 'none';
+        }
+      }
+      const observer = new IntersectionObserver((entries)=>{
+        entries.forEach(entry=>{
+          if(entry.isIntersecting && !typed){
+            typed = true;
+            setTimeout(typeWriter, 500);
+            observer.unobserve(entry.target);
+          }
+        });
+      }, {threshold:0.5});
+      observer.observe(typingContainer);
+    });
+  </script>
+</body>
+</html>
