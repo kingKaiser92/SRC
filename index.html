@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Saints Run Club</title>
 
-  <!-- Preload only the hero image (above-the-fold) -->
+  <!-- Preload only the hero image -->
   <link rel="preload" as="image" href="./assets/img/hero/running.jpg" fetchpriority="high">
+  <!-- Faster font loading than @import -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;700&family=Teko:wght@700&display=swap" rel="stylesheet">
 
   <style>
-    /* Fonts */
-    @import url('https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;700&display=swap');
-    @import url('https://fonts.googleapis.com/css2?family=Teko:wght@700&display=swap');
-
     :root{
       --text-color-dark:#2c2c2c;
       --text-color-light:#ffffff;
@@ -32,7 +32,6 @@
     .slice{flex:1 1 0;background-image:url('./assets/img/hero/running.jpg');background-size:1000% 100%;border-radius:12px;background-repeat:no-repeat;background-position:0 50%}
     .divider{width:20px;flex-shrink:0;background-color:var(--bg-color-light);border-radius:100px}
 
-    /* different slice heights for the stagger effect */
     .slice:nth-child(1){height:85%;align-self:flex-start;background-position:0% 50%}
     .slice:nth-child(3){height:95%;align-self:flex-end;background-position:11.111% 50%}
     .slice:nth-child(5){height:80%;align-self:center;background-position:22.222% 50%}
@@ -70,14 +69,14 @@
     .text-column{font-size:14px;line-height:1.6;content-visibility:auto;contain-intrinsic-size:300px}
     .text-column h3{font-size:16px;margin-bottom:1rem;font-weight:500}
     .image-column-center{height:80vh;border-radius:20px;overflow:hidden}
-    .image-scroll-wrapper{height:100%;width:130%}
+    .image-scroll-wrapper{height:100%;width:130%; will-change: transform;}
     .image-scroll-wrapper img{width:100%;height:100%;object-fit:cover}
     .image-column-right{height:80vh;border-radius:20px;overflow:hidden}
-    .image-column-right .zoom-image{width:130%;height:100%;object-fit:cover;transform:translateX(0) scale(1.0)}
+    .image-column-right .zoom-image{width:130%;height:100%;object-fit:cover;transform:translateX(0) scale(1.0); will-change: transform;}
 
     /* --- Full‑bleed stacked gallery --- */
     .bleed-gallery{width:100vw;margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);background:var(--bg-color-light)}
-    .bleed-row{display:block;width:100vw;overflow:hidden}
+    .bleed-row{display:block;width:100vw;overflow:hidden;content-visibility:auto;contain-intrinsic-size:800px}
     .bleed-row.full .tile{overflow:hidden}
     .bleed-row.full img{display:block;width:100%;height:60vh;object-fit:cover;transform:scale(1);transition:transform 320ms ease}
     .bleed-row.split{display:grid;grid-template-columns:1fr 1fr}
@@ -150,7 +149,7 @@
     </div>
   </div>
 
-  <!-- Full‑bleed stacked gallery (WebP files at repo root) -->
+  <!-- Full‑bleed stacked gallery -->
   <section class="bleed-gallery" aria-label="Featured projects">
     <figure class="bleed-row full">
       <figure class="tile" tabindex="0">
@@ -182,28 +181,36 @@
       const ericWrapper = document.getElementById('eric-wrapper');
       const alexImage   = document.getElementById('alex-image');
 
-      // rAF-throttled scroll for smoothness
+      // Cache geometry to avoid layout thrash on every scroll
+      let vh = window.innerHeight;
+      let sectionTop = 0;
+      let sectionHeight = 0;
+
+      function measure(){
+        vh = window.innerHeight;
+        const rect = gridSection.getBoundingClientRect();
+        sectionTop = window.scrollY + rect.top;
+        sectionHeight = gridSection.offsetHeight;
+      }
+
+      // Smooth rAF-throttled scroll
       let ticking = false;
       function onScroll(){
-        const vh = window.innerHeight;
         const y  = window.scrollY;
 
         // Open slice dividers across the first viewport
         const f = Math.min(1, y / vh);
         const initialWidth = 20;
         const w = Math.max(0, initialWidth * (1 - f));
-        dividers.forEach(d => d.style.width = w + 'px');
+        for (const d of dividers) d.style.width = w + 'px';
 
         // SRC fade/scale
         heroText.style.opacity = Math.max(0, 1 - f * 1.5);
         heroText.style.transform = `translate(-50%, -50%) scale(${1 + f * 0.2})`;
 
         // Parallel scroll progress for Eric & Alex
-        const r = gridSection.getBoundingClientRect();
-        const start = vh;
-        const end   = -r.height;
-        const raw   = (start - r.top) / (start - end);
-        const p     = Math.max(0, Math.min(1, raw));
+        const progressRaw = (y + vh - sectionTop) / (sectionHeight + vh);
+        const p = Math.max(0, Math.min(1, progressRaw));
 
         ericWrapper.style.transform = `translateX(${p * -20}%)`;
         alexImage.style.transform   = `translateX(${p * 20}%) scale(${1 + p * 0.15})`;
@@ -215,8 +222,11 @@
           ticking = true;
         }
       }
+
       window.addEventListener('scroll', requestTick, {passive:true});
-      window.addEventListener('resize', requestTick, {passive:true});
+      window.addEventListener('resize', () => { measure(); requestTick(); }, {passive:true});
+
+      measure();
       onScroll();
 
       // Typing effect
