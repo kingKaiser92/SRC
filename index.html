@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Saints Run Club</title>
+
+  <!-- Preload only the hero image (above-the-fold) -->
+  <link rel="preload" as="image" href="./assets/img/hero/running.jpg" fetchpriority="high">
+
+  <style>
+    /* Fonts */
+    @import url('https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Teko:wght@700&display=swap');
+
+    :root{
+      --text-color-dark:#2c2c2c;
+      --text-color-light:#ffffff;
+      --accent-color:#FFD200;
+      --bg-color-dark:#111111;
+      --bg-color-light:#F5F5F0;
+      --typing-bottom-gap:0rem;
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0}
+
+    body{font-family:'Inter',sans-serif;background-color:var(--bg-color-dark);color:var(--text-color-light)}
+
+    /* --- HERO (sliced image) --- */
+    .hero-section{position:relative;height:100vh;width:100%;overflow:hidden;background-color:var(--bg-color-light)}
+    .sliced-image-container{position:absolute;inset:0;display:flex;align-items:center;padding:0 10px;background-color:var(--bg-color-light)}
+    .slice{flex:1 1 0;background-image:url('./assets/img/hero/running.jpg');background-size:1000% 100%;border-radius:12px;background-repeat:no-repeat;background-position:0 50%}
+    .divider{width:20px;flex-shrink:0;background-color:var(--bg-color-light);border-radius:100px}
+
+    /* different slice heights for the stagger effect */
+    .slice:nth-child(1){height:85%;align-self:flex-start;background-position:0% 50%}
+    .slice:nth-child(3){height:95%;align-self:flex-end;background-position:11.111% 50%}
+    .slice:nth-child(5){height:80%;align-self:center;background-position:22.222% 50%}
+    .slice:nth-child(7){height:100%;align-self:center;background-position:33.333% 50%}
+    .slice:nth-child(9){height:90%;align-self:flex-start;background-position:44.444% 50%}
+    .slice:nth-child(11){height:100%;align-self:center;background-position:55.555% 50%}
+    .slice:nth-child(13){height:85%;align-self:flex-end;background-position:66.666% 50%}
+    .slice:nth-child(15){height:95%;align-self:flex-start;background-position:77.777% 50%}
+    .slice:nth-child(17){height:80%;align-self:center;background-position:88.888% 50%}
+    .slice:nth-child(19){height:90%;align-self:flex-end;background-position:100% 50%}
+
+    .hero-text-center{
+      position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+      font-family:'Anton',sans-serif;font-size:clamp(8rem,25vw,20rem);color:var(--accent-color);line-height:1;
+      will-change:opacity,transform;z-index:2;
+    }
+
+    .logo{position:fixed;top:2rem;left:2rem;z-index:10}
+    .logo svg{width:48px;height:48px}
+
+    .footer-ui{position:fixed;bottom:2rem;left:2rem;right:2rem;display:flex;justify-content:space-between;align-items:center;z-index:10}
+    .footer-text{font-size:1.5rem;font-weight:700;color:var(--text-color-light)}
+    .gallery-button{border:1px solid var(--text-color-light);background:transparent;color:var(--text-color-light);padding:.5rem 1rem;font-size:.8rem;letter-spacing:1px;cursor:pointer;text-decoration:none;display:inline-block;border-radius:4px}
+    .gallery-button:hover{opacity:0.88}
+
+    /* --- SAINTS RUN CLUB line --- */
+    .typing-section{background-color:var(--bg-color-light);color:var(--text-color-dark);display:flex;justify-content:center;align-items:center;padding-top:0;padding-bottom:var(--typing-bottom-gap)}
+    .saints-typing-text{font-family:'Teko',sans-serif;font-size:clamp(3rem,10vw,8rem);text-transform:uppercase;line-height:1;margin:0}
+    .saints-cursor{display:inline-block;width:1rem;height:6rem;background-color:var(--text-color-dark);animation:blink .7s infinite;margin-left:10px}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+    /* --- Eric & Alex grid --- */
+    .sticky-container{position:relative;background-color:var(--bg-color-light);color:var(--text-color-dark)}
+    .sticky-grid{position:relative;width:100%;display:grid;grid-template-columns:1.2fr 1.5fr 1.2fr 1fr;gap:2rem;align-items:center;padding:2rem 4rem 3rem}
+    .text-column{font-size:14px;line-height:1.6;content-visibility:auto;contain-intrinsic-size:300px}
+    .text-column h3{font-size:16px;margin-bottom:1rem;font-weight:500}
+    .image-column-center{height:80vh;border-radius:20px;overflow:hidden}
+    .image-scroll-wrapper{height:100%;width:130%}
+    .image-scroll-wrapper img{width:100%;height:100%;object-fit:cover}
+    .image-column-right{height:80vh;border-radius:20px;overflow:hidden}
+    .image-column-right .zoom-image{width:130%;height:100%;object-fit:cover;transform:translateX(0) scale(1.0)}
+
+    /* --- Full‑bleed stacked gallery --- */
+    .bleed-gallery{width:100vw;margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);background:var(--bg-color-light)}
+    .bleed-row{display:block;width:100vw;overflow:hidden}
+    .bleed-row.full .tile{overflow:hidden}
+    .bleed-row.full img{display:block;width:100%;height:60vh;object-fit:cover;transform:scale(1);transition:transform 320ms ease}
+    .bleed-row.split{display:grid;grid-template-columns:1fr 1fr}
+    .bleed-row.split .tile{overflow:hidden}
+    .bleed-row.split img{display:block;width:100%;height:50vh;object-fit:cover;transform:scale(1);transition:transform 320ms ease}
+    .bleed-gallery .tile:hover img,.bleed-gallery .tile:focus-within img{transform:scale(1.06)}
+    @media (prefers-reduced-motion:reduce){.bleed-row img{transition:none!important}}
+
+    @media (max-width:900px){
+      .image-column-center,.image-column-right{height:60vh}
+      .bleed-row.full img{height:45vh}
+      .bleed-row.split img{height:40vh}
+    }
+
+    .final-section{height:40vh;background-color:var(--bg-color-dark)}
+  </style>
+</head>
+<body>
+  <header class="logo">
+    <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M40 25 C20 25, 20 75, 40 75 M60 25 C80 25, 80 75, 60 75 M25 50 H75" stroke="white" stroke-width="4"/>
+    </svg>
+  </header>
+
+  <main class="hero-section">
+    <div class="sliced-image-container">
+      <div class="slice" aria-hidden="true"></div><div class="divider" aria-hidden="true"></div>
+      <div class="slice" aria-hidden="true"></div><div class="divider" aria-hidden="true"></div>
+      <div class="slice" aria-hidden="true"></div><div class="divider" aria-hidden="true"></div>
+      <div class="slice" aria-hidden="true"></div><div class="divider" aria-hidden="true"></div>
+      <div class="slice" aria-hidden="true"></div><div class="divider" aria-hidden="true"></div>
+      <div class="slice" aria-hidden="true"></div><div class="divider" aria-hidden="true"></div>
+      <div class="slice" aria-hidden="true"></div><div class="divider" aria-hidden="true"></div>
+      <div class="slice" aria-hidden="true"></div><div class="divider" aria-hidden="true"></div>
+      <div class="slice" aria-hidden="true"></div><div class="divider" aria-hidden="true"></div>
+      <div class="slice" aria-hidden="true"></div>
+    </div>
+    <h1 class="hero-text-center">SRC</h1>
+  </main>
+
+  <footer class="footer-ui">
+    <div class="footer-text">SRC</div>
+    <a class="gallery-button" href="https://saintsvisionllc.pixieset.com/saintsrunclub/" target="_blank" rel="noopener noreferrer" aria-label="Open Saints Run Club gallery in a new tab">VIEW GALLERY</a>
+  </footer>
+
+  <section class="typing-section">
+    <h1 class="saints-typing-text" id="saints-typing-container">
+      <span id="saints-typing-text"></span><span class="saints-cursor"></span>
+    </h1>
+  </section>
+
+  <!-- Grid section (parallel scroll) -->
+  <div class="sticky-container">
+    <div class="sticky-grid" id="grid-section">
+      <div class="text-column">
+        <h3>[ Intro ]</h3>
+        <p>The digital fan experience has never been more fragmented. With attention spans shrinking and fan journeys becoming increasingly complex, lasting relevance and sustainable growth rely on unlocking the power of fan communities.</p>
+      </div>
+      <div class="image-column-center">
+        <div class="image-scroll-wrapper" id="eric-wrapper">
+          <img src="./assets/img/grid/eric.jpg" alt="Eric running" loading="lazy" decoding="async">
+        </div>
+      </div>
+      <div class="text-column">
+        <p>Cyphr is the digital experience and venture studio redefining how modern fans access their favorite artists, athletes, teams, and entertainment brands, connecting through the communities that matter most to them.</p>
+      </div>
+      <div class="image-column-right">
+        <img src="./assets/img/grid/alex.jpg" alt="Alex running" class="zoom-image" id="alex-image" loading="lazy" decoding="async">
+      </div>
+    </div>
+  </div>
+
+  <!-- Full‑bleed stacked gallery (WebP files at repo root) -->
+  <section class="bleed-gallery" aria-label="Featured projects">
+    <figure class="bleed-row full">
+      <figure class="tile" tabindex="0">
+        <img src="./bodyimg1.webp" alt="Gallery image 1" loading="lazy" decoding="async">
+      </figure>
+    </figure>
+
+    <div class="bleed-row split">
+      <figure class="tile" tabindex="0"><img src="./bodyimg2.webp" alt="Gallery image 2" loading="lazy" decoding="async"></figure>
+      <figure class="tile" tabindex="0"><img src="./bodyimg3.webp" alt="Gallery image 3" loading="lazy" decoding="async"></figure>
+    </div>
+
+    <figure class="bleed-row full">
+      <figure class="tile" tabindex="0">
+        <img src="./bodyimg4.webp" alt="Gallery image 4" loading="lazy" decoding="async">
+      </figure>
+    </figure>
+  </section>
+
+  <div class="final-section"></div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const heroText = document.querySelector('.hero-text-center');
+      const typingContainer = document.getElementById('saints-typing-container');
+      const dividers = document.querySelectorAll('.divider');
+
+      const gridSection = document.getElementById('grid-section');
+      const ericWrapper = document.getElementById('eric-wrapper');
+      const alexImage   = document.getElementById('alex-image');
+
+      // rAF-throttled scroll for smoothness
+      let ticking = false;
+      function onScroll(){
+        const vh = window.innerHeight;
+        const y  = window.scrollY;
+
+        // Open slice dividers across the first viewport
+        const f = Math.min(1, y / vh);
+        const initialWidth = 20;
+        const w = Math.max(0, initialWidth * (1 - f));
+        dividers.forEach(d => d.style.width = w + 'px');
+
+        // SRC fade/scale
+        heroText.style.opacity = Math.max(0, 1 - f * 1.5);
+        heroText.style.transform = `translate(-50%, -50%) scale(${1 + f * 0.2})`;
+
+        // Parallel scroll progress for Eric & Alex
+        const r = gridSection.getBoundingClientRect();
+        const start = vh;
+        const end   = -r.height;
+        const raw   = (start - r.top) / (start - end);
+        const p     = Math.max(0, Math.min(1, raw));
+
+        ericWrapper.style.transform = `translateX(${p * -20}%)`;
+        alexImage.style.transform   = `translateX(${p * 20}%) scale(${1 + p * 0.15})`;
+      }
+
+      function requestTick(){
+        if(!ticking){
+          requestAnimationFrame(() => { onScroll(); ticking = false; });
+          ticking = true;
+        }
+      }
+      window.addEventListener('scroll', requestTick, {passive:true});
+      window.addEventListener('resize', requestTick, {passive:true});
+      onScroll();
+
+      // Typing effect
+      const typingTextElement = document.getElementById('saints-typing-text');
+      const textToType = "Saints Run Club";
+      let i = 0, typed = false;
+      function typeWriter(){
+        if(i < textToType.length){
+          typingTextElement.textContent += textToType.charAt(i++);
+          setTimeout(typeWriter, 150);
+        } else {
+          typingContainer.querySelector('.saints-cursor').style.display = 'none';
+        }
+      }
+      const observer = new IntersectionObserver((entries)=>{
+        entries.forEach(entry=>{
+          if(entry.isIntersecting && !typed){
+            typed = true;
+            setTimeout(typeWriter, 500);
+            observer.unobserve(entry.target);
+          }
+        });
+      }, {threshold:0.5});
+      observer.observe(typingContainer);
+    });
+  </script>
+</body>
+</html>
