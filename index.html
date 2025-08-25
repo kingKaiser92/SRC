@@ -123,7 +123,7 @@
 
     .final-section{height:40vh;background-color:var(--bg-color-dark)}
 
-    /* ===== Mobile: stack layout, keep animations, fix hero + typing + Alex ===== */
+    /* ===== Mobile: stack layout, keep animations, fix hero compression + typing + Alex ===== */
     @media (max-width:768px){
 
       /* Give safe-area padding so typed text never clips */
@@ -134,10 +134,14 @@
       /* Slightly smaller default; JS will auto-fit further if needed */
       .saints-typing-text{font-size:clamp(2.6rem,13vw,7rem)}
 
-      /* Keep hero slices and animation; reduce apparent stretch */
+      /* Hero stays sliced/animated; de-compress image */
       .hero-section{height:72vh}
-      .divider{width:14px}                          /* thinner bars on phones */
-      .slice{background-size:800% 100%}             /* gentler horizontal zoom */
+      .divider{width:clamp(10px, 3.2vw, 14px)}  /* thinner bars on phones */
+      .slice{
+        /* override desktop/mobile width-heavy scaling to preserve aspect ratio */
+        background-size:auto 100% !important;  /* height-based scaling */
+        background-repeat:no-repeat;
+      }
 
       /* Grid stacks but keeps movement */
       .sticky-grid{grid-template-columns:1fr;gap:1rem;padding:1.25rem}
