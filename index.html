@@ -32,12 +32,13 @@
     .slice{
       flex:1 1 0;
       background-image:url('./assets/img/hero/running.webp');
-      background-size:1000% 100%;
+      background-size:1000% 100%;        /* desktop segmentation width */
       border-radius:12px;
       background-repeat:no-repeat;
       background-position:0 50%;
     }
     .divider{width:20px;flex-shrink:0;background-color:var(--bg-color-light);border-radius:100px}
+
     /* varied heights for stagger */
     .slice:nth-child(1){height:85%;align-self:flex-start;background-position:0% 50%}
     .slice:nth-child(3){height:95%;align-self:flex-end;background-position:11.111% 50%}
@@ -53,8 +54,7 @@
     .hero-text-center{
       position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
       font-family:'Anton',sans-serif;font-size:clamp(8rem,25vw,20rem);color:var(--accent-color);line-height:1;
-      will-change:opacity,transform;z-index:2;
-      white-space:nowrap;
+      will-change:opacity,transform;z-index:2;white-space:nowrap;
     }
 
     .logo{position:fixed;top:2rem;left:2rem;z-index:10}
@@ -69,7 +69,7 @@
     .typing-section{
       background-color:var(--bg-color-light);color:var(--text-color-dark);
       display:flex;justify-content:center;align-items:center;
-      padding-top:0;padding-bottom:var(--typing-bottom-gap)
+      padding-top:0;padding-bottom:var(--typing-bottom-gap);
     }
     .saints-typing-text{
       font-family:'Teko',sans-serif;font-size:clamp(3rem,10vw,8rem);
@@ -83,7 +83,7 @@
       height:0.8em;
       transform:translateY(0.15em);
       animation:blink .7s steps(1,end) infinite;
-      margin-left:0; /* prevent added spacing */
+      margin-left:0;
     }
     @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
 
@@ -123,24 +123,34 @@
 
     .final-section{height:40vh;background-color:var(--bg-color-dark)}
 
-    /* ===== Mobile: stack layout BUT keep animations ===== */
+    /* ===== Mobile: stack layout, keep animations, fix hero + typing + Alex ===== */
     @media (max-width:768px){
-      /* Keep hero slices visible for animation; just shorten hero */
-      .hero-section{height:70vh}
 
-      /* Grid stacks */
+      /* Give safe-area padding so typed text never clips */
+      .typing-section{
+        padding-left:max(12px, env(safe-area-inset-left));
+        padding-right:max(12px, env(safe-area-inset-right));
+      }
+      /* Slightly smaller default; JS will auto-fit further if needed */
+      .saints-typing-text{font-size:clamp(2.6rem,13vw,7rem)}
+
+      /* Keep hero slices and animation; reduce apparent stretch */
+      .hero-section{height:72vh}
+      .divider{width:14px}                          /* thinner bars on phones */
+      .slice{background-size:800% 100%}             /* gentler horizontal zoom */
+
+      /* Grid stacks but keeps movement */
       .sticky-grid{grid-template-columns:1fr;gap:1rem;padding:1.25rem}
       .image-column-center,.image-column-right{height:65vh;border-radius:16px;overflow:hidden}
-      /* Keep horizontal pan room for animations */
       .image-scroll-wrapper{width:130%;height:100%}
       .image-scroll-wrapper img{width:100%;height:100%;object-fit:cover;object-position:center}
-      .image-column-right .zoom-image{
-        width:130%;height:100%;
-        object-fit:cover;object-position:center;
-      }
 
-      /* Typing headline scales down but caret remains; no extra space */
-      .saints-typing-text{font-size:clamp(3rem,18vw,8rem)}
+      /* Show more of Alex’s head */
+      #alex-image{
+        object-position:50% 18%;
+        width:118%;
+        height:100%;
+      }
     }
   </style>
 </head>
@@ -251,7 +261,7 @@
 
         // Hero slice opening + SRC scale/fade (kept on mobile with gentler values)
         const f = Math.min(1, y / vh);
-        const initialWidth = mobile.matches ? 12 : 20;   // narrower dividers on phones
+        const initialWidth = mobile.matches ? 12 : 20;   // narrower bars on phones
         const w = Math.max(0, initialWidth * (1 - f));
         dividers.forEach(d => d.style.width = w + 'px');
 
@@ -260,7 +270,7 @@
         heroText.style.opacity = fadeAmt;
         heroText.style.transform = `translate(-50%, -50%) scale(${scaleAmt})`;
 
-        // Eric / Alex movement — still horizontal, reduced amplitude on phones
+        // Eric / Alex movement — horizontal, reduced amplitude on phones
         if(gridSection){
           const progressRaw = (y + vh - sectionTop) / (sectionHeight + vh);
           const p = Math.max(0, Math.min(1, progressRaw));
@@ -277,12 +287,12 @@
         }
       }
       window.addEventListener('scroll', requestTick, {passive:true});
-      window.addEventListener('resize', () => { measure(); requestTick(); }, {passive:true});
+      window.addEventListener('resize', () => { measure(); fitTypedLine(); requestTick(); }, {passive:true});
 
       measure();
       onScroll();
 
-      /* Typing effect — caret doesn't affect layout */
+      /* Typing effect — caret doesn't affect layout; auto-fit so it never overflows */
       const typingTextElement = document.getElementById('saints-typing-text');
       const caretEl = document.getElementById('saints-caret');
       const textToType = "Saints Run Club"; // no trailing spaces
@@ -291,6 +301,7 @@
       function typeWriter(){
         if(i < textToType.length){
           typingTextElement.textContent += textToType.charAt(i++);
+          fitTypedLine();  // ensure it always fits as we type
           setTimeout(typeWriter, 150);
         } else {
           // fade the caret; keep element to avoid layout shift
@@ -299,11 +310,26 @@
         }
       }
 
+      function fitTypedLine(){
+        const container = document.getElementById('saints-typing-container');
+        if(!container || !typingTextElement) return;
+        const available = container.clientWidth - 2; // small buffer
+        // reset before measuring
+        typingTextElement.style.transform = 'none';
+        typingTextElement.style.transformOrigin = 'left center';
+        const w = typingTextElement.scrollWidth;
+        if (w > available) {
+          const ratio = Math.max(0.84, Math.min(1, available / w));
+          typingTextElement.style.transform = `scale(${ratio})`;
+        }
+      }
+
       const typingContainer = document.getElementById('saints-typing-container');
       const observer = new IntersectionObserver((entries)=>{
         entries.forEach(entry=>{
           if(entry.isIntersecting && !typed){
             typed = true;
+            fitTypedLine();
             setTimeout(typeWriter, 400);
             observer.unobserve(entry.target);
           }
