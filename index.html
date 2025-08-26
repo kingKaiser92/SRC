@@ -299,6 +299,28 @@
 }
 
 </style>
+
+<style id="runner-mobile-fixes">
+  /* Bring cards above runner and strengthen layering */
+  .rt-card{ z-index:4; }
+  .runner{ z-index:3; }
+
+  /* Improve caption legibility and spacing */
+  .rt-caption{ font-size:0.95rem; opacity:.75; }
+
+  /* Mobile layout: center cards and stack vertically to avoid overlap */
+  @media (max-width:768px){
+    .rt-track{ height:220px; width:min(1000px, 94vw); }
+    .rt-card{ 
+      left:50% !important; 
+      width:min(92vw, 520px);
+      transform:translateX(-50%) translateY(-10px);
+    }
+    .rt-card--wed{ top:6%; }
+    .rt-card--sat{ top:56%; }
+  }
+</style>
+
 </head>
 <body>
   <header class="logo">
@@ -406,7 +428,7 @@
           <p><strong>Route TBD weekly</strong> <span aria-hidden="true">•</span> <time>8:00 AM</time><br>
              Posted Fridays on HeyLo/Strava. Pace groups, no one left behind.</p>
         </div>
-        <div class="rt-caption">Scroll to move the runner →</div>
+        <div class="rt-caption">Scroll down to move the runner ↓</div>
       </div>
     </div>
   </div>
