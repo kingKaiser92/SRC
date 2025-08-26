@@ -62,8 +62,8 @@
 
     .footer-ui{position:fixed;bottom:2rem;left:2rem;right:2rem;display:flex;justify-content:space-between;align-items:center;z-index:10}
     .footer-text{font-size:1.5rem;font-weight:700;color:var(--text-color-light)}
-    .gallery-button{border:2px solid #111;background:var(--accent-color);color:#111;padding:.65rem 1.1rem;font-size:.9rem;font-weight:800;letter-spacing:.02em;cursor:pointer;text-decoration:none;display:inline-block;border-radius:4px;box-shadow:0 6px 18px rgba(0,0,0,.18);transition:transform .15s ease, filter .15s ease}
-    .gallery-button:hover{filter:brightness(.95); transform:translateY(-1px)}
+    .gallery-button{border:2px solid #111;background:transparent;color:#111;padding:.65rem 1.1rem;font-size:.9rem;font-weight:800;letter-spacing:.04em;cursor:pointer;text-decoration:none;display:inline-block;border-radius:4px;box-shadow:none;transition:transform .15s ease, background-color .15s ease, color .15s ease}
+    .gallery-button:hover{background:rgba(0,0,0,.06); transform:translateY(-1px)}
 
     /* ---------- SAINTS RUN CLUB (typing) ---------- */
     .typing-section{
@@ -307,8 +307,9 @@
     z-index: 50; /* over social nav (30) */
   }
   .footer-text{ display:none; } /* declutter on small screens */
-  .gallery-button{ padding:.9rem 1.2rem; font-size:1rem; }
+  .gallery-button{border:2px solid #111;background:transparent;color:#111;padding:.65rem 1.1rem;font-size:.9rem;font-weight:800;letter-spacing:.04em;cursor:pointer;text-decoration:none;display:inline-block;border-radius:4px;box-shadow:none;transition:transform .15s ease, background-color .15s ease, color .15s ease}
 }
+.gallery-button:focus-visible{outline:3px solid #111; outline-offset:2px}
 </style>
 
 <style id="runner-mobile-fixes">
