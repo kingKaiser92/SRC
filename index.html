@@ -229,7 +229,76 @@
       overflow:hidden; clip:rect(0,0,0,0);
       white-space:nowrap; border:0;
     }
-  </style>
+  
+/* ===== Scroll Runner Timeline (full-bleed, sticky) ===== */
+.run-timeline{
+  width:100vw;
+  margin-left:calc(50% - 50vw);
+  margin-right:calc(50% - 50vw);
+  background:var(--bg-color-light);
+  color:var(--text-color-dark);
+  border-top:1px solid #111;
+  border-bottom:1px solid #111;
+}
+.rt-stage{height:160vh; position:relative}
+.rt-sticky{position:sticky; top:0; height:100vh; display:grid; place-items:center; overflow:hidden}
+.rt-track{
+  position:relative;
+  width:min(1400px, 88vw);
+  height:240px;
+  border:1px solid #111;
+  border-left:none; border-right:none;
+  background:
+    linear-gradient(#111,#111) center/100% 2px no-repeat,
+    repeating-linear-gradient(90deg, rgba(0,0,0,.12) 0 2px, transparent 2px 24px);
+  display:grid; place-items:center;
+}
+.rt-rail{position:absolute; left:6%; right:6%; top:50%; height:2px; background:#111; transform:translateY(-50%)}
+.rt-pin{position:absolute; top:50%; width:2px; height:100%; background:#111; transform:translate(-50%,-50%)}
+.rt-pin--wed{left:32%}
+.rt-pin--sat{left:72%}
+
+/* Runner icon */
+.runner{position:absolute; top:50%; translate:0 -50%; width:70px; height:70px; display:grid; place-items:center; z-index:3}
+.runner svg{width:70px; height:70px; filter:drop-shadow(0 6px 14px rgba(0,0,0,.15))}
+.runner-ring{fill:#000;opacity:.08}
+.runner-body{fill:#111}
+.runner-head{fill:#111}
+.runner-spark{fill:var(--accent)}
+@keyframes rt-bob{0%,100%{transform:translateY(-50%)} 50%{transform:translateY(calc(-50% - 6px))}}
+.runner{animation:rt-bob .6s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){.runner{animation:none}}
+
+/* Reveal cards */
+.rt-card{
+  position:absolute; top:12%; width:min(420px, 70vw);
+  border-radius:16px; padding:16px 18px; color:#111;
+  background:rgba(255,255,255,.85);
+  border:1px solid rgba(0,0,0,.2);
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  transform:translateX(-50%) translateY(-10px);
+  opacity:0; pointer-events:none;
+  transition:opacity .4s ease, transform .4s ease;
+}
+.rt-card h4{font-family:'Anton',sans-serif; margin:0 0 4px 0; font-size:1.6rem; letter-spacing:.3px}
+.rt-card p{margin:0; line-height:1.4}
+.rt-card time{font-weight:700}
+.rt-card--wed{left:32%}
+.rt-card--sat{left:72%}
+.rt-card.show{opacity:1; transform:translateX(-50%) translateY(0); pointer-events:auto}
+
+/* Caption */
+.rt-caption{position:absolute; bottom:12px; left:50%; transform:translateX(-50%); font-size:.9rem; opacity:.7}
+
+/* Mobile sizing */
+@media (max-width:768px){
+  .rt-track{height:200px; width:min(1000px, 92vw)}
+  .runner svg{width:56px; height:56px}
+  .runner{width:56px; height:56px}
+  .rt-card{top:8%; width:min(90vw, 460px)}
+}
+
+</style>
 </head>
 <body>
   <header class="logo">
@@ -306,7 +375,43 @@
     </figure>
   </section>
 
-  <div class="final-section"></div>
+  
+<section class="run-timeline" aria-label="Weekly timeline">
+  <div class="rt-stage">
+    <div class="rt-sticky">
+      <div class="rt-track" id="rtTrack">
+        <div class="rt-rail"></div>
+        <div class="rt-pin rt-pin--wed" aria-hidden="true"></div>
+        <div class="rt-pin rt-pin--sat" aria-hidden="true"></div>
+
+        <!-- Runner -->
+        <div class="runner" id="runner" aria-hidden="true">
+          <svg viewBox="0 0 120 120" role="img" aria-label="Runner">
+            <circle class="runner-ring" cx="60" cy="60" r="56"/>
+            <circle class="runner-head" cx="70" cy="34" r="9"/>
+            <path class="runner-body" d="M45 74l10-26 16 6 9-9 8 7-11 12-13-4-6 17-13-3z"/>
+            <path class="runner-body" d="M50 88l-8 10 10 4 9-11z"/>
+            <path class="runner-spark" d="M28 66h10v6H28z"/>
+          </svg>
+        </div>
+
+        <!-- Cards -->
+        <div class="rt-card rt-card--wed" id="cardWed">
+          <h4>Wednesday — Speed Work</h4>
+          <p><strong>Astoria Park Track</strong> <span aria-hidden="true">•</span> <time>6:30 PM</time><br>
+             Structured intervals &amp; drills. All levels welcome.</p>
+        </div>
+        <div class="rt-card rt-card--sat" id="cardSat">
+          <h4>Saturday — Long Run</h4>
+          <p><strong>Route TBD weekly</strong> <span aria-hidden="true">•</span> <time>8:00 AM</time><br>
+             Posted Fridays on HeyLo/Strava. Pace groups, no one left behind.</p>
+        </div>
+        <div class="rt-caption">Scroll to move the runner →</div>
+      </div>
+    </div>
+  </div>
+</section>
+
 
   <!-- Social nav (desktop pill / mobile app bar) with brand icons -->
   <nav class="social-nav" aria-label="Social links">
@@ -436,5 +541,41 @@
       observer.observe(typingContainer);
     });
   </script>
+
+<script>
+(function(){
+  const stage = document.querySelector('.rt-stage');
+  if(!stage) return;
+  const track = document.getElementById('rtTrack');
+  const runner = document.getElementById('runner');
+  const cardWed = document.getElementById('cardWed');
+  const cardSat = document.getElementById('cardSat');
+
+  let vh = innerHeight, stageTop = 0, stageH = 0;
+  function measure(){
+    const r = stage.getBoundingClientRect();
+    stageTop = scrollY + r.top;
+    stageH = stage.offsetHeight;
+    vh = innerHeight;
+  }
+  function clamp(v,min,max){ return v<min?min:(v>max?max:v); }
+  function update(){
+    const pRaw = (scrollY - stageTop) / (stageH - vh);
+    const p = clamp(pRaw, 0, 1);
+    const left = 6 + (94 - 6) * p; // 6% -> 94% travel
+    if (runner) runner.style.left = left + "%";
+    const showWed = p > 0.18;  // ~32% visual
+    const showSat = p > 0.62;  // ~72% visual
+    cardWed && cardWed.classList.toggle('show', showWed);
+    cardSat && cardSat.classList.toggle('show', showSat);
+  }
+  let ticking = false;
+  function onScroll(){ if(!ticking){ requestAnimationFrame(()=>{ update(); ticking=false; }); ticking=true; } }
+  addEventListener('scroll', onScroll, {passive:true});
+  addEventListener('resize', ()=>{ measure(); onScroll(); }, {passive:true});
+  measure(); update();
+})();
+</script>
+
 </body>
 </html>
