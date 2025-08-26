@@ -141,6 +141,7 @@
         /* override desktop/mobile width-heavy scaling to preserve aspect ratio */
         background-size:auto 100% !important;  /* height-based scaling */
         background-repeat:no-repeat;
+        background-position:center center;
       }
 
       /* Grid stacks but keeps movement */
@@ -155,6 +156,65 @@
         width:118%;
         height:100%;
       }
+    }
+
+    /* ===== Social nav ===== */
+    .social-nav{
+      position:fixed;
+      top:1.25rem;
+      right:1rem;
+      z-index:30; /* above hero + footer */
+      display:flex;
+      gap:.5rem;
+      padding:.4rem;
+      border-radius:999px;
+      background:rgba(17,17,17,.35);
+      backdrop-filter:blur(8px);
+      -webkit-backdrop-filter:blur(8px);
+      border:1px solid rgba(255,255,255,.18);
+    }
+    .social-nav a{
+      --size:42px;
+      width:var(--size);
+      height:var(--size);
+      display:grid;
+      place-items:center;
+      color:var(--text-color-light);
+      opacity:.75;
+      text-decoration:none;
+      border-radius:999px;
+      outline:0;
+      transition:opacity .2s ease, transform .2s ease, box-shadow .2s ease;
+    }
+    .social-nav a:hover{opacity:1; transform:translateY(-2px);}
+    .social-nav a:focus-visible{
+      box-shadow:0 0 0 3px rgba(255,210,0,.8), 0 0 0 5px rgba(0,0,0,.6);
+      opacity:1;
+    }
+    .social-nav svg{width:22px; height:22px; fill:currentColor}
+
+    /* Mobile app-bar */
+    @media (max-width:768px){
+      .social-nav{
+        top:auto;
+        right:1rem;
+        left:1rem;
+        bottom:calc(10px + env(safe-area-inset-bottom));
+        justify-content:space-around;
+        padding:.6rem;
+        border-radius:16px;
+        background:rgba(17,17,17,.6);
+      }
+      .social-nav a{ --size:48px; }
+    }
+
+    /* Visually hidden text for screen readers */
+    .sr-only{
+      position:absolute !important;
+      width:1px; height:1px;
+      padding:0; margin:-1px;
+      overflow:hidden; clip:rect(0,0,0,0);
+      white-space:nowrap; border:0;
     }
   </style>
 </head>
@@ -234,6 +294,40 @@
   </section>
 
   <div class="final-section"></div>
+
+  <!-- Social nav (desktop pill / mobile app bar) -->
+  <nav class="social-nav" aria-label="Social links">
+    <!-- Instagram -->
+    <a href="https://www.instagram.com/svintsrunclub/" target="_blank" rel="noopener noreferrer" aria-label="Open Instagram" title="Instagram">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <rect x="3" y="3" width="18" height="18" rx="5"></rect>
+        <circle cx="12" cy="12" r="4.2"></circle>
+        <circle cx="17.3" cy="6.7" r="1.2"></circle>
+      </svg>
+      <span class="sr-only">Instagram</span>
+    </a>
+
+    <!-- Strava -->
+    <a href="https://strava.app.link/lw6PeAun8Vb" target="_blank" rel="noopener noreferrer" aria-label="Open Strava" title="Strava">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <!-- stylized twin peaks -->
+        <path d="M8.8 4l4.2 8H9.9l3.1 6 6-12h-3.1L14.7 4H8.8z"></path>
+      </svg>
+      <span class="sr-only">Strava</span>
+    </a>
+
+    <!-- HeyLo -->
+    <a href="https://heylo.group/svintsrunclub" target="_blank" rel="noopener noreferrer" aria-label="Open HeyLo group" title="HeyLo">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <!-- two people + chat bubble -->
+        <circle cx="8" cy="9" r="3.2"></circle>
+        <circle cx="16.5" cy="11" r="2.6"></circle>
+        <path d="M3.5 18.2c.8-2.6 3.1-4.2 5.9-4.2s5.1 1.6 5.9 4.2c.1.4-.2.8-.6.8H4.1c-.4 0-.7-.4-.6-.8z"></path>
+        <path d="M13.8 7.5c0-2 1.8-3.5 3.9-3.5s3.9 1.6 3.9 3.5-1.8 3.5-3.9 3.5h-.6l-1.8 1.6c-.2.2-.6 0-.5-.3l.3-1.3c-1.1-.6-1.3-1.8-1.3-2.5z"></path>
+      </svg>
+      <span class="sr-only">HeyLo</span>
+    </a>
+  </nav>
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
