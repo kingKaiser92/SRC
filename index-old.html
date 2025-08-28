@@ -62,8 +62,8 @@
 
     .footer-ui{position:fixed;bottom:2rem;left:2rem;right:2rem;display:flex;justify-content:space-between;align-items:center;z-index:10}
     .footer-text{font-size:1.5rem;font-weight:700;color:var(--text-color-light)}
-    .gallery-button{border:1px solid var(--text-color-light);background:transparent;color:var(--text-color-light);padding:.5rem 1rem;font-size:.8rem;letter-spacing:1px;cursor:pointer;text-decoration:none;display:inline-block;border-radius:4px}
-    .gallery-button:hover{opacity:0.88}
+    .gallery-button{border:2px solid #111;background:transparent;color:#111;padding:.65rem 1.1rem;font-size:.9rem;font-weight:800;letter-spacing:.04em;cursor:pointer;text-decoration:none;display:inline-block;border-radius:4px;box-shadow:none;transition:transform .15s ease, background-color .15s ease, color .15s ease}
+    .gallery-button:hover{background:rgba(0,0,0,.06); transform:translateY(-1px)}
 
     /* ---------- SAINTS RUN CLUB (typing) ---------- */
     .typing-section{
@@ -298,27 +298,18 @@
   .rt-card{top:8%; width:min(90vw, 460px)}
 }
 
-/* ===== Bottom video band (minimal) ===== */
-.footer-video{
-  width:100vw;
-  margin-left:calc(50% - 50vw);
-  margin-right:calc(50% - 50vw);
-  background:var(--bg-color-light);
-  padding:24px 16px 120px;
-  border-top:1px solid rgba(0,0,0,.08);
-}
-.footer-video__inner{ max-width:1200px; margin:0 auto; }
-.footer-video__media{
-  width:100%;
-  aspect-ratio:16/9;
-  object-fit:cover;
-  display:block;
-  border-radius:16px;
-  background:#000;
-}
 @media (max-width:768px){
-  .footer-video{ padding-bottom:calc(140px + env(safe-area-inset-bottom)); }
+  .footer-ui{
+    bottom: calc(92px + env(safe-area-inset-bottom)); /* above social app bar */
+    left: 1rem;
+    right: 1rem;
+    justify-content: center;
+    z-index: 50; /* over social nav (30) */
+  }
+  .footer-text{ display:none; } /* declutter on small screens */
+  .gallery-button{border:2px solid #111;background:transparent;color:#111;padding:.65rem 1.1rem;font-size:.9rem;font-weight:800;letter-spacing:.04em;cursor:pointer;text-decoration:none;display:inline-block;border-radius:4px;box-shadow:none;transition:transform .15s ease, background-color .15s ease, color .15s ease}
 }
+.gallery-button:focus-visible{outline:3px solid #111; outline-offset:2px}
 </style>
 
 <style id="runner-mobile-fixes">
@@ -441,12 +432,12 @@
         <!-- Cards -->
         <div class="rt-card rt-card--wed" id="cardWed">
           <h4>Wednesday — Speed Work</h4>
-          <p><strong>Astoria Park Track</strong> <span aria-hidden="true">•</span> <time>6:30 PM</time><br>
+          <p><strong>Astoria Park Track</strong> <span aria-hidden="true">•</span> <time>6:00 AM</time><br>
              Structured intervals &amp; drills. All levels welcome.</p>
         </div>
         <div class="rt-card rt-card--sat" id="cardSat">
           <h4>Saturday — Long Run</h4>
-          <p><strong>Route TBD weekly</strong> <span aria-hidden="true">•</span> <time>8:00 AM</time><br>
+          <p><strong>Route TBD weekly</strong> <span aria-hidden="true">•</span> <time>7:00 AM</time><br>
              Posted Fridays on HeyLo/Strava. Pace groups, no one left behind.</p>
         </div>
         <div class="rt-caption">Scroll down to move the runner ↓</div>
@@ -457,18 +448,6 @@
 
 
   <!-- Social nav (desktop pill / mobile app bar) with brand icons -->
-<section class="footer-video" id="club-video" aria-label="Club video">
-  <div class="footer-video__inner">
-    <video class="footer-video__media"
-           autoplay muted loop playsinline
-           preload="metadata"
-           poster="./assets/img/hero/hero-poster.jpg" aria-hidden="true">
-      <source src="./assets/video/running-bg.mp4" type="video/mp4">
-      Sorry, your browser doesn’t support embedded videos.
-    </video>
-  </div>
-</section>
-
   <nav class="social-nav" aria-label="Social links">
     <!-- Instagram -->
     <a data-brand="instagram" href="https://www.instagram.com/svintsrunclub/" target="_blank" rel="noopener noreferrer" aria-label="Open Instagram" title="Instagram">
@@ -632,20 +611,5 @@
 })();
 </script>
 
-<script>
-  (function(){
-    var vid = document.querySelector('#club-video .footer-video__media');
-    if (!vid) return;
-    if ('IntersectionObserver' in window){
-      var io = new IntersectionObserver(function(entries){
-        var e = entries[0];
-        if (!e) return;
-        if (e.isIntersecting) { vid.play().catch(function(){}); }
-        else { vid.pause(); }
-      }, {threshold:0.25});
-      io.observe(vid);
-    }
-  })();
-</script>
 </body>
 </html>
