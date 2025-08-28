@@ -211,7 +211,47 @@
       position:absolute !important; width:1px; height:1px; padding:0; margin:-1px;
       overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
     }
-  </style>
+  
+/* ===== Cinematic full-bleed video band ===== */
+.footer-video--bleed{
+  width:100vw;
+  margin-left:calc(50% - 50vw);
+  margin-right:calc(50% - 50vw);
+  margin-bottom:calc(120px + env(safe-area-inset-bottom));
+  padding:0;
+  background:var(--bg-color-light);
+  position:relative;
+  border-top:0;
+}
+.footer-video--bleed .footer-video__inner{max-width:none;margin:0;padding:0}
+.footer-video--bleed .footer-video__media{
+  width:100vw; height:auto; aspect-ratio:16/9;
+  object-fit:cover; display:block; border-radius:0; background:#000;
+  opacity:0; transform:scale(1.06);
+  transition:opacity .8s ease, transform 1.25s cubic-bezier(0.22,1,0.36,1);
+}
+.footer-video--bleed.is-visible .footer-video__media{ opacity:1; transform:scale(1); }
+/* soft fade to page background */
+.footer-video--bleed::before,
+.footer-video--bleed::after{
+  content:""; position:absolute; left:0; right:0; height:96px; pointer-events:none; z-index:2;
+}
+.footer-video--bleed::before{
+  top:0;
+  background:linear-gradient(to bottom, var(--bg-color-light) 0%, rgba(245,245,240,0) 100%);
+}
+.footer-video--bleed::after{
+  bottom:0;
+  background:linear-gradient(to top, var(--bg-color-light) 0%, rgba(245,245,240,0) 100%);
+}
+@media (max-width:768px){
+  .footer-video--bleed{ margin-bottom:calc(140px + env(safe-area-inset-bottom)); }
+}
+@media (prefers-reduced-motion:reduce){
+  .footer-video--bleed .footer-video__media{ transition:none; transform:none; opacity:1; }
+}
+
+</style>
 </head>
 <body>
   <header class="logo" aria-label="SRC logo">
@@ -289,7 +329,7 @@
   </section>
 
   <!-- Bottom MP4 video section -->
-  <section class="footer-video" id="club-video" aria-label="Club video">
+  <section class="footer-video footer-video--bleed" id="club-video" aria-label="Club video">
     <div class="footer-video__inner">
       <video class="footer-video__media"
              autoplay muted loop playsinline webkit-playsinline
@@ -416,6 +456,18 @@
         });
       }, {threshold:0.5});
       observer.observe(typingContainer);
+
+
+      // Reveal the full-bleed video band when it enters the viewport
+      const band = document.getElementById('club-video');
+      if (band && 'IntersectionObserver' in window){
+        const io2 = new IntersectionObserver(([e])=>{
+          if (!e) return;
+          if (e.isIntersecting) { band.classList.add('is-visible'); io2.unobserve(band); }
+        }, {threshold:0.15});
+        io2.observe(band);
+      }
+
 
       // Bottom video autoplay helper + pause when off-screen
       const v = document.querySelector('#club-video video');
