@@ -647,5 +647,41 @@
     }
   })();
 </script>
+<script>
+(function(){
+  var vid = document.querySelector('#club-video .footer-video__media');
+  if (!vid) return;
+
+  // Select the first format the browser says it can play
+  var sources = [
+    {type:'video/webm', src:'./assets/video/running-bg.webm'},
+    {type:'video/mp4',  src:'./assets/video/running-bg.mp4'}
+  ];
+  var chosen = null;
+  for (var i=0;i<sources.length;i++){
+    var t = sources[i].type;
+    if (vid.canPlayType && vid.canPlayType(t)) { chosen = sources[i]; break; }
+  }
+  if (chosen){ vid.setAttribute('src', chosen.src); }
+  else {
+    // Friendly fallback note
+    var p = document.createElement('p');
+    p.className = 'footer-video__fallback';
+    p.textContent = "Video preview not supported by this browser.";
+    var inner = document.querySelector('#club-video .footer-video__inner');
+    if (inner){ inner.style.position='relative'; inner.appendChild(p); }
+  }
+
+  // Pause when scrolled away (saves battery for loops)
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      var e = entries[0]; if (!e) return;
+      if (e.isIntersecting) vid.play().catch(function(){});
+      else vid.pause();
+    }, {threshold:0.25});
+    io.observe(vid);
+  }
+})();
+</script>
 </body>
 </html>
