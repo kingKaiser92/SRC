@@ -371,6 +371,11 @@
   .footer-video--edgefade .footer-video__media{ transition:none; opacity:1; transform:translateX(-50%) }
 }
 
+
+/* === OVERRIDE: remove side fades on edge‑wide video === */
+.edgefade-wrap::before,
+.edgefade-wrap::after{ display:none !important; background:none !important; }
+
 </style>
 </head>
 <body>
