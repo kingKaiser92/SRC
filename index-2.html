@@ -62,8 +62,8 @@
 
     .footer-ui{position:fixed;bottom:2rem;left:2rem;right:2rem;display:flex;justify-content:space-between;align-items:center;z-index:10}
     .footer-text{font-size:1.5rem;font-weight:700;color:var(--text-color-light)}
-    .gallery-button{border:2px solid #111;background:transparent;color:#111;padding:.65rem 1.1rem;font-size:.9rem;font-weight:800;letter-spacing:.04em;cursor:pointer;text-decoration:none;display:inline-block;border-radius:4px;box-shadow:none;transition:transform .15s ease, background-color .15s ease, color .15s ease}
-    .gallery-button:hover{background:rgba(0,0,0,.06); transform:translateY(-1px)}
+    .gallery-button{border:1px solid var(--text-color-light);background:transparent;color:var(--text-color-light);padding:.5rem 1rem;font-size:.8rem;letter-spacing:1px;cursor:pointer;text-decoration:none;display:inline-block;border-radius:4px}
+    .gallery-button:hover{opacity:0.88}
 
     /* ---------- SAINTS RUN CLUB (typing) ---------- */
     .typing-section{
@@ -298,21 +298,30 @@
   .rt-card{top:8%; width:min(90vw, 460px)}
 }
 
-@media (max-width:768px){
-  /* Adjust footer-ui's bottom position on mobile to account for the background video */
-  .footer-ui{
-    bottom: calc(92px + env(safe-area-inset-bottom) + 80px); /* Adjust 80px as needed for video height */
-    left: 1rem;
-    right: 1rem;
-    justify-content: center;
-    z-index: 50; /* over social nav (30) */
-  }
-  .footer-text{ display:none; } /* declutter on small screens */
-  .gallery-button{border:2px solid #111;background:transparent;color:#111;padding:.65rem 1.1rem;font-size:.9rem;font-weight:800;letter-spacing:.04em;cursor:pointer;text-decoration:none;display:inline-block;border-radius:4px;box-shadow:none;transition:transform .15s ease, background-color .15s ease, color .15s ease}
+/* ===== Bottom video band (minimal) ===== */
+.footer-video{
+  width:100vw;
+  margin-left:calc(50% - 50vw);
+  margin-right:calc(50% - 50vw);
+  background:var(--bg-color-light);
+  padding:24px 16px 120px;
+  border-top:1px solid rgba(0,0,0,.08);
 }
-.gallery-button:focus-visible{outline:3px solid #111; outline-offset:2px}
+.footer-video__inner{ max-width:1200px; margin:0 auto; }
+.footer-video__media{
+  width:100%;
+  aspect-ratio:16/9;
+  object-fit:cover;
+  display:block;
+  border-radius:16px;
+  background:#000;
+}
+@media (max-width:768px){
+  .footer-video{ padding-bottom:calc(140px + env(safe-area-inset-bottom)); }
+}
+</style>
 
-/* ===== Scroll Runner Timeline Mobile Fixes ===== */
+<style id="runner-mobile-fixes">
   /* Bring cards above runner and strengthen layering */
   .rt-card{ z-index:4; }
   .runner{ z-index:3; }
@@ -331,23 +340,6 @@
     .rt-card--wed{ top:6%; }
     .rt-card--sat{ top:56%; }
   }
-
-/* ===== Background Video Styling ===== */
-.background-video {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: auto;
-    min-height: 40vh; /* Ensure it's tall enough to show the fade */
-    z-index: -1; /* Place it behind other content */
-    filter: brightness(0.7) grayscale(0.5); /* Adjust these values to blend as desired */
-    object-fit: cover; /* This is important to ensure it fills the space while maintaining aspect ratio */
-
-    /* Blending with a gradient mask */
-    mask-image: linear-gradient(to top, black 60%, transparent 100%);
-    -webkit-mask-image: linear-gradient(to top, black 60%, transparent 100%); /* For WebKit browsers */
-}
 </style>
 
 </head>
@@ -449,12 +441,12 @@
         <!-- Cards -->
         <div class="rt-card rt-card--wed" id="cardWed">
           <h4>Wednesday — Speed Work</h4>
-          <p><strong>Astoria Park Track</strong> <span aria-hidden="true">•</span> <time>6:00 AM</time><br>
+          <p><strong>Astoria Park Track</strong> <span aria-hidden="true">•</span> <time>6:30 PM</time><br>
              Structured intervals &amp; drills. All levels welcome.</p>
         </div>
         <div class="rt-card rt-card--sat" id="cardSat">
           <h4>Saturday — Long Run</h4>
-          <p><strong>Route TBD weekly</strong> <span aria-hidden="true">•</span> <time>7:00 AM</time><br>
+          <p><strong>Route TBD weekly</strong> <span aria-hidden="true">•</span> <time>8:00 AM</time><br>
              Posted Fridays on HeyLo/Strava. Pace groups, no one left behind.</p>
         </div>
         <div class="rt-caption">Scroll down to move the runner ↓</div>
@@ -465,7 +457,195 @@
 
 
   <!-- Social nav (desktop pill / mobile app bar) with brand icons -->
+<section class="footer-video" id="club-video" aria-label="Club video">
+  <div class="footer-video__inner">
+    <video class="footer-video__media"
+           autoplay muted loop playsinline
+           preload="metadata"
+           poster="./assets/img/hero/hero-poster.jpg" aria-hidden="true">
+      <source src="./assets/video/running-bg.mp4" type="video/mp4">
+      Sorry, your browser doesn’t support embedded videos.
+    </video>
+  </div>
+</section>
+
   <nav class="social-nav" aria-label="Social links">
     <!-- Instagram -->
     <a data-brand="instagram" href="https://www.instagram.com/svintsrunclub/" target="_blank" rel="noopener noreferrer" aria-label="Open Instagram" title="Instagram">
-      <svg fill="currentColor" stroke="currentColor" role="img" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"> <path fill-rule="evenodd" clip-rule="evenodd" d="M12 18C15.3137 18 18 15.3137 18 12C18 8.68629 15.3137 6 12 6C8.68629 6 6 8.68629 6 12C6 15.3137 8.68629 18 12 18ZM12 16C14.2091 16 16 14.2091 16 12C16 9.79086 14.2091 8 12 8C9.79086 8 8 9.79086 8 12C8 14.2091 9.79086 16 12 16Z" fill="currentColor"/> <path d="M18 5C17.4477 5 17 5.44772 17 6C17 6.55228 17.4477 7 18 7C18.5523 7 19 6.55228 19 6C19 5.44772 18.5523 5 18 5Z" fill="currentColor"/> <path fill-rule="evenodd" clip-rule="evenodd" d="M1.65396 4.27606C1 5.55953 1 7.23969 1 10.6V13.4C1 16.7603 1 18.4405 1.65396 19.7239C2.2292 20.8529 3.14708 21.7708 4.27606 22.346C5.55953 23 7.23969 23 10.6 23H13.4C16.7603 23 18.4405 23 19.7239 22.346C20.8529 21.7708 21.7708 20.8529 22.346 19.7239C23 18.4405 23 16.7603 23 13.4V10.6C23 7.23969 23 5.55953 22.346 4.27606C21.7708 3.14708 20.8529 2.2292 19.7239 1.65396C18.4405 1 16.7603 1 13.
+      <svg fill="currentColor" stroke="currentColor" role="img" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"> <path fill-rule="evenodd" clip-rule="evenodd" d="M12 18C15.3137 18 18 15.3137 18 12C18 8.68629 15.3137 6 12 6C8.68629 6 6 8.68629 6 12C6 15.3137 8.68629 18 12 18ZM12 16C14.2091 16 16 14.2091 16 12C16 9.79086 14.2091 8 12 8C9.79086 8 8 9.79086 8 12C8 14.2091 9.79086 16 12 16Z" fill="currentColor"/> <path d="M18 5C17.4477 5 17 5.44772 17 6C17 6.55228 17.4477 7 18 7C18.5523 7 19 6.55228 19 6C19 5.44772 18.5523 5 18 5Z" fill="currentColor"/> <path fill-rule="evenodd" clip-rule="evenodd" d="M1.65396 4.27606C1 5.55953 1 7.23969 1 10.6V13.4C1 16.7603 1 18.4405 1.65396 19.7239C2.2292 20.8529 3.14708 21.7708 4.27606 22.346C5.55953 23 7.23969 23 10.6 23H13.4C16.7603 23 18.4405 23 19.7239 22.346C20.8529 21.7708 21.7708 20.8529 22.346 19.7239C23 18.4405 23 16.7603 23 13.4V10.6C23 7.23969 23 5.55953 22.346 4.27606C21.7708 3.14708 20.8529 2.2292 19.7239 1.65396C18.4405 1 16.7603 1 13.4 1H10.6C7.23969 1 5.55953 1 4.27606 1.65396C3.14708 2.2292 2.2292 3.14708 1.65396 4.27606ZM13.4 3H10.6C8.88684 3 7.72225 3.00156 6.82208 3.0751C5.94524 3.14674 5.49684 3.27659 5.18404 3.43597C4.43139 3.81947 3.81947 4.43139 3.43597 5.18404C3.27659 5.49684 3.14674 5.94524 3.0751 6.82208C3.00156 7.72225 3 8.88684 3 10.6V13.4C3 15.1132 3.00156 16.2777 3.0751 17.1779C3.14674 18.0548 3.27659 18.5032 3.43597 18.816C3.81947 19.5686 4.43139 20.1805 5.18404 20.564C5.49684 20.7234 5.94524 20.8533 6.82208 20.9249C7.72225 20.9984 8.88684 21 10.6 21H13.4C15.1132 21 16.2777 20.9984 17.1779 20.9249C18.0548 20.8533 18.5032 20.7234 18.816 20.564C19.5686 20.1805 20.1805 19.5686 20.564 18.816C20.7234 18.5032 20.8533 18.0548 20.9249 17.1779C20.9984 16.2777 21 15.1132 21 13.4V10.6C21 8.88684 20.9984 7.72225 20.9249 6.82208C20.8533 5.94524 20.7234 5.49684 20.564 5.18404C20.1805 4.43139 19.5686 3.81947 18.816 3.43597C18.5032 3.27659 18.0548 3.14674 17.1779 3.0751C16.2777 3.00156 15.1132 3 13.4 3Z" fill="currentColor"/> </svg>
+      <span class="sr-only">Instagram</span>
+    </a>
+
+    <!-- Strava -->
+    <a data-brand="strava" href="https://strava.app.link/lw6PeAun8Vb" target="_blank" rel="noopener noreferrer" aria-label="Open Strava" title="Strava">
+      <svg fill="currentColor" stroke="currentColor" role="img" fill="currentColor" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"> <path d="M20.516 23.927l-2.786-5.49h-4.083l6.87 13.563 6.865-13.563h-4.083zM13.953 10.974l3.781 7.464h5.563l-9.344-18.438-9.333 18.438h5.557z"/> </svg>
+      <span class="sr-only">Strava</span>
+    </a>
+
+    <!-- HeyLo (chat bubble stand-in) -->
+    <a data-brand="heylo" href="https://heylo.group/svintsrunclub" target="_blank" rel="noopener noreferrer" aria-label="Open HeyLo group" title="HeyLo">
+      <svg viewBox="0 0 24 24" role="img"><path d="M3.5 6.5A3.5 3.5 0 0 1 7 3h10a3.5 3.5 0 0 1 3.5 3.5v6A3.5 3.5 0 0 1 17 16H10l-4.5 4v-4H7a3.5 3.5 0 0 1-3.5-3.5v-6z"></path><circle cx="9" cy="9.5" r="1.2"></circle><circle cx="12" cy="9.5" r="1.2"></circle><circle cx="15" cy="9.5" r="1.2"></circle></svg>
+      <span class="sr-only">HeyLo</span>
+    </a>
+  </nav>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const heroText   = document.querySelector('.hero-text-center');
+      const dividers   = document.querySelectorAll('.divider');
+
+      const gridSection = document.getElementById('grid-section');
+      const ericWrapper = document.getElementById('eric-wrapper');
+      const alexImage   = document.getElementById('alex-image');
+
+      const mobile = window.matchMedia('(max-width: 768px)');
+
+      // Cache geometry on resize
+      let vh = window.innerHeight;
+      let sectionTop = 0, sectionHeight = 0;
+      function measure(){
+        vh = window.innerHeight;
+        if (gridSection){
+          const rect = gridSection.getBoundingClientRect();
+          sectionTop = window.scrollY + rect.top;
+          sectionHeight = gridSection.offsetHeight;
+        }
+      }
+
+      // rAF-throttled scroll
+      let ticking = false;
+      function onScroll(){
+        const y  = window.scrollY;
+
+        // Hero slice opening + SRC scale/fade (kept on mobile with gentler values)
+        const f = Math.min(1, y / vh);
+        const initialWidth = mobile.matches ? 12 : 20;   // narrower bars on phones
+        const w = Math.max(0, initialWidth * (1 - f));
+        dividers.forEach(d => d.style.width = w + 'px');
+
+        const scaleAmt = mobile.matches ? (1 + f * 0.12) : (1 + f * 0.2);
+        const fadeAmt  = Math.max(0, 1 - f * (mobile.matches ? 1.2 : 1.5));
+        heroText.style.opacity = fadeAmt;
+        heroText.style.transform = `translate(-50%, -50%) scale(${scaleAmt})`;
+
+        // Eric / Alex movement — horizontal; center pan on mobile with offset
+        if(gridSection){
+          const progressRaw = (y + vh - sectionTop) / (sectionHeight + vh);
+          const p = Math.max(0, Math.min(1, progressRaw));
+          const amp = mobile.matches ? 10 : 20; // percentage of width
+          if (ericWrapper) ericWrapper.style.transform = `translateX(${p * -amp}%)`;
+          const offset = mobile.matches ? -amp/2 : 0;
+          if (alexImage)   alexImage.style.transform   = `translateX(${offset + p * amp}%) scale(${1 + p * (mobile.matches? 0.10 : 0.15)})`;
+        }
+      }
+
+      function requestTick(){
+        if(!ticking){
+          requestAnimationFrame(() => { onScroll(); ticking = false; });
+          ticking = true;
+        }
+      }
+      window.addEventListener('scroll', requestTick, {passive:true});
+      window.addEventListener('resize', () => { measure(); fitTypedLine(); requestTick(); }, {passive:true});
+
+      measure();
+      onScroll();
+
+      /* Typing effect — caret doesn't affect layout; auto-fit so it never overflows */
+      const typingTextElement = document.getElementById('saints-typing-text');
+      const caretEl = document.getElementById('saints-caret');
+      const textToType = "Saints Run Club"; // no trailing spaces
+      let i = 0, typed = false;
+
+      function typeWriter(){
+        if(i < textToType.length){
+          typingTextElement.textContent += textToType.charAt(i++);
+          fitTypedLine();  // ensure it always fits as we type
+          setTimeout(typeWriter, 150);
+        } else {
+          // fade the caret; keep element to avoid layout shift
+          caretEl.style.animation = 'none';
+          caretEl.style.opacity = '0';
+        }
+      }
+
+      function fitTypedLine(){
+        const container = document.getElementById('saints-typing-container');
+        if(!container || !typingTextElement) return;
+        const available = container.clientWidth - 2; // small buffer
+        typingTextElement.style.transform = 'none';
+        typingTextElement.style.transformOrigin = 'left center';
+        const w = typingTextElement.scrollWidth;
+        if (w > available) {
+          const ratio = Math.max(0.84, Math.min(1, available / w));
+          typingTextElement.style.transform = `scale(${ratio})`;
+        }
+      }
+
+      const typingContainer = document.getElementById('saints-typing-container');
+      const observer = new IntersectionObserver((entries)=>{
+        entries.forEach(entry=>{
+          if(entry.isIntersecting && !typed){
+            typed = true;
+            fitTypedLine();
+            setTimeout(typeWriter, 400);
+            observer.unobserve(entry.target);
+          }
+        });
+      }, {threshold:0.5});
+      observer.observe(typingContainer);
+    });
+  </script>
+
+<script>
+(function(){
+  const stage = document.querySelector('.rt-stage');
+  if(!stage) return;
+  const track = document.getElementById('rtTrack');
+  const runner = document.getElementById('runner');
+  const cardWed = document.getElementById('cardWed');
+  const cardSat = document.getElementById('cardSat');
+
+  let vh = innerHeight, stageTop = 0, stageH = 0;
+  function measure(){
+    const r = stage.getBoundingClientRect();
+    stageTop = scrollY + r.top;
+    stageH = stage.offsetHeight;
+    vh = innerHeight;
+  }
+  function clamp(v,min,max){ return v<min?min:(v>max?max:v); }
+  function update(){
+    const pRaw = (scrollY - stageTop) / (stageH - vh);
+    const p = clamp(pRaw, 0, 1);
+    const left = 6 + (94 - 6) * p; // 6% -> 94% travel
+    if (runner) runner.style.left = left + "%";
+    const showWed = p > 0.18;  // ~32% visual
+    const showSat = p > 0.62;  // ~72% visual
+    cardWed && cardWed.classList.toggle('show', showWed);
+    cardSat && cardSat.classList.toggle('show', showSat);
+  }
+  let ticking = false;
+  function onScroll(){ if(!ticking){ requestAnimationFrame(()=>{ update(); ticking=false; }); ticking=true; } }
+  addEventListener('scroll', onScroll, {passive:true});
+  addEventListener('resize', ()=>{ measure(); onScroll(); }, {passive:true});
+  measure(); update();
+})();
+</script>
+
+<script>
+  (function(){
+    var vid = document.querySelector('#club-video .footer-video__media');
+    if (!vid) return;
+    if ('IntersectionObserver' in window){
+      var io = new IntersectionObserver(function(entries){
+        var e = entries[0];
+        if (!e) return;
+        if (e.isIntersecting) { vid.play().catch(function(){}); }
+        else { vid.pause(); }
+      }, {threshold:0.25});
+      io.observe(vid);
+    }
+  })();
+</script>
+</body>
+</html>
