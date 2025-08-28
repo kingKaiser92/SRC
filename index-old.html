@@ -311,6 +311,66 @@
   .footer-video--frame .footer-video__media{ transition: none; opacity: 1; transform: none; }
 }
 
+
+/* ===== Edge-fade wide video band ===== */
+.footer-video--edgefade{
+  width:100vw;
+  margin-left:calc(50% - 50vw);
+  margin-right:calc(50% - 50vw);
+  background:var(--bg-color-light);
+  padding:40px 0 calc(120px + env(safe-area-inset-bottom));
+  border-top:1px solid rgba(0,0,0,.06);
+  position:relative;
+}
+.footer-video--edgefade .footer-video__inner{
+  max-width:none; margin:0 auto; padding:0;
+}
+/* The viewport-wide wrapper that controls the fixed height */
+.edgefade-wrap{
+  position:relative;
+  height:clamp(280px, 42vh, 460px); /* similar height to current, adjustable */
+  overflow:hidden;
+}
+/* Make the video wider than the viewport so it "bleeds" off the sides */
+.footer-video--edgefade .footer-video__media{
+  position:absolute; top:0; left:50%;
+  transform:translateX(-50%) scale(1.02);
+  width:120vw; height:100%;
+  object-fit:cover;
+  background:#000;
+  opacity:0;
+  transition:opacity .6s ease, transform 1s cubic-bezier(0.22,1,0.36,1);
+  will-change:transform,opacity;
+}
+.footer-video--edgefade.is-visible .footer-video__media{
+  opacity:1; transform:translateX(-50%) scale(1);
+}
+/* soft side fades to blend into the page background */
+.edgefade-wrap::before,
+.edgefade-wrap::after{
+  content:""; position:absolute; top:0; bottom:0; width:12vw; pointer-events:none; z-index:2;
+}
+.edgefade-wrap::before{
+  left:0;
+  background:linear-gradient(to right, var(--bg-color-light), rgba(245,245,240,0));
+}
+.edgefade-wrap::after{
+  right:0;
+  background:linear-gradient(to left, var(--bg-color-light), rgba(245,245,240,0));
+}
+
+@media (max-width:768px){
+  .footer-video--edgefade{
+    padding:28px 0 calc(140px + env(safe-area-inset-bottom));
+  }
+  .edgefade-wrap{ height:clamp(200px, 36vh, 340px); }
+  .footer-video--edgefade .footer-video__media{ width:140vw; } /* a bit wider on mobile */
+}
+
+@media (prefers-reduced-motion:reduce){
+  .footer-video--edgefade .footer-video__media{ transition:none; opacity:1; transform:translateX(-50%) }
+}
+
 </style>
 </head>
 <body>
@@ -389,14 +449,14 @@
   </section>
 
   <!-- Bottom MP4 video section -->
-  <section class="footer-video footer-video--frame" id="club-video" aria-label="Club video">
+  <section class="footer-video footer-video--edgefade" id="club-video" aria-label="Club video">
   <div class="footer-video__inner">
-    <div class="footer-video__panel">
+    <div class="edgefade-wrap">
       <video class="footer-video__media"
              autoplay muted loop playsinline webkit-playsinline
              preload="metadata"
              poster="/assets/img/hero/hero-poster.jpg">
-        <source src="/assets/video/running-bg.mp4?v=4" type="video/mp4">
+        <source src="/assets/video/running-bg.mp4?v=5" type="video/mp4">
       </video>
     </div>
   </div>
@@ -531,6 +591,19 @@
       }
 
 
+      
+      // Reveal the edge‑fade band when it enters the viewport
+      (function(){
+        const band = document.getElementById('club-video');
+        if (band && 'IntersectionObserver' in window){
+          const io2 = new IntersectionObserver(([e])=>{
+            if (!e) return;
+            if (e.isIntersecting){ band.classList.add('is-visible'); io2.unobserve(band); }
+          }, {threshold:0.12});
+          io2.observe(band);
+        } else if (band){ band.classList.add('is-visible'); }
+      })();
+    
       // Bottom video autoplay helper + pause when off-screen
       const v = document.querySelector('#club-video video');
       if (v){
