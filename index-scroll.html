@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Saints Run Club — Fixed Stage Scroll Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;700&family=Teko:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg-dark:#111;
+  --bg-light:#F5F5F0;
+  --accent:#FFD200;
+  --text-dark:#222;
+  --slides:4; /* total scenes */
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;}
+body{font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg-dark);color:#fff;overflow-x:hidden}
+
+/* ===== Fixed-stage scrollytelling shell ===== */
+.scroll-track{
+  height: calc(var(--slides) * 100vh);
+  background: var(--bg-light);
+}
+.stage{
+  position: sticky; top: 0; height: 100vh; overflow: hidden;
+  isolation: isolate; /* layers inside */
+  background: var(--bg-light);
+}
+.slide{
+  position:absolute; inset:0; display:grid; place-items:center;
+  opacity:0; transform: translateY(6vh) scale(1.02); 
+  transition: opacity .5s ease, transform .9s cubic-bezier(.22,1,.36,1);
+  pointer-events:none;
+}
+.slide.is-on{ opacity:1; transform: translateY(0) scale(1); pointer-events:auto; }
+
+/* --- Slide 1: Hero sliced with SRC --- */
+.hero-sliced{
+  background: var(--bg-light);
+}
+.sliced-wrap{ position:absolute; inset:0; display:flex; align-items:center; padding:0 10px; }
+.slice{
+  flex:1 1 0;
+  background-image:url('/assets/img/hero/running.webp');
+  background-size:1000% 100%; background-repeat:no-repeat; background-position:0 50%;
+  border-radius:12px;
+}
+.divider{width:20px; background:var(--bg-light); border-radius:100px}
+.slice:nth-child(1){height:85%;align-self:flex-start;background-position:0% 50%}
+.slice:nth-child(3){height:95%;align-self:flex-end;background-position:11.111% 50%}
+.slice:nth-child(5){height:80%;align-self:center;background-position:22.222% 50%}
+.slice:nth-child(7){height:100%;align-self:center;background-position:33.333% 50%}
+.slice:nth-child(9){height:90%;align-self:flex-start;background-position:44.444% 50%}
+.slice:nth-child(11){height:100%;align-self:center;background-position:55.555% 50%}
+.slice:nth-child(13){height:85%;align-self:flex-end;background-position:66.666% 50%}
+.slice:nth-child(15){height:95%;align-self:flex-start;background-position:77.777% 50%}
+.slice:nth-child(17){height:80%;align-self:center;background-position:88.888% 50%}
+.slice:nth-child(19){height:90%;align-self:flex-end;background-position:100% 50%}
+.hero-title{
+  position:absolute; inset:auto 0 8vh 0; margin:auto; text-align:center;
+  font-family:'Anton',sans-serif; font-size: clamp(4rem, 12vw, 16rem);
+  color:var(--accent); line-height:1;
+}
+
+/* --- Slide 2: Typing text --- */
+.typing{
+  display:grid; place-items:center; color:#111; background:var(--bg-light);
+}
+.typing h1{
+  font-family:'Teko',sans-serif; font-size: clamp(3rem, 10vw, 8rem);
+  text-transform:uppercase; line-height:1; white-space:nowrap;
+  color:#111;
+}
+.caret{ display:inline-block; width:0; border-left:.12em solid currentColor; height:.8em; transform:translateY(.15em); animation:blink .7s steps(1,end) infinite; }
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+/* --- Slide 3: Featured image panel --- */
+.panel{
+  display:grid; place-items:center; background:var(--bg-light);
+  padding: clamp(12px, 2vw, 24px);
+}
+.panel figure{ 
+  width:min(1100px, 86vw); aspect-ratio: 16/9;
+  border-radius:18px; overflow:hidden; border:1px solid rgba(0,0,0,.12);
+  box-shadow: 0 20px 60px rgba(0,0,0,.18), 0 6px 18px rgba(0,0,0,.08);
+  background:#000;
+}
+.panel img{ width:100%; height:100%; object-fit:cover; }
+
+/* --- Slide 4: Edge-wide video panel --- */
+.video-band{
+  background:var(--bg-light);
+  display:grid; place-items:center;
+}
+.edgewide{
+  position:relative; height:clamp(280px,42vh,460px); width:100vw; overflow:hidden;
+}
+.edgewide video{
+  position:absolute; top:0; left:50%;
+  transform:translateX(-50%);
+  width:120vw; height:100%; object-fit:cover; background:#000;
+  border-radius:14px; /* remove for square */
+  box-shadow: 0 20px 60px rgba(0,0,0,.18), 0 6px 18px rgba(0,0,0,.08);
+}
+
+/* --- Scroll UI hint (optional) --- */
+.scroll-hint{
+  position:fixed; bottom:22px; left:50%; transform:translateX(-50%);
+  font-size:.8rem; color:rgba(0,0,0,.55); background:rgba(255,255,255,.6);
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  border-radius:999px; padding:.35rem .7rem; z-index:20;
+  border:1px solid rgba(0,0,0,.08);
+}
+
+/* Mobile niceties */
+@media (max-width: 768px){
+  .divider{width:clamp(10px,3.2vw,14px)}
+  .slice{ background-size:auto 100% !important; background-position:center }
+  .hero-title{ inset:auto 0 6vh 0 }
+  .panel figure{ border-radius:14px }
+  .edgewide video{ width:140vw; border-radius:12px }
+}
+
+/* Respect reduced motion: disable crossfades and pinning feel */
+@media (prefers-reduced-motion: reduce){
+  .slide{ opacity:1 !important; transform:none !important }
+}
+</style>
+</head>
+<body>
+  <!-- Fixed-stage scrollytelling: user scrolls the track, slides animate on the pinned stage -->
+  <div class="stage" id="stage">
+    <!-- Slide 1: Sliced hero with SRC -->
+    <section class="slide hero-sliced" data-index="0">
+      <div class="sliced-wrap" aria-hidden="true">
+        <div class="slice"></div><div class="divider"></div>
+        <div class="slice"></div><div class="divider"></div>
+        <div class="slice"></div><div class="divider"></div>
+        <div class="slice"></div><div class="divider"></div>
+        <div class="slice"></div><div class="divider"></div>
+        <div class="slice"></div><div class="divider"></div>
+        <div class="slice"></div><div class="divider"></div>
+        <div class="slice"></div><div class="divider"></div>
+        <div class="slice"></div><div class="divider"></div>
+        <div class="slice"></div>
+      </div>
+      <h1 class="hero-title">SRC</h1>
+    </section>
+
+    <!-- Slide 2: Typing text -->
+    <section class="slide typing" data-index="1">
+      <h1><span id="type-text"></span><span class="caret"></span></h1>
+    </section>
+
+    <!-- Slide 3: Image panel -->
+    <section class="slide panel" data-index="2">
+      <figure>
+        <img src="/assets/img/grid/alex.webp" alt="Saints Run Club — track session">
+      </figure>
+    </section>
+
+    <!-- Slide 4: Edge-wide video panel -->
+    <section class="slide video-band" data-index="3">
+      <div class="edgewide">
+        <video id="edgeVideo" autoplay muted loop playsinline webkit-playsinline preload="metadata"
+               poster="/assets/img/hero/hero-poster.jpg" aria-hidden="true">
+          <source src="/assets/video/running-bg.mp4" type="video/mp4">
+        </video>
+      </div>
+    </section>
+  </div>
+
+  <!-- The scrollable track behind the pinned stage -->
+  <div class="scroll-track" id="track"></div>
+
+  <div class="scroll-hint" id="hint" role="status" aria-live="polite">Scroll</div>
+
+<script>
+(function(){
+  const stage = document.getElementById('stage');
+  const track = document.getElementById('track');
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const n = slides.length;
+  document.documentElement.style.setProperty('--slides', n);
+
+  // Smooth-ish activation across the scroll track
+  function clamp01(x){ return Math.max(0, Math.min(1, x)); }
+  function easeInOutCubic(t){ return t<.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2,3)/2; }
+
+  const vh = ()=> window.innerHeight;
+  function update(){
+    const rect = track.getBoundingClientRect();
+    const scrolled = clamp01((window.innerHeight - rect.top) / (track.offsetHeight + window.innerHeight));
+    const step = 1 / n;
+
+    slides.forEach((el, i) => {
+      // local progress for slide i: center each slide within its segment
+      const start = i * step;
+      const end   = start + step;
+      const t = clamp01((scrolled - start) / (end - start));
+      const eased = easeInOutCubic(t);
+      const on = t > 0.05 && t < 0.95;
+      el.classList.toggle('is-on', on);
+      // inline transform for extra depth (optional)
+      el.style.opacity = eased;
+      el.style.transform = `translateY(${(1-eased)*6}vh) scale(${1.02 - eased*0.02})`;
+    });
+    requestAnimationFrame(()=>{});
+  }
+
+  // typing effect on slide 2
+  const text = "Saints Run Club";
+  const out = document.getElementById('type-text');
+  let idx = 0, started = false;
+  function type(){
+    if (idx < text.length){ out.textContent += text.charAt(idx++); setTimeout(type, 110); }
+  }
+
+  // Observe slide 2 entering to start typing once
+  const slide2 = document.querySelector('.slide.typing');
+  if ('IntersectionObserver' in window && slide2){
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting && !started){ started = true; type(); io.unobserve(slide2); }
+    }, {root: stage, threshold: 0.6});
+    io.observe(slide2);
+  } else { started = true; type(); }
+
+  // Pause the video when the last slide is off-screen (battery)
+  const vid = document.getElementById('edgeVideo');
+  if ('IntersectionObserver' in window && vid){
+    const io2 = new IntersectionObserver(([e]) => {
+      if(e && e.isIntersecting){ vid.play().catch(()=>{}); } else { vid.pause(); }
+    }, {root: stage, threshold: 0.3});
+    io2.observe(vid);
+  }
+
+  // Hide the "Scroll" hint after first movement
+  const hint = document.getElementById('hint');
+  let hinted = false;
+  function onFirstScroll(){
+    if (!hinted){ hinted = true; hint && hint.remove(); }
+    update();
+  }
+
+  // Scroll + resize handlers
+  window.addEventListener('scroll', onFirstScroll, {passive:true});
+  window.addEventListener('resize', update, {passive:true});
+
+  // Initial
+  update();
+})();
+</script>
+
+</body>
+</html>
