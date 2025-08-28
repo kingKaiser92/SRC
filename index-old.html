@@ -251,6 +251,66 @@
   .footer-video--bleed .footer-video__media{ transition:none; transform:none; opacity:1; }
 }
 
+
+/* ===== Framed panel video (pano) ===== */
+.footer-video--frame{
+  background: var(--bg-color-light);
+  padding: 40px 16px calc(120px + env(safe-area-inset-bottom));
+  border-top: 1px solid rgba(0,0,0,.06);
+}
+.footer-video--frame .footer-video__inner{
+  max-width: 1200px; margin: 0 auto;
+}
+.footer-video__panel{
+  position: relative;
+  border: 1px solid rgba(0,0,0,.12);
+  border-radius: 18px;       /* set to 0 for square corners */
+  overflow: hidden;
+  box-shadow:
+    0 20px 60px rgba(0,0,0,.18),
+    0 6px 18px rgba(0,0,0,.08);
+  background: #000;
+  transform: translateZ(0);
+}
+/* 21:9 pano crop so the video doesn't feel too tall */
+.footer-video--frame .footer-video__media{
+  width: 100%;
+  aspect-ratio: 21/9;
+  height: auto;
+  object-fit: cover;
+  display: block;
+  background: #000;
+  opacity: 0; transform: scale(1.02);
+  transition: opacity .6s ease, transform 1s cubic-bezier(0.22,1,0.36,1);
+}
+.footer-video--frame.is-visible .footer-video__media{ opacity: 1; transform: scale(1); }
+/* Soft inner fades (top+bottom) to blend edges inside the frame */
+.footer-video__panel::before,
+.footer-video__panel::after{
+  content:"";
+  position:absolute; left:0; right:0; height:72px; pointer-events:none; z-index:2;
+}
+.footer-video__panel::before{
+  top:0; background: linear-gradient(to bottom, rgba(245,245,240,1), rgba(245,245,240,0));
+  mix-blend-mode: multiply; opacity:.75;
+}
+.footer-video__panel::after{
+  bottom:0; background: linear-gradient(to top, rgba(245,245,240,1), rgba(245,245,240,0));
+  mix-blend-mode: multiply; opacity:.75;
+}
+
+@media (max-width: 768px){
+  .footer-video--frame{
+    padding: 28px 14px calc(140px + env(safe-area-inset-bottom));
+  }
+  .footer-video__panel{ border-radius: 14px; }
+  .footer-video--frame .footer-video__media{ aspect-ratio: 16/9; } /* a bit taller on mobile */
+}
+
+@media (prefers-reduced-motion: reduce){
+  .footer-video--frame .footer-video__media{ transition: none; opacity: 1; transform: none; }
+}
+
 </style>
 </head>
 <body>
@@ -329,16 +389,18 @@
   </section>
 
   <!-- Bottom MP4 video section -->
-  <section class="footer-video footer-video--bleed" id="club-video" aria-label="Club video">
-    <div class="footer-video__inner">
+  <section class="footer-video footer-video--frame" id="club-video" aria-label="Club video">
+  <div class="footer-video__inner">
+    <div class="footer-video__panel">
       <video class="footer-video__media"
              autoplay muted loop playsinline webkit-playsinline
              preload="metadata"
              poster="/assets/img/hero/hero-poster.jpg">
-        <source src="/assets/video/running-bg.mp4?v=3" type="video/mp4">
+        <source src="/assets/video/running-bg.mp4?v=4" type="video/mp4">
       </video>
     </div>
-  </section>
+  </div>
+</section>
 
   <!-- Social nav -->
   <nav class="social-nav" aria-label="Social links">
