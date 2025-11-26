@@ -1,340 +1,330 @@
-<html lang="en" class="antialiased bg-neutral-950"><head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <title>Saints Run Club — Collection &amp; Archive</title>
-    <meta name="description" content="A creative athletic portfolio landing page concept.">
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet">
-    <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600&amp;display=swap" rel="stylesheet">
-    <!-- Tailwind -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- Configuration -->
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            fontFamily: {
-              sans: ["Inter", "system-ui", "sans-serif"],
-              display: ["Clash Display", "system-ui", "sans-serif"],
-            },
-            colors: {
-              neutral: {
-                925: "#0f0f0f",
-              },
-            },
-            animation: {
-              "spin-slow": "spin 60s linear infinite",
-              "spin-reverse-slower": "spin 80s linear infinite reverse",
-            },
-            letterSpacing: {
-              tightest: "-.075em",
-            },
-            transitionTimingFunction: {
-              "out-expo": "cubic-bezier(0.16, 1, 0.3, 1)",
-            },
-          },
-        },
-        plugins: [
-          function ({ addUtilities }) {
-            addUtilities({
-              ".perspective-1000": { perspective: "1000px" },
-              ".transform-style-3d": { "transform-style": "preserve-3d" },
-              ".backface-hidden": {
-                "backface-visibility": "hidden",
-                "-webkit-backface-visibility": "hidden",
-              },
-              ".rotate-y-0": { transform: "rotateY(0deg)" },
-              ".rotate-y-180": { transform: "rotateY(180deg)" },
-            });
-          },
-        ],
-      };
-    </script>
-    <style>
-      :root {
-        --font-sans: "Inter", system-ui, sans-serif;
-        --font-display: "Clash Display", system-ui, sans-serif;
-      }
-      html,
-      body {
-        background-color: #0a0a0a;
-        scroll-behavior: smooth;
-      }
-      /* Performance Optimizations */
-      .hardware-accel {
-        transform: translateZ(0);
-        backface-visibility: hidden;
-        will-change: transform, opacity;
-      }
-      /* Scrollbar */
-      ::-webkit-scrollbar {
-        width: 0px;
-        background: transparent;
-      }
-      .no-scrollbar::-webkit-scrollbar {
-        display: none;
-      }
-      .no-scrollbar {
-        -ms-overflow-style: none;
-        scrollbar-width: none;
-      }
-      /* Animation Primitives */
-      @keyframes slide-up-fade {
-        0% {
-          opacity: 0;
-          transform: translateY(40px);
-        }
-        100% {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-      @keyframes gentle-scale {
-        0% {
-          opacity: 0;
-          transform: scale(0.95);
-        }
-        100% {
-          opacity: 1;
-          transform: scale(1);
-        }
-      }
-      .animate-text-reveal {
-        animation: slide-up-fade 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        opacity: 0;
-      }
-      .animate-emblem-reveal {
-        animation: gentle-scale 1.8s cubic-bezier(0.19, 1, 0.22, 1) forwards;
-        opacity: 0;
-      }
-      .delay-2000 {
-        animation-delay: 1s;
-      }
-      .delay-2100 {
-        animation-delay: 1.1s;
-      }
-      .delay-2200 {
-        animation-delay: 1.2s;
-      }
-      .delay-2300 {
-        animation-delay: 1.3s;
-      }
-      .delay-2500 {
-        animation-delay: 1.5s;
-      }
-      /* 3D Scene Helpers */
-      .vertical-text {
-        writing-mode: vertical-rl;
-        text-orientation: mixed;
-        transform: rotate(180deg);
-      }
-      .perspective-scene {
-        perspective: 1500px; 
-      }
-      /* Carousel Specifics */
-      .carousel-item {
-        transition: width 0.6s cubic-bezier(0.2, 0.8, 0.2, 1),
-          transform 0.4s ease;
-        transform-style: preserve-3d;
-      }
-      .carousel-item.active {
-        width: 320px;
-        z-index: 20;
-      }
-      .carousel-item.inactive {
-        width: 48px;
-        cursor: pointer;
-        z-index: 10;
-        opacity: 0.8;
-      }
-      .carousel-item.inactive:hover {
-        width: 56px;
-        background-color: rgba(255, 255, 255, 0.05);
-        opacity: 1;
-        transform: translateZ(20px) translateY(-5px);
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
-      }
-
-      @media (min-width: 1024px) {
-        .carousel-item.active {
-          width: 500px;
-        }
-        .carousel-item.inactive {
-          width: 64px;
-        }
-        .carousel-item.inactive:hover {
-            width: 72px;
-        }
-      }
-
-      @media (max-width: 768px) {
-        .carousel-item.active {
-          width: 55vw; 
-          max-width: 240px;
-        }
-        .carousel-item.inactive {
-          width: 28px; 
-        }
-        .carousel-item.inactive:hover {
-          width: 32px;
-        }
-        
-        /* MOBILE REVEAL LOGIC */
-        .mobile-reveal {
-          filter: grayscale(100%);
-          opacity: 0.6;
-          transition: filter 0.8s cubic-bezier(0.33, 1, 0.68, 1), opacity 0.8s ease;
-          will-change: filter, opacity;
-        }
-        .mobile-reveal.in-view {
-          filter: grayscale(0%);
-          opacity: 1;
-        }
-        .mobile-reveal:active {
-          filter: grayscale(0%);
-          opacity: 1;
-          transition-duration: 0.15s;
-        }
-      }
-
-      .carousel-item .spine {
-        transition: opacity 0.4s ease, transform 0.4s ease;
-        position: absolute;
-        inset: 0;
-      }
-      .carousel-item.active .spine {
-        opacity: 0;
-        pointer-events: none;
-        transform: scale(0.9);
-      }
-      .carousel-item .card-wrapper {
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 0.5s ease 0.2s; 
-        position: absolute;
-        inset: 0;
-      }
-      .carousel-item.active .card-wrapper {
-        opacity: 1;
-        pointer-events: auto;
-      }
-      .flip-card-inner {
-        position: relative;
-        width: 100%;
-        height: 100%;
-        transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        transform-style: preserve-3d;
-      }
-      .carousel-item.active:hover .flip-card-inner {
-        transform: rotateY(180deg);
-      }
-      .flip-card-front,
-      .flip-card-back {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        -webkit-backface-visibility: hidden;
-        backface-visibility: hidden;
-        border-radius: 2px;
-        overflow: hidden;
-      }
-      .flip-card-back {
-        transform: rotateY(180deg);
-        background: #111;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-      }
-      .indicator-dot {
-        transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
-        height: 4px;
-        border-radius: 999px;
-        background: rgba(255, 255, 255, 0.2);
-      }
-      .indicator-dot.active {
-        background: #eab308;
-        width: 24px;
-      }
-      .indicator-dot:not(.active) {
-        width: 4px;
-      }
-      .indicator-dot:hover {
-        background: rgba(255, 255, 255, 0.5);
-      }
-
-      .intro-emblem-container {
-        position: absolute;
-        z-index: 50;
-      }
-      @media (min-width: 1024px) {
-        .intro-emblem-container {
-          right: 0;
-          top: 0;
-          bottom: 0;
-          width: 50%;
-          animation: intro-slide-desktop 1.8s cubic-bezier(0.76, 0, 0.24, 1)
-            forwards;
-        }
-        @keyframes intro-slide-desktop {
-          0% {
-            width: 100%;
-          }
-          100% {
-            width: 50%;
-          }
-        }
-      }
-      @media (max-width: 1023px) {
-        .intro-emblem-container {
-          left: 0;
-          right: 0;
-          bottom: 0;
-          width: 100%;
-          height: 45vh;
-          border-top: none;
-          animation: intro-slide-mobile 1.8s cubic-bezier(0.76, 0, 0.24, 1)
-            forwards;
-        }
-        @keyframes intro-slide-mobile {
-          0% {
-            height: 100%;
-            opacity: 0;
-          }
-          100% {
-            height: 45vh;
-            opacity: 1;
-          }
-        }
-      }
-      .card-stack-item {
-        width: 100%;
-        will-change: transform;
-      }
-      @media (min-width: 1024px) {
-        .card-stack-item {
-          position: sticky;
-          top: 0;
-          height: 100vh;
-          overflow: hidden;
-        }
-      }
-      @media (max-width: 1023px) {
-        .mobile-sticky {
-          position: sticky;
-          top: 0;
-          height: 100dvh;
-          overflow: hidden;
-        }
-        .mobile-relative {
-          position: relative;
-          height: auto;
-          min-height: 100dvh;
-        }
-      }
-    </style>
-  </head>
+<html lang="en" class="antialiased bg-neutral-950"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Saints Run Club — Collection &amp; Archive</title>
+<meta name="description" content="A creative athletic portfolio landing page concept.">
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600&amp;display=swap" rel="stylesheet">
+<!-- Tailwind -->
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- Icons -->
+<script src="https://unpkg.com/lucide@latest"></script>
+<!-- Configuration -->
+<script>
+tailwind.config = {
+theme: {
+extend: {
+fontFamily: {
+sans: ["Inter", "system-ui", "sans-serif"],
+display: ["Clash Display", "system-ui", "sans-serif"],
+},
+colors: {
+neutral: {
+925: "#0f0f0f",
+},
+},
+animation: {
+"spin-slow": "spin 60s linear infinite",
+"spin-reverse-slower": "spin 80s linear infinite reverse",
+},
+letterSpacing: {
+tightest: "-.075em",
+},
+transitionTimingFunction: {
+"out-expo": "cubic-bezier(0.16, 1, 0.3, 1)",
+},
+},
+},
+plugins: [
+function ({ addUtilities }) {
+addUtilities({
+".perspective-1000": { perspective: "1000px" },
+".transform-style-3d": { "transform-style": "preserve-3d" },
+".backface-hidden": {
+"backface-visibility": "hidden",
+"-webkit-backface-visibility": "hidden",
+},
+".rotate-y-0": { transform: "rotateY(0deg)" },
+".rotate-y-180": { transform: "rotateY(180deg)" },
+});
+},
+],
+};
+</script>
+<style>
+:root {
+--font-sans: "Inter", system-ui, sans-serif;
+--font-display: "Clash Display", system-ui, sans-serif;
+}
+html,
+body {
+background-color: #0a0a0a;
+scroll-behavior: smooth;
+}
+/* Performance Optimizations */
+.hardware-accel {
+transform: translateZ(0);
+backface-visibility: hidden;
+will-change: transform, opacity;
+}
+/* Scrollbar */
+::-webkit-scrollbar {
+width: 0px;
+background: transparent;
+}
+.no-scrollbar::-webkit-scrollbar {
+display: none;
+}
+.no-scrollbar {
+-ms-overflow-style: none;
+scrollbar-width: none;
+}
+/* Animation Primitives */
+@keyframes slide-up-fade {
+0% {
+opacity: 0;
+transform: translateY(40px);
+}
+100% {
+opacity: 1;
+transform: translateY(0);
+}
+}
+@keyframes gentle-scale {
+0% {
+opacity: 0;
+transform: scale(0.95);
+}
+100% {
+opacity: 1;
+transform: scale(1);
+}
+}
+.animate-text-reveal {
+animation: slide-up-fade 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+opacity: 0;
+}
+.animate-emblem-reveal {
+animation: gentle-scale 1.8s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+opacity: 0;
+}
+.delay-2000 {
+animation-delay: 1s;
+}
+.delay-2100 {
+animation-delay: 1.1s;
+}
+.delay-2200 {
+animation-delay: 1.2s;
+}
+.delay-2300 {
+animation-delay: 1.3s;
+}
+.delay-2500 {
+animation-delay: 1.5s;
+}
+/* 3D Scene Helpers */
+.vertical-text {
+writing-mode: vertical-rl;
+text-orientation: mixed;
+transform: rotate(180deg);
+}
+.perspective-scene {
+perspective: 1500px; /* Deepened perspective for larger items */
+}
+/* Carousel Specifics */
+.carousel-item {
+transition: width 0.6s cubic-bezier(0.2, 0.8, 0.2, 1),
+transform 0.4s ease;
+transform-style: preserve-3d;
+}
+.carousel-item.active {
+width: 320px;
+z-index: 20;
+}
+/* Inactive State: Spine */
+.carousel-item.inactive {
+width: 48px;
+cursor: pointer;
+z-index: 10;
+opacity: 0.8;
+}
+.carousel-item.inactive:hover {
+width: 56px;
+background-color: rgba(255, 255, 255, 0.05);
+opacity: 1;
+transform: translateZ(20px) translateY(-5px); /* Pop forward effect */
+box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+}
+/* Desktop Sizing Overrides */
+@media (min-width: 1024px) {
+.carousel-item.active {
+width: 500px; /* Significantly wider for desktop */
+}
+.carousel-item.inactive {
+width: 64px; /* Slightly wider spines */
+}
+.carousel-item.inactive:hover {
+width: 72px;
+}
+}
+/* Mobile Sizing Overrides - FIXED FOR FIT */
+@media (max-width: 768px) {
+.carousel-item.active {
+width: 55vw; /* Use percentage to ensure fit */
+max-width: 240px;
+}
+.carousel-item.inactive {
+width: 28px; /* Narrower spines to prevent push-out */
+}
+.carousel-item.inactive:hover {
+width: 32px;
+}
+}
+/* Content Visibility Toggles */
+.carousel-item .spine {
+transition: opacity 0.4s ease, transform 0.4s ease;
+position: absolute;
+inset: 0;
+}
+.carousel-item.active .spine {
+opacity: 0;
+pointer-events: none;
+transform: scale(0.9);
+}
+.carousel-item .card-wrapper {
+opacity: 0;
+pointer-events: none;
+transition: opacity 0.5s ease 0.2s; /* delay appearance until width expands */
+position: absolute;
+inset: 0;
+}
+.carousel-item.active .card-wrapper {
+opacity: 1;
+pointer-events: auto;
+}
+/* 3D Flip Logic */
+.flip-card-inner {
+position: relative;
+width: 100%;
+height: 100%;
+transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+transform-style: preserve-3d;
+}
+/* Trigger flip on hover only if active */
+.carousel-item.active:hover .flip-card-inner {
+transform: rotateY(180deg);
+}
+.flip-card-front,
+.flip-card-back {
+position: absolute;
+width: 100%;
+height: 100%;
+-webkit-backface-visibility: hidden;
+backface-visibility: hidden;
+border-radius: 2px;
+overflow: hidden;
+}
+.flip-card-back {
+transform: rotateY(180deg);
+background: #111;
+border: 1px solid rgba(255, 255, 255, 0.1);
+}
+/* Indicator Logic */
+.indicator-dot {
+transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+height: 4px;
+border-radius: 999px;
+background: rgba(255, 255, 255, 0.2);
+}
+.indicator-dot.active {
+background: #eab308;
+width: 24px;
+}
+.indicator-dot:not(.active) {
+width: 4px;
+}
+.indicator-dot:hover {
+background: rgba(255, 255, 255, 0.5);
+}
+/* Intro Animation */
+.intro-emblem-container {
+position: absolute;
+z-index: 50;
+}
+@media (min-width: 1024px) {
+.intro-emblem-container {
+right: 0;
+top: 0;
+bottom: 0;
+width: 50%;
+animation: intro-slide-desktop 1.8s cubic-bezier(0.76, 0, 0.24, 1)
+forwards;
+}
+@keyframes intro-slide-desktop {
+0% {
+width: 100%;
+}
+100% {
+width: 50%;
+}
+}
+}
+@media (max-width: 1023px) {
+.intro-emblem-container {
+left: 0;
+right: 0;
+bottom: 0;
+width: 100%;
+height: 45vh;
+/* REMOVED BORDER TO BLEND BETTER */
+border-top: none;
+animation: intro-slide-mobile 1.8s cubic-bezier(0.76, 0, 0.24, 1)
+forwards;
+}
+@keyframes intro-slide-mobile {
+0% {
+height: 100%;
+opacity: 0;
+}
+100% {
+height: 45vh;
+opacity: 1;
+}
+}
+}
+/* Stacking Logic */
+.card-stack-item {
+width: 100%;
+will-change: transform;
+}
+/* Desktop: Sticky Stacking */
+@media (min-width: 1024px) {
+.card-stack-item {
+position: sticky;
+top: 0;
+height: 100vh;
+overflow: hidden;
+}
+}
+/* Mobile: Hybrid Stacking (Hero/Vision Sticky, Content Relative) */
+@media (max-width: 1023px) {
+.mobile-sticky {
+position: sticky;
+top: 0;
+height: 100dvh;
+overflow: hidden;
+}
+.mobile-relative {
+position: relative;
+height: auto;
+min-height: 100dvh;
+}
+}
+</style>
+</head>
   <body class="bg-neutral-950 text-neutral-100 overflow-x-hidden selection:bg-yellow-500/30">
     <!-- Navigation -->
     <header class="fixed top-0 w-full z-[100] p-6 md:p-8 flex items-center justify-between mix-blend-exclusion pointer-events-none">
@@ -410,7 +400,7 @@
           </div>
 
           <div class="flex flex-col justify-center my-8 lg:my-0">
-            <h1 class="font-normal uppercase leading-[0.8] tracking-tightest text-white font-display">
+            <h1 class="font-medium uppercase leading-[0.8] tracking-tightest text-white font-display">
               <div class="overflow-hidden">
                 <span class="block text-[16vw] lg:text-[9vw] animate-text-reveal delay-2100">
                   Saints
@@ -434,7 +424,9 @@
           </div>
         </div>
 
+        <!-- BLENDING UPDATE: Modified classes to remove hard edges on mobile -->
         <div class="intro-emblem-container w-full lg:w-1/2 relative overflow-hidden bg-gradient-to-b from-neutral-950 via-neutral-900/10 to-neutral-950 lg:bg-gradient-to-r lg:from-neutral-950 lg:via-neutral-900/30 lg:to-neutral-900/50 lg:border-l border-white/5">
+          <!-- Add a specific gradient overlay for mobile to blend the top edge perfectly -->
           <div class="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-neutral-950 to-transparent z-10 lg:hidden pointer-events-none"></div>
 
           <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-neutral-800/20 via-neutral-900/40 to-neutral-950 opacity-60"></div>
@@ -535,6 +527,7 @@
 
       <!-- SECTION 3: ARCHIVE -->
       <section id="section-archive" class="card-stack-item mobile-sticky z-30 bg-neutral-950 border-t border-white/10 flex flex-col items-center justify-center shadow-[0_-20px_50px_rgba(0,0,0,0.5)] overflow-hidden">
+        <!-- Subtly added background emblem -->
         <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-0 select-none overflow-hidden">
           <img src="https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/06b116a1-9ad0-4968-9c7a-bd59c8b85724_3840w.png" class="w-[140%] md:w-[80%] h-auto object-contain opacity-[0.03] invert md:invert-0 grayscale blur-[1px]">
         </div>
@@ -564,7 +557,7 @@
       <!-- SECTION 4: VISION -->
       <section id="section-vision" class="card-stack-item mobile-sticky z-40 bg-neutral-950 border-t border-white/10 flex flex-col shadow-[0_-20px_50px_rgba(0,0,0,0.5)]">
         <div class="w-full flex-shrink-0 pt-32 pb-16 px-6 flex flex-col items-center justify-center z-10 bg-neutral-950/95 border-b border-white/5 backdrop-blur-md">
-          <h2 class="text-6xl md:text-8xl font-display font-medium text-white tracking-tighter mb-4 leading-[0.8]">
+          <h2 class="text-6xl md:text-8xl font-display font-semibold text-white tracking-tighter mb-4 leading-[0.8]">
             The
             <span class="text-yellow-500">Vision</span>
           </h2>
@@ -574,31 +567,30 @@
         </div>
 
         <div class="w-full h-full overflow-y-auto px-1 pb-48 pt-1 bg-neutral-950 no-scrollbar">
-          <!-- Changed to columns-1 on mobile for "feed" style and better reveal effect -->
-          <div class="w-full max-w-7xl mx-auto columns-1 md:columns-3 lg:columns-4 gap-1 space-y-1">
+          <div class="w-full max-w-7xl mx-auto columns-2 md:columns-3 lg:columns-4 gap-1 space-y-1">
             <div class="break-inside-avoid relative group overflow-hidden bg-neutral-900">
-              <img loading="lazy" src="https://images.unsplash.com/photo-1571008887538-b36bb32f4571?q=80&amp;w=400&amp;fit=crop" class="w-full h-auto mobile-reveal transition-opacity group-hover:opacity-100">
+              <img loading="lazy" src="https://images.unsplash.com/photo-1571008887538-b36bb32f4571?q=80&amp;w=400&amp;fit=crop" class="w-full h-auto opacity-70 group-hover:opacity-100 transition-opacity">
             </div>
             <div class="break-inside-avoid relative group overflow-hidden bg-neutral-900">
-              <img loading="lazy" src="https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/c543a9e1-f226-4ced-80b0-feb8445a75b9_1600w.jpg" class="w-full h-auto mobile-reveal transition-opacity group-hover:opacity-100">
+              <img loading="lazy" src="https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/c543a9e1-f226-4ced-80b0-feb8445a75b9_1600w.jpg" class="w-full h-auto opacity-70 group-hover:opacity-100 transition-opacity">
             </div>
             <div class="break-inside-avoid relative group overflow-hidden bg-neutral-900">
-              <img loading="lazy" src="https://images.unsplash.com/photo-1532444458054-01a7dd3e9fca?q=80&amp;w=400&amp;fit=crop" class="w-full h-auto mobile-reveal transition-opacity group-hover:opacity-100">
+              <img loading="lazy" src="https://images.unsplash.com/photo-1532444458054-01a7dd3e9fca?q=80&amp;w=400&amp;fit=crop" class="w-full h-auto opacity-70 group-hover:opacity-100 transition-opacity">
             </div>
             <div class="break-inside-avoid relative group overflow-hidden bg-neutral-900 aspect-[4/5]">
-              <img loading="lazy" src="https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/5bab247f-35d9-400d-a82b-fd87cfe913d2_1600w.webp" class="w-full h-full object-cover mobile-reveal transition-opacity group-hover:opacity-100">
+              <img loading="lazy" src="https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/5bab247f-35d9-400d-a82b-fd87cfe913d2_1600w.webp" class="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-opacity">
             </div>
             <div class="break-inside-avoid relative group overflow-hidden bg-neutral-900">
-              <img loading="lazy" src="https://images.unsplash.com/photo-1551972251-12070d63502a?q=80&amp;w=400&amp;fit=crop" class="w-full h-auto mobile-reveal transition-opacity group-hover:opacity-100">
+              <img loading="lazy" src="https://images.unsplash.com/photo-1551972251-12070d63502a?q=80&amp;w=400&amp;fit=crop" class="w-full h-auto opacity-70 group-hover:opacity-100 transition-opacity">
             </div>
             <div class="break-inside-avoid relative group overflow-hidden bg-neutral-900 aspect-square">
-              <img loading="lazy" src="https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?q=80&amp;w=400&amp;fit=crop" class="w-full h-full object-cover mobile-reveal transition-opacity group-hover:opacity-100">
+              <img loading="lazy" src="https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?q=80&amp;w=400&amp;fit=crop" class="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-opacity">
             </div>
             <div class="break-inside-avoid relative group overflow-hidden bg-neutral-900">
-              <img loading="lazy" src="https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/30104e3c-5eea-4b93-93e9-5313698a7156_1600w.webp" class="w-full h-auto mobile-reveal transition-opacity group-hover:opacity-100">
+              <img loading="lazy" src="https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/30104e3c-5eea-4b93-93e9-5313698a7156_1600w.webp" class="w-full h-auto opacity-70 group-hover:opacity-100 transition-opacity">
             </div>
             <div class="break-inside-avoid relative group overflow-hidden bg-neutral-900">
-              <img loading="lazy" src="https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/917d6f93-fb36-439a-8c48-884b67b35381_1600w.jpg" class="w-full h-auto mobile-reveal transition-opacity group-hover:opacity-100">
+              <img loading="lazy" src="https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/917d6f93-fb36-439a-8c48-884b67b35381_1600w.jpg" class="w-full h-auto opacity-70 group-hover:opacity-100 transition-opacity">
             </div>
           </div>
         </div>
@@ -626,6 +618,7 @@
                     if (index < sections.length - 1) {
                       const nextSection = sections[index + 1];
                       const nextRect = nextSection.getBoundingClientRect();
+                      // Only apply scale effect if next section is entering viewport
                       if (nextRect.top <= h && nextRect.top >= 0) {
                         const progress = 1 - nextRect.top / h;
                         const scale = 1 - progress * 0.05;
@@ -638,6 +631,7 @@
                         const overlay = section.querySelector('[id$="-overlay"]');
                         if (overlay) overlay.style.opacity = 0;
                       } else {
+                        // When fully covered or passed
                         section.style.transform = `scale(0.95)`;
                       }
                     }
@@ -746,10 +740,12 @@
               controls.innerHTML = "";
 
               events.forEach((evt, index) => {
+                // Create Card with Responsive Height: taller on LG screens
                 const el = document.createElement("div");
                 el.className = `carousel-item relative h-[380px] md:h-[420px] lg:h-[600px] rounded-sm`;
                 el.onclick = () => selectItem(index);
 
+                // Desktop: Flip/Select on hover
                 el.onmouseenter = () => {
                   if (window.matchMedia("(min-width: 1024px)").matches) {
                      selectItem(index);
@@ -791,7 +787,7 @@
                                       </p>
                                   </div>
                                   <div class="space-y-3 lg:space-y-5 flex-1 flex flex-col justify-end">
-                                      <button class="group w-full h-10 lg:h-12 bg-white text-black flex items-center justify-center gap-2 text-[10px] lg:text-xs font-semibold uppercase tracking-widest cursor-pointer hover:bg-yellow-500 transition-all duration-300">
+                                      <button class="group w-full h-10 lg:h-12 bg-white text-black flex items-center justify-center gap-2 text-[10px] lg:text-xs font-bold uppercase tracking-widest cursor-pointer hover:bg-yellow-500 transition-all duration-300">
                                           <span>View Gallery</span>
                                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3 h-3 lg:w-4 lg:h-4 transition-transform group-hover:translate-x-1"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
                                       </button>
@@ -803,6 +799,7 @@
                 el.innerHTML = spine + card;
                 track.appendChild(el);
 
+                // Create Segment Indicator
                 const indicator = document.createElement("button");
                 indicator.className = `indicator-dot cursor-pointer`;
                 indicator.onclick = () => selectItem(index);
@@ -840,9 +837,11 @@
               });
             }
 
+            // Keyboard Navigation
             document.addEventListener("keydown", (e) => {
               const archiveSection = document.getElementById("section-archive");
               const rect = archiveSection.getBoundingClientRect();
+              // Only trigger if section is visible
               if (rect.top < window.innerHeight && rect.bottom > 0) {
                 if (e.key === "ArrowLeft") {
                   if (activeCarouselIndex > 0) selectItem(activeCarouselIndex - 1);
@@ -854,26 +853,6 @@
             });
 
             initGallery();
-
-            // Mobile Reveal Observer Logic
-            // This observes images in the Vision section and toggles the grayscale filter
-            // when they enter the center of the viewport (simulate "scroll past" effect)
-            if (window.innerWidth < 768) {
-              const revealObserver = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                  if (entry.isIntersecting) {
-                    entry.target.classList.add('in-view');
-                  } else {
-                    entry.target.classList.remove('in-view');
-                  }
-                });
-              }, { 
-                threshold: 0.4, 
-                rootMargin: "-15% 0px -15% 0px" // Only trigger when element is well inside the view
-              });
-
-              document.querySelectorAll('.mobile-reveal').forEach(img => revealObserver.observe(img));
-            }
     </script>
   
 </body></html>
