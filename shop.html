@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en" class="antialiased bg-neutral-950">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>SHOP — SAINTS RUN CLUB</title>
+  <meta name="description" content="Saints Run Club merchandise. Rep the crew.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ["Inter", "system-ui", "sans-serif"],
+            display: ["Clash Display", "system-ui", "sans-serif"],
+          },
+          colors: {
+            neutral: {
+              925: "#0f0f0f",
+            },
+          },
+          letterSpacing: {
+            tightest: "-.075em",
+          },
+          transitionTimingFunction: {
+            "out-expo": "cubic-bezier(0.16, 1, 0.3, 1)",
+          },
+        },
+      },
+    };
+  </script>
+  <link rel="icon" href="https://izcimioeuohdofzmnahu.supabase.co/storage/v1/object/public/website-assets/winged-foot.png">
+  <meta property="og:title" content="SHOP — SAINTS RUN CLUB">
+  <meta property="og:image" content="https://izcimioeuohdofzmnahu.supabase.co/storage/v1/object/public/website-assets/winged-foot.png">
+  <meta property="og:type" content="website">
+  <style>
+    html { scroll-behavior: smooth; }
+    * { -webkit-tap-highlight-color: transparent; }
+
+    /* Grain overlay */
+    .grain::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: 999;
+      pointer-events: none;
+      opacity: 0.03;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-repeat: repeat;
+      background-size: 256px 256px;
+    }
+
+    /* Video intro overlay */
+    .video-intro {
+      position: fixed;
+      inset: 0;
+      z-index: 150;
+      background: #0a0a0a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .video-intro.fade-out {
+      animation: introDissolve 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes introDissolve {
+      0% { opacity: 1; }
+      100% { opacity: 0; pointer-events: none; }
+    }
+
+    /* Black vignette that fades in over the video near the end */
+    .video-vignette {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 2;
+      opacity: 0;
+      background: radial-gradient(ellipse at center, transparent 0%, #0a0a0a 70%);
+      transition: opacity 2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .video-vignette.active {
+      opacity: 1;
+    }
+
+    /* Full black overlay that rises over the video */
+    .video-blackout {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 3;
+      background: #0a0a0a;
+      opacity: 0;
+      transition: opacity 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .video-blackout.active {
+      opacity: 1;
+    }
+
+    /* Spotlight card border effect */
+    .card-spotlight {
+      position: relative;
+      overflow: hidden;
+    }
+    .card-spotlight::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      padding: 1px;
+      background: radial-gradient(
+        600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+        rgba(234, 179, 8, 0.15),
+        transparent 40%
+      );
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    /* Stagger animation */
+    @keyframes fadeSlideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .stagger-item {
+      opacity: 0;
+      animation: fadeSlideUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    /* Subtle float for hero elements */
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+
+    /* Button magnetic pull - subtle scale on hover */
+    .btn-magnetic {
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s, box-shadow 0.3s;
+    }
+    .btn-magnetic:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 24px -8px rgba(234, 179, 8, 0.3);
+    }
+    .btn-magnetic:active {
+      transform: translateY(1px) scale(0.98);
+    }
+
+    /* Success banner slide-down */
+    @keyframes slideDown {
+      from { transform: translateY(-100%); }
+      to { transform: translateY(0); }
+    }
+    .success-animate {
+      animation: slideDown 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    /* Flying MERCH title */
+    .flying-title {
+      position: fixed;
+      z-index: 160;
+      pointer-events: none;
+      font-family: "Clash Display", system-ui, sans-serif;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: white;
+      letter-spacing: -0.075em;
+      line-height: 0.85;
+      /* Starts centered */
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: clamp(3.5rem, 15vw, 12rem);
+      opacity: 0;
+      transition: none;
+    }
+    .flying-title.visible {
+      opacity: 1;
+      transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .flying-title.moving {
+      transition: top 1s cubic-bezier(0.16, 1, 0.3, 1),
+                  left 1s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 1s cubic-bezier(0.16, 1, 0.3, 1),
+                  font-size 1s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .flying-title.done {
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    /* Page content hidden until title lands */
+    .page-content {
+      opacity: 0;
+    }
+    .page-content.revealed {
+      opacity: 1;
+      transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+  </style>
+</head>
+<body class="bg-neutral-950 text-neutral-100 overflow-x-hidden selection:bg-yellow-500/30 min-h-[100dvh] flex flex-col grain" style="padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)">
+
+  <!-- ============================================================
+       VIDEO INTRO (full-screen overlay)
+       Drop your Cling 3.0 NYC dive video here.
+       The video plays once, then fades out to reveal the shop.
+       ============================================================ -->
+  <div id="video-intro" class="video-intro">
+    <video
+      id="intro-video"
+      class="w-full h-full object-cover"
+      muted
+      playsinline
+      preload="auto"
+      poster=""
+    >
+      <source src="nyc-drop-in.mp4" type="video/mp4">
+    </video>
+    <!-- Layers that fade in over the video to blend into the page -->
+    <div id="video-vignette" class="video-vignette"></div>
+    <div id="video-blackout" class="video-blackout"></div>
+    <!-- Fallback: skip button if video fails or takes too long -->
+    <button
+      id="skip-intro"
+      onclick="dismissIntro()"
+      class="absolute bottom-6 right-6 md:bottom-8 md:right-8 text-neutral-500 hover:text-white text-xs tracking-widest uppercase transition-colors z-10 p-2"
+    >
+      Skip
+    </button>
+  </div>
+
+  <!-- Flying MERCH title (appears after video, flies to final position) -->
+  <div id="flying-title" class="flying-title">Merch</div>
+
+  <!-- Success Banner -->
+  <div id="success-banner" class="hidden fixed top-0 left-0 w-full z-[200] bg-yellow-500 text-neutral-950 text-center py-3 px-4 font-semibold text-sm md:text-base success-animate">
+    Order placed. Check your email for confirmation.
+    <button onclick="document.getElementById('success-banner').classList.add('hidden')" class="ml-4 text-neutral-950/60 hover:text-neutral-950 font-bold transition-colors">&times;</button>
+  </div>
+
+  <!-- All page content — hidden until title animation completes -->
+  <div id="page-content" class="page-content flex flex-col min-h-[100dvh]">
+
+  <!-- Header -->
+  <header class="w-full z-[100] px-4 py-4 md:p-8 flex items-center justify-between gap-2">
+    <a href="/" class="group flex items-center gap-1.5 md:gap-2 text-neutral-500 hover:text-white transition-colors duration-300 shrink-0">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="md:w-[18px] md:h-[18px] group-hover:-translate-x-1 transition-transform duration-300">
+        <path d="m15 18-6-6 6-6"/>
+      </svg>
+      <span class="font-display font-medium text-xs md:text-sm tracking-wide uppercase">Saints Run Club</span>
+    </a>
+
+    <div class="flex items-center gap-2">
+      <div class="flex p-1 lg:p-2 gap-1 lg:gap-2 bg-neutral-900/50 border border-white/[0.06] rounded-full shadow-[0_8px_32px_-8px_rgba(0,0,0,0.5)] backdrop-blur-md items-center">
+        <a href="https://instagram.com/svintsrunclub" target="_blank" class="w-8 h-8 lg:w-10 lg:h-10 rounded-full hover:bg-white/10 flex items-center justify-center transition-colors duration-200 group">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 lg:w-5 lg:h-5 text-neutral-400 group-hover:text-yellow-500 transition-colors duration-200">
+            <rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect>
+            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+            <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line>
+          </svg>
+        </a>
+        <a href="https://www.tiktok.com/@svintsrunclub" target="_blank" class="w-8 h-8 lg:w-10 lg:h-10 rounded-full hover:bg-white/10 flex items-center justify-center transition-colors duration-200 group">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4 lg:w-5 lg:h-5 text-neutral-400 group-hover:text-yellow-500 transition-colors duration-200">
+            <path d="M9 0h1.98c.144.715.54 1.617 1.235 2.512C12.895 3.389 13.797 4 15 4v2c-1.753 0-3.07-.814-4-1.829V11a5 5 0 1 1-5-5v2a3 3 0 1 0 3 3z"></path>
+          </svg>
+        </a>
+        <a href="https://strava.app.link/lw6PeAun8Vb" target="_blank" class="w-8 h-8 lg:w-10 lg:h-10 rounded-full hover:bg-white/10 flex items-center justify-center transition-colors duration-200 group">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4 lg:w-5 lg:h-5 text-neutral-400 group-hover:text-yellow-500 transition-colors duration-200">
+            <path d="M6.731 0 2 9.125h2.788L6.73 5.497l1.93 3.628h2.766zm4.694 9.125-1.372 2.756L8.66 9.125H6.547L10.053 16l3.484-6.875z"></path>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero — asymmetric, left-aligned -->
+  <section class="px-4 md:px-8 lg:px-16 pt-10 pb-6 md:pt-24 md:pb-12 max-w-7xl mx-auto w-full">
+    <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4 md:gap-6">
+      <div>
+        <p class="text-[10px] md:text-xs tracking-[0.3em] uppercase text-yellow-500/70 font-medium mb-2 md:mb-4 stagger-item" style="animation-delay: 0.1s">Collection 001</p>
+        <h1 id="merch-title" class="font-display font-semibold text-5xl md:text-8xl lg:text-[10rem] tracking-tightest leading-[0.85] text-white uppercase stagger-item" style="animation-delay: 0.2s">
+          Merch
+        </h1>
+      </div>
+      <p class="text-neutral-500 text-xs md:text-base max-w-xs leading-relaxed md:pb-3 stagger-item" style="animation-delay: 0.35s">
+        Limited drops. Once they sell out, they don't come back.
+      </p>
+    </div>
+    <div class="mt-6 md:mt-14 h-px bg-gradient-to-r from-white/10 via-white/5 to-transparent"></div>
+  </section>
+
+  <!-- Product Grid — asymmetric bento-style -->
+  <main class="flex-1 px-4 md:px-8 lg:px-16 pb-16 md:pb-24 max-w-7xl mx-auto w-full">
+
+    <!-- PRODUCT CARD TEMPLATE (copy & update for each product)
+    ============================================================
+    <div class="group card-spotlight stagger-item rounded-2xl bg-neutral-900/40" style="animation-delay: 0.Xs">
+      <div class="aspect-square md:aspect-[4/5] overflow-hidden rounded-t-2xl">
+        <img
+          src="https://izcimioeuohdofzmnahu.supabase.co/storage/v1/object/public/website-assets/merch/PRODUCT_IMAGE.jpg"
+          alt="Product Name"
+          class="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-700 ease-out-expo"
+          loading="lazy"
+        >
+      </div>
+      <div class="p-5 md:p-6">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <h3 class="font-display font-medium text-base md:text-lg text-white">Product Name</h3>
+            <p class="text-neutral-500 text-sm mt-1">Short description</p>
+          </div>
+          <span class="text-yellow-500 font-semibold text-sm md:text-base font-display whitespace-nowrap">$XX</span>
+        </div>
+        <a
+          href="https://buy.stripe.com/YOUR_PAYMENT_LINK"
+          target="_blank"
+          class="btn-magnetic mt-5 inline-block w-full text-center px-6 py-3 bg-yellow-500 text-neutral-950 font-semibold text-sm rounded-xl hover:bg-yellow-400 active:scale-[0.98] uppercase tracking-wide"
+        >
+          Buy now
+        </a>
+      </div>
+    </div>
+    ============================================================ -->
+
+    <!-- Row 1: 2 columns, 60/40 split on desktop -->
+    <div class="grid grid-cols-1 md:grid-cols-[1.4fr_1fr] gap-5 md:gap-6 mb-5 md:mb-6">
+
+      <!-- Product 1 — Featured / large -->
+      <div class="group card-spotlight stagger-item rounded-2xl bg-neutral-900/40" style="animation-delay: 0.4s">
+        <div class="aspect-square md:aspect-[3/4] overflow-hidden rounded-t-2xl relative">
+          <div class="absolute inset-0 flex items-center justify-center">
+            <div class="text-neutral-700 text-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-3 text-neutral-800" style="animation: float 4s ease-in-out infinite"><path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/></svg>
+              <p class="text-xs tracking-widest uppercase text-neutral-700">Product image</p>
+            </div>
+          </div>
+          <!-- Subtle gradient overlay on image -->
+          <div class="absolute inset-0 bg-gradient-to-t from-neutral-900/60 via-transparent to-transparent pointer-events-none"></div>
+        </div>
+        <div class="p-5 md:p-6">
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <h3 class="font-display font-medium text-lg md:text-xl text-white tracking-tight">SRC Classic Tee</h3>
+              <p class="text-neutral-500 text-sm mt-1 leading-relaxed">Heavyweight cotton. Black on black.</p>
+            </div>
+            <span class="text-yellow-500 font-semibold text-base font-display whitespace-nowrap">$35</span>
+          </div>
+          <a href="#" class="btn-magnetic mt-5 inline-block w-full text-center px-6 py-3.5 bg-yellow-500 text-neutral-950 font-semibold text-sm rounded-xl hover:bg-yellow-400 uppercase tracking-wide">Coming soon</a>
+        </div>
+      </div>
+
+      <!-- Product 2 -->
+      <div class="group card-spotlight stagger-item rounded-2xl bg-neutral-900/40" style="animation-delay: 0.55s">
+        <div class="aspect-square md:aspect-[4/5] overflow-hidden rounded-t-2xl relative">
+          <div class="absolute inset-0 flex items-center justify-center">
+            <div class="text-neutral-700 text-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-3 text-neutral-800" style="animation: float 4s ease-in-out 0.5s infinite"><path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/></svg>
+              <p class="text-xs tracking-widest uppercase text-neutral-700">Product image</p>
+            </div>
+          </div>
+          <div class="absolute inset-0 bg-gradient-to-t from-neutral-900/60 via-transparent to-transparent pointer-events-none"></div>
+        </div>
+        <div class="p-5 md:p-6">
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <h3 class="font-display font-medium text-lg text-white tracking-tight">SRC Cap</h3>
+              <p class="text-neutral-500 text-sm mt-1 leading-relaxed">Embroidered logo. One size.</p>
+            </div>
+            <span class="text-yellow-500 font-semibold text-base font-display whitespace-nowrap">$30</span>
+          </div>
+          <a href="#" class="btn-magnetic mt-5 inline-block w-full text-center px-6 py-3.5 bg-yellow-500 text-neutral-950 font-semibold text-sm rounded-xl hover:bg-yellow-400 uppercase tracking-wide">Coming soon</a>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Row 2: 2 columns, 40/60 split (reversed asymmetry) -->
+    <div class="grid grid-cols-1 md:grid-cols-[1fr_1.4fr] gap-5 md:gap-6">
+
+      <!-- Product 3 -->
+      <div class="group card-spotlight stagger-item rounded-2xl bg-neutral-900/40" style="animation-delay: 0.7s">
+        <div class="aspect-square md:aspect-[4/5] overflow-hidden rounded-t-2xl relative">
+          <div class="absolute inset-0 flex items-center justify-center">
+            <div class="text-neutral-700 text-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-3 text-neutral-800" style="animation: float 4s ease-in-out 1s infinite"><path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/></svg>
+              <p class="text-xs tracking-widest uppercase text-neutral-700">Product image</p>
+            </div>
+          </div>
+          <div class="absolute inset-0 bg-gradient-to-t from-neutral-900/60 via-transparent to-transparent pointer-events-none"></div>
+        </div>
+        <div class="p-5 md:p-6">
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <h3 class="font-display font-medium text-lg text-white tracking-tight">SRC Sticker Pack</h3>
+              <p class="text-neutral-500 text-sm mt-1 leading-relaxed">5 die-cut vinyl stickers.</p>
+            </div>
+            <span class="text-yellow-500 font-semibold text-base font-display whitespace-nowrap">$10</span>
+          </div>
+          <a href="#" class="btn-magnetic mt-5 inline-block w-full text-center px-6 py-3.5 bg-yellow-500 text-neutral-950 font-semibold text-sm rounded-xl hover:bg-yellow-400 uppercase tracking-wide">Coming soon</a>
+        </div>
+      </div>
+
+      <!-- Product 4 — Placeholder for next drop -->
+      <div class="group stagger-item rounded-2xl border border-dashed border-white/[0.06] flex items-center justify-center min-h-[200px] md:min-h-[400px]" style="animation-delay: 0.85s">
+        <div class="text-center p-8">
+          <div class="w-12 h-12 rounded-full border border-white/[0.08] flex items-center justify-center mx-auto mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-neutral-700"><line x1="12" x2="12" y1="5" y2="19"/><line x1="5" x2="19" y1="12" y2="12"/></svg>
+          </div>
+          <p class="text-neutral-600 text-sm font-display tracking-wide">More dropping soon</p>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="px-4 md:px-8 lg:px-16 py-8 md:py-12 border-t border-white/[0.04]">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+      <a href="/" class="text-neutral-600 hover:text-white text-sm transition-colors duration-300 font-display tracking-wide uppercase">Back to Saints Run Club</a>
+      <p class="text-neutral-700 text-xs tracking-wider">Saints Run Club &mdash; NYC</p>
+    </div>
+  </footer>
+
+  </div><!-- /page-content -->
+
+  <script>
+    // === Elements ===
+    const introEl = document.getElementById('video-intro');
+    const videoEl = document.getElementById('intro-video');
+    const vignetteEl = document.getElementById('video-vignette');
+    const blackoutEl = document.getElementById('video-blackout');
+    const flyingTitle = document.getElementById('flying-title');
+    const pageContent = document.getElementById('page-content');
+    const merchTitle = document.getElementById('merch-title');
+    let introDismissed = false;
+    let fadeStarted = false;
+    let sequenceStarted = false;
+
+    // === Phase 3: Flying title moves to final position, then page reveals ===
+    function flyTitleToPosition() {
+      // Temporarily make page content visible but transparent to measure position
+      pageContent.style.visibility = 'hidden';
+      pageContent.style.opacity = '0';
+      pageContent.classList.add('revealed');
+
+      // Measure where the real h1 sits
+      const targetRect = merchTitle.getBoundingClientRect();
+
+      // Reset page content visibility
+      pageContent.style.visibility = '';
+      pageContent.style.opacity = '0';
+      pageContent.classList.remove('revealed');
+
+      // Compute final position for the flying title
+      const targetFontSize = window.getComputedStyle(merchTitle).fontSize;
+
+      // Animate the flying title to the target position
+      requestAnimationFrame(() => {
+        flyingTitle.classList.add('moving');
+        flyingTitle.style.top = targetRect.top + 'px';
+        flyingTitle.style.left = targetRect.left + 'px';
+        flyingTitle.style.transform = 'translate(0, 0)';
+        flyingTitle.style.fontSize = targetFontSize;
+      });
+
+      // After the title lands, reveal the page and hide the flying title
+      setTimeout(() => {
+        // Hide the real h1 stagger animation — it's already "there" via the flying title
+        merchTitle.style.opacity = '1';
+        merchTitle.style.animation = 'none';
+
+        // Swap: hide flying title, show page
+        flyingTitle.classList.add('done');
+        pageContent.classList.add('revealed');
+        pageContent.style.opacity = '';
+
+        // After page is visible, trigger stagger animations for everything else
+        setTimeout(() => {
+          flyingTitle.style.display = 'none';
+          triggerStaggerAnimations();
+        }, 300);
+      }, 1100);
+    }
+
+    // === Phase 2: Show centered title, hold, then fly ===
+    function showFlyingTitle() {
+      if (sequenceStarted) return;
+      sequenceStarted = true;
+
+      // Remove the video overlay
+      introEl.classList.add('fade-out');
+      setTimeout(() => { introEl.style.display = 'none'; }, 1400);
+
+      // Show the centered "Merch" title
+      setTimeout(() => {
+        flyingTitle.classList.add('visible');
+      }, 400);
+
+      // Hold for a beat, then fly to position
+      setTimeout(() => {
+        flyTitleToPosition();
+      }, 1600);
+    }
+
+    // === Phase 1: Video fade-out ===
+    function dismissIntro() {
+      if (introDismissed) return;
+      introDismissed = true;
+      blackoutEl.classList.add('active');
+      setTimeout(() => showFlyingTitle(), 800);
+    }
+
+    function startVideoFade() {
+      if (fadeStarted) return;
+      fadeStarted = true;
+      vignetteEl.classList.add('active');
+      setTimeout(() => {
+        blackoutEl.classList.add('active');
+      }, 1000);
+    }
+
+    // === Init ===
+    if (!videoEl.querySelector('source')) {
+      // No video — skip straight to title animation
+      introEl.style.display = 'none';
+      introDismissed = true;
+      flyingTitle.classList.add('visible');
+      setTimeout(() => flyTitleToPosition(), 1200);
+    } else {
+      videoEl.play().catch(() => dismissIntro());
+
+      videoEl.addEventListener('timeupdate', () => {
+        if (videoEl.duration && videoEl.currentTime >= videoEl.duration - 2.5) {
+          startVideoFade();
+        }
+      });
+
+      videoEl.addEventListener('ended', () => {
+        setTimeout(() => dismissIntro(), 600);
+      });
+
+      setTimeout(() => dismissIntro(), 10000);
+    }
+
+    // === Success Banner ===
+    if (new URLSearchParams(window.location.search).has('success')) {
+      document.getElementById('success-banner').classList.remove('hidden');
+      history.replaceState(null, '', window.location.pathname);
+    }
+
+    // === Spotlight Card Border ===
+    document.querySelectorAll('.card-spotlight').forEach(card => {
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        card.style.setProperty('--mouse-x', (e.clientX - rect.left) + 'px');
+        card.style.setProperty('--mouse-y', (e.clientY - rect.top) + 'px');
+      });
+    });
+
+    // === Stagger animations (triggered after title lands) ===
+    function triggerStaggerAnimations() {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.style.animationPlayState = 'running';
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1 });
+
+      document.querySelectorAll('.stagger-item').forEach(el => {
+        // Skip the merch h1 — it's already visible
+        if (el.id === 'merch-title') return;
+        el.style.animationPlayState = 'paused';
+        observer.observe(el);
+      });
+    }
+
+    // Pause all stagger items on load (they'll be triggered after the sequence)
+    document.querySelectorAll('.stagger-item').forEach(el => {
+      el.style.animationPlayState = 'paused';
+    });
+  </script>
+
+</body>
+</html>
