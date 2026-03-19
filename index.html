@@ -147,6 +147,16 @@ forwards;
 .delay-2200 { animation-delay: 1.2s; }
 .delay-2300 { animation-delay: 1.3s; }
 .delay-2500 { animation-delay: 1.5s; }
+/* Speed section text reveal */
+.speed-reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.speed-reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
 /* --- EXISTING STYLES --- */
 /* 3D Scene Helpers */
 .vertical-text {
@@ -529,6 +539,28 @@ min-height: 100dvh;
         <div class="absolute inset-0 bg-black/50 opacity-0 pointer-events-none transition-opacity duration-300" id="philosophy-overlay"></div>
       </section>
 
+      <!-- Wednesday Speed Session — Video Section -->
+      <section id="section-speed" class="card-stack-item mobile-relative z-[25] bg-neutral-950 border-t border-white/10 shadow-[0_-20px_50px_rgba(0,0,0,0.5)] relative">
+        <video
+          id="speed-video"
+          class="absolute inset-0 w-full h-full object-cover"
+          muted
+          playsinline
+          preload="metadata"
+        >
+          <source src="astoria_park_track.mp4" type="video/mp4">
+        </video>
+        <!-- Dark overlay for text readability -->
+        <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-black/30 to-black/60 pointer-events-none"></div>
+        <!-- Overlay text -->
+        <div class="absolute inset-0 z-10 flex flex-col items-center justify-center text-center px-6">
+          <p class="font-mono text-[10px] md:text-xs tracking-[0.3em] uppercase text-yellow-500/80 mb-3 md:mb-4 speed-reveal">Every Week</p>
+          <h2 class="font-display font-semibold text-4xl md:text-7xl lg:text-8xl tracking-tightest leading-[0.85] text-white uppercase speed-reveal">Wednesdays</h2>
+          <p class="mt-3 md:mt-5 text-lg md:text-2xl text-white/90 font-display font-medium tracking-tight speed-reveal">6AM Speed</p>
+          <p class="mt-2 md:mt-3 font-mono text-[10px] md:text-xs tracking-[0.3em] uppercase text-yellow-500 speed-reveal">Astoria Park Track</p>
+        </div>
+      </section>
+
       <section id="section-archive" class="card-stack-item mobile-sticky z-30 bg-neutral-950 border-t border-white/10 flex flex-col items-center justify-center shadow-[0_-20px_50px_rgba(0,0,0,0.5)] overflow-hidden">
         <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-0 select-none overflow-hidden md:backdrop-blur-sm">
           <img src="https://izcimioeuohdofzmnahu.supabase.co/storage/v1/object/public/website-assets/winged-foot.png" class="w-[140%] md:w-[80%] h-auto object-contain opacity-[0.03] invert md:invert-0 grayscale blur-[1px]">
@@ -669,21 +701,59 @@ min-height: 100dvh;
       window.addEventListener("scroll", onScroll, { passive: true });
       onScroll();
 
+      /* SPEED VIDEO SECTION — boomerang playback on scroll */
+      const speedVideo = document.getElementById('speed-video');
+      const speedSection = document.getElementById('section-speed');
+      const speedReveals = speedSection.querySelectorAll('.speed-reveal');
+      let speedStarted = false;
+      let speedDirection = 1; // 1 = forward, -1 = reverse
+      let speedRafId = null;
+      let speedInView = false;
+
+      function boomerangStep() {
+        if (!speedInView) return;
+        if (speedDirection === -1) {
+          speedVideo.currentTime -= 0.033; // ~30fps step backward
+          if (speedVideo.currentTime <= 0.05) {
+            speedVideo.currentTime = 0;
+            speedDirection = 1;
+            speedVideo.play().catch(() => {});
+            return;
+          }
+          speedRafId = requestAnimationFrame(boomerangStep);
+        }
+      }
+
+      speedVideo.addEventListener('ended', () => {
+        speedDirection = -1;
+        speedVideo.pause();
+        boomerangStep();
+      });
+
+      const speedObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          speedInView = entry.isIntersecting;
+          if (entry.isIntersecting && !speedStarted) {
+            speedStarted = true;
+            speedVideo.play().catch(() => {});
+            speedReveals.forEach((el, i) => {
+              setTimeout(() => el.classList.add('visible'), 200 + i * 150);
+            });
+          } else if (entry.isIntersecting && speedStarted) {
+            // Re-entered view, resume
+            if (speedDirection === 1) speedVideo.play().catch(() => {});
+            else boomerangStep();
+          } else {
+            // Left view, pause everything
+            speedVideo.pause();
+            if (speedRafId) cancelAnimationFrame(speedRafId);
+          }
+        });
+      }, { threshold: 0.3 });
+      speedObserver.observe(speedSection);
+
       /* 3D CAROUSEL LOGIC */
       const events = [
-        {
-          id: 1,
-          title: "Wednesday Speed Session",
-          shortTitle: "Speed Session",
-          loc: "East High Track",
-          date: "Weekly",
-          desc: "Interval training to improve speed and efficiency. Every Wednesday.",
-          color: "bg-neutral-800",
-          img: "https://izcimioeuohdofzmnahu.supabase.co/storage/v1/object/public/website-assets/saints-website-collage/speedwork.jpg",
-          tag: "WEEKLY",
-          isWeekly: true,
-          galleryLink: "#"
-        },
         {
           id: 2,
           title: "Saturday Long Run",
