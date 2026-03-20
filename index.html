@@ -448,7 +448,7 @@ min-height: 100dvh;
                 </span>
                 <div class="h-px w-8 bg-white/10"></div>
                 <span class="text-[10px] md:text-xs lg:text-sm uppercase text-white/80 tracking-widest font-mono">
-                  Long Run · Location via IG
+                  7AM Long Run · Location via IG
                 </span>
               </div>
             </div>
@@ -608,7 +608,7 @@ min-height: 100dvh;
             <div class="absolute inset-0 z-10 flex flex-col items-center justify-center text-center px-6">
               <p class="font-mono text-[10px] md:text-xs lg:text-sm tracking-[0.3em] uppercase text-yellow-500/80 mb-2 md:mb-3 longrun-reveal">Every Week</p>
               <h2 class="font-display font-semibold text-4xl md:text-6xl lg:text-6xl xl:text-7xl tracking-tightest leading-[0.85] text-white uppercase longrun-reveal">Saturdays</h2>
-              <p class="mt-3 md:mt-4 text-lg md:text-2xl lg:text-3xl xl:text-4xl text-white/90 font-display font-medium tracking-tight longrun-reveal">Long Run</p>
+              <p class="mt-3 md:mt-4 text-lg md:text-2xl lg:text-3xl xl:text-4xl text-white/90 font-display font-medium tracking-tight longrun-reveal">7AM Long Run</p>
               <p class="mt-2 md:mt-3 font-mono text-[10px] md:text-xs lg:text-sm tracking-[0.3em] uppercase text-yellow-500 longrun-reveal">Location via Instagram</p>
               <a href="https://instagram.com/svintsrunclub" target="_blank" rel="noopener noreferrer" class="mt-3 md:mt-4 font-mono text-xs md:text-sm lg:text-base tracking-[0.15em] text-white/90 hover:text-yellow-500 transition-colors longrun-reveal">@SVINTSRUNCLUB</a>
             </div>
@@ -768,44 +768,81 @@ min-height: 100dvh;
       let speedDirection = 1, longrunDirection = 1;
       let speedRafId = null, longrunRafId = null;
 
-      function boomerangStep() {
-        if (!weeklyInView) return;
-        if (speedDirection === -1) {
-          speedVideo.currentTime -= 0.033;
-          if (speedVideo.currentTime <= 0.05) {
-            speedVideo.currentTime = 0;
-            speedDirection = 1;
-            speedVideo.play().catch(() => {});
-            return;
-          }
-          speedRafId = requestAnimationFrame(boomerangStep);
+      // Check if native reverse playback is supported
+      function supportsNegativePlayback(video) {
+        try {
+          video.playbackRate = -1;
+          const works = video.playbackRate === -1;
+          video.playbackRate = 1;
+          return works;
+        } catch (e) {
+          video.playbackRate = 1;
+          return false;
         }
       }
 
-      function longrunBoomerangStep() {
-        if (!weeklyInView) return;
-        if (longrunDirection === -1) {
-          longrunVideo.currentTime -= 0.033;
-          if (longrunVideo.currentTime <= 0.05) {
-            longrunVideo.currentTime = 0;
-            longrunDirection = 1;
-            longrunVideo.play().catch(() => {});
+      const canReverseNatively = supportsNegativePlayback(speedVideo);
+
+      // Smooth reverse using native negative playback rate
+      function startNativeReverse(video, onComplete) {
+        video.playbackRate = -1;
+        video.play().catch(() => {});
+        const checkDone = () => {
+          if (video.currentTime <= 0.05) {
+            video.pause();
+            video.playbackRate = 1;
+            video.currentTime = 0;
+            onComplete();
             return;
           }
-          longrunRafId = requestAnimationFrame(longrunBoomerangStep);
+          requestAnimationFrame(checkDone);
+        };
+        requestAnimationFrame(checkDone);
+      }
+
+      // Fallback: timestamp-based stepping (smoother than fixed 0.033)
+      function startFallbackReverse(video, onComplete) {
+        let lastTime = performance.now();
+        const step = () => {
+          if (!weeklyInView) return;
+          const now = performance.now();
+          const delta = (now - lastTime) / 1000; // seconds elapsed
+          lastTime = now;
+          video.currentTime = Math.max(0, video.currentTime - delta * 0.8);
+          if (video.currentTime <= 0.05) {
+            video.currentTime = 0;
+            onComplete();
+            return;
+          }
+          requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+      }
+
+      function reverseVideo(video, directionRef, rafRef, setDirection) {
+        if (canReverseNatively) {
+          startNativeReverse(video, () => {
+            setDirection(1);
+            video.play().catch(() => {});
+          });
+        } else {
+          startFallbackReverse(video, () => {
+            setDirection(1);
+            video.play().catch(() => {});
+          });
         }
       }
 
       speedVideo.addEventListener('ended', () => {
         speedDirection = -1;
         speedVideo.pause();
-        boomerangStep();
+        reverseVideo(speedVideo, speedDirection, speedRafId, (d) => { speedDirection = d; });
       });
 
       longrunVideo.addEventListener('ended', () => {
         longrunDirection = -1;
         longrunVideo.pause();
-        longrunBoomerangStep();
+        reverseVideo(longrunVideo, longrunDirection, longrunRafId, (d) => { longrunDirection = d; });
       });
 
       const weeklyObserver = new IntersectionObserver((entries) => {
@@ -820,7 +857,7 @@ min-height: 100dvh;
               });
             } else {
               if (speedDirection === 1) speedVideo.play().catch(() => {});
-              else boomerangStep();
+              else reverseVideo(speedVideo, speedDirection, speedRafId, (d) => { speedDirection = d; });
             }
             if (!longrunStarted) {
               longrunStarted = true;
@@ -830,7 +867,7 @@ min-height: 100dvh;
               });
             } else {
               if (longrunDirection === 1) longrunVideo.play().catch(() => {});
-              else longrunBoomerangStep();
+              else reverseVideo(longrunVideo, longrunDirection, longrunRafId, (d) => { longrunDirection = d; });
             }
           } else {
             speedVideo.pause();
