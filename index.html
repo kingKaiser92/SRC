@@ -157,6 +157,37 @@ forwards;
   opacity: 1;
   transform: translateY(0);
 }
+/* Long run section text reveal */
+.longrun-reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.longrun-reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+/* Split-screen weekly panels */
+@media (min-width: 1024px) {
+  .weekly-panel {
+    flex: 1 1 50%;
+    transition: flex 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .weekly-panel:hover {
+    flex: 1.8 1 0%;
+  }
+  .weekly-panel:hover ~ .weekly-panel,
+  .weekly-panel:not(:hover) {
+    flex: 1 1 0%;
+  }
+  /* When one panel is hovered, shrink the other */
+  #section-weekly:has(#panel-wednesday:hover) #panel-saturday {
+    flex: 0.5 1 0%;
+  }
+  #section-weekly:has(#panel-saturday:hover) #panel-wednesday {
+    flex: 0.5 1 0%;
+  }
+}
 /* --- EXISTING STYLES --- */
 /* 3D Scene Helpers */
 .vertical-text {
@@ -385,12 +416,12 @@ min-height: 100dvh;
           <div id="hero-details-container" class="flex flex-col gap-4 animate-text-reveal delay-2000 gap-x-4 gap-y-4 group cursor-pointer lg:cursor-auto relative transition-all duration-300" role="button" aria-expanded="true">
             <div class="flex gap-4 gap-x-4 gap-y-4 items-center justify-between lg:justify-start">
               <div class="flex gap-4 items-center">
-                <span class="font-mono text-[10px] md:text-xs text-white/40 uppercase tracking-widest w-24 shrink-0">
+                <span class="font-mono text-[10px] md:text-xs lg:text-sm text-white/40 uppercase tracking-widest w-24 shrink-0">
                   Est. 2025
                 </span>
-                <div class="h-px w-8 bg-white/10 hidden lg:block"></div>
+                <div class="h-px w-8 lg:w-12 bg-white/10 hidden lg:block"></div>
                 <div class="h-px w-8 bg-white/10 lg:block"></div>
-                <span class="text-[10px] md:text-xs uppercase text-white/80 tracking-widest font-mono">
+                <span class="text-[10px] md:text-xs lg:text-sm uppercase text-white/80 tracking-widest font-mono">
                   Astoria, Queens
                 </span>
               </div>
@@ -403,20 +434,20 @@ min-height: 100dvh;
 
             <div id="hero-details-content" class="flex flex-col gap-2 overflow-hidden transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] max-h-[500px] opacity-100 lg:max-h-none lg:opacity-100 lg:!overflow-visible">
               <div class="flex gap-4 gap-x-4 gap-y-4 items-center">
-                <span class="font-mono text-[10px] md:text-xs text-white/40 uppercase tracking-widest w-24 shrink-0">
+                <span class="font-mono text-[10px] md:text-xs lg:text-sm text-white/40 uppercase tracking-widest w-24 shrink-0">
                   Wednesdays
                 </span>
                 <div class="h-px w-8 bg-white/10"></div>
-                <span class="text-[10px] md:text-xs uppercase text-white/80 tracking-widest font-mono">
+                <span class="text-[10px] md:text-xs lg:text-sm uppercase text-white/80 tracking-widest font-mono">
                   6AM Speed @ Astoria Park Track
                 </span>
               </div>
               <div class="flex gap-4 gap-x-4 gap-y-4 items-center">
-                <span class="font-mono text-[10px] md:text-xs text-white/40 uppercase tracking-widest w-24 shrink-0">
+                <span class="font-mono text-[10px] md:text-xs lg:text-sm text-white/40 uppercase tracking-widest w-24 shrink-0">
                   Saturdays
                 </span>
                 <div class="h-px w-8 bg-white/10"></div>
-                <span class="text-[10px] md:text-xs uppercase text-white/80 tracking-widest font-mono">
+                <span class="text-[10px] md:text-xs lg:text-sm uppercase text-white/80 tracking-widest font-mono">
                   Long Run · Location via IG
                 </span>
               </div>
@@ -441,7 +472,7 @@ min-height: 100dvh;
                 </span>
               </div>
             </h1>
-            <p class="mt-6 md:mt-8 text-neutral-400 max-w-md text-xs md:text-sm font-light leading-relaxed animate-text-reveal delay-2500">
+            <p class="mt-6 md:mt-8 text-neutral-400 max-w-md text-xs md:text-sm lg:text-base font-light leading-relaxed animate-text-reveal delay-2500">
               Earn your wings. Find your fast. A collective dedicated to the
               pursuit of personal bests and community spirit.
             </p>
@@ -453,7 +484,7 @@ min-height: 100dvh;
 
           <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-neutral-800/20 via-neutral-900/40 to-neutral-950 opacity-60"></div>
           <div class="flex lg:pb-8 animate-emblem-reveal pt-8 pr-8 pb-12 pl-8 absolute top-0 right-0 bottom-0 left-0 items-center justify-center">
-            <div class="relative w-full max-w-[300px] lg:max-w-xl aspect-square flex items-center justify-center">
+            <div class="relative w-full max-w-[300px] lg:max-w-2xl aspect-square flex items-center justify-center">
               <img src="https://izcimioeuohdofzmnahu.supabase.co/storage/v1/object/public/website-assets/winged-foot.png" alt="Winged Foot" class="w-full h-full object-contain drop-shadow-2xl opacity-100 p-4 lg:p-0">
               <div class="absolute inset-0 m-auto w-[90%] h-[90%] border border-white/5 rounded-full -z-10 animate-spin-slow"></div>
               <div class="absolute inset-0 m-auto w-[120%] h-[120%] border border-white/5 rounded-full -z-20 border-dashed animate-spin-reverse-slower"></div>
@@ -464,7 +495,7 @@ min-height: 100dvh;
         <div class="absolute inset-0 bg-black/50 opacity-0 pointer-events-none transition-opacity duration-300" id="hero-overlay"></div>
       </section>
       <section id="section-philosophy" class="card-stack-item mobile-relative z-20 bg-neutral-950 border-t border-white/10 flex flex-col lg:flex-row shadow-[0_-20px_50px_rgba(0,0,0,0.5)]">
-        <div class="lg:w-1/3 flex-shrink-0 flex flex-col lg:p-12 lg:border-b-0 lg:border-r lg:sticky lg:top-0 lg:h-screen bg-neutral-950 w-full border-white/10 border-b pt-8 pr-8 pb-8 pl-8 justify-between">
+        <div class="lg:w-1/3 flex-shrink-0 flex flex-col lg:p-12 xl:p-16 lg:border-b-0 lg:border-r lg:sticky lg:top-0 lg:h-screen bg-neutral-950 w-full border-white/10 border-b pt-8 pr-8 pb-8 pl-8 justify-between">
           <div class="space-y-2"></div>
 
           <div class="my-12 lg:my-0">
@@ -475,13 +506,13 @@ min-height: 100dvh;
               <br class="">
               <span class="text-yellow-500">Purpose</span>
             </h2>
-            <p class="mt-8 text-sm text-neutral-400 font-light leading-relaxed max-w-xs">
+            <p class="mt-8 text-sm lg:text-base text-neutral-400 font-light leading-relaxed max-w-xs">
               Defined by effort. United by pavement. The code we live by, mile
               after mile.
             </p>
           </div>
 
-          <div class="hidden lg:flex items-center gap-4 text-xs font-mono text-neutral-500 uppercase tracking-widest">
+          <div class="hidden lg:flex items-center gap-4 text-xs lg:text-sm font-mono text-neutral-500 uppercase tracking-widest">
             <span>Est. 2025</span>
             <div class="w-8 h-px bg-white/10"></div>
             <span>Queens, NY</span>
@@ -489,9 +520,9 @@ min-height: 100dvh;
         </div>
 
         <div class="w-full lg:w-2/3 grid grid-cols-1 md:grid-cols-2">
-          <div class="group relative aspect-square md:aspect-auto md:h-[50vh] flex flex-col justify-between p-8 border-b md:border-r border-white/10 bg-neutral-900/20 hover:bg-neutral-900/40 transition-colors">
-            <div class="w-10 h-10 rounded-full bg-white/5 border border-white/5 flex items-center justify-center text-white group-hover:scale-110 transition-transform duration-500">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="users" class="lucide lucide-users w-5 h-5">
+          <div class="group relative aspect-square md:aspect-auto md:h-[50vh] lg:h-[55vh] flex flex-col justify-between p-8 lg:p-10 border-b md:border-r border-white/10 bg-neutral-900/20 hover:bg-neutral-900/40 transition-colors">
+            <div class="w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-white/5 border border-white/5 flex items-center justify-center text-white group-hover:scale-110 transition-transform duration-500">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="users" class="lucide lucide-users w-5 h-5 lg:w-6 lg:h-6">
                 <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
                 <path d="M16 3.128a4 4 0 0 1 0 7.744"></path>
                 <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
@@ -499,37 +530,37 @@ min-height: 100dvh;
               </svg>
             </div>
             <div class="relative z-10">
-              <h3 class="text-xl font-display font-medium text-white mb-4">
+              <h3 class="text-xl lg:text-2xl font-display font-medium text-white mb-4">
                 Community First
               </h3>
-              <p class="text-sm text-neutral-400 leading-relaxed font-light">
+              <p class="text-sm lg:text-base text-neutral-400 leading-relaxed font-light">
                 We start together, we finish together. No runner is left behind,
                 regardless of pace. A collective force moving as one.
               </p>
             </div>
           </div>
 
-          <div class="relative aspect-square md:aspect-auto md:h-[50vh] border-b border-white/10 overflow-hidden group">
+          <div class="relative aspect-square md:aspect-auto md:h-[50vh] lg:h-[55vh] border-b border-white/10 overflow-hidden group">
             <img src="https://izcimioeuohdofzmnahu.supabase.co/storage/v1/object/public/website-assets/saints-website-collage/hands.jpg" alt="Community" class="absolute inset-0 w-full h-full object-cover lg:grayscale lg:brightness-75 group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700">
             <div class="absolute inset-0 lg:bg-neutral-950/20 bg-transparent group-hover:bg-transparent transition-colors"></div>
           </div>
 
-          <div class="relative aspect-square md:aspect-auto md:h-[50vh] border-b md:border-b-0 md:border-r border-white/10 overflow-hidden group">
+          <div class="relative aspect-square md:aspect-auto md:h-[50vh] lg:h-[55vh] border-b md:border-b-0 md:border-r border-white/10 overflow-hidden group">
             <img src="https://izcimioeuohdofzmnahu.supabase.co/storage/v1/object/public/website-assets/saints-website-collage/group-main.jpg" alt="Speed" class="absolute inset-0 w-full h-full object-cover lg:grayscale lg:brightness-75 group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700">
             <div class="absolute inset-0 lg:bg-neutral-950/20 bg-transparent group-hover:bg-transparent transition-colors"></div>
           </div>
 
-          <div class="group relative aspect-square md:aspect-auto md:h-[50vh] flex flex-col justify-between p-8 bg-neutral-900/20 hover:bg-neutral-900/40 transition-colors">
-            <div class="w-10 h-10 rounded-full bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center text-yellow-500 group-hover:scale-110 transition-transform duration-500">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="zap" class="lucide lucide-zap w-5 h-5">
+          <div class="group relative aspect-square md:aspect-auto md:h-[50vh] lg:h-[55vh] flex flex-col justify-between p-8 lg:p-10 bg-neutral-900/20 hover:bg-neutral-900/40 transition-colors">
+            <div class="w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center text-yellow-500 group-hover:scale-110 transition-transform duration-500">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="zap" class="lucide lucide-zap w-5 h-5 lg:w-6 lg:h-6">
                 <path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"></path>
               </svg>
             </div>
             <div class="relative z-10">
-              <h3 class="text-xl font-display font-medium text-white mb-4">
+              <h3 class="text-xl lg:text-2xl font-display font-medium text-white mb-4">
                 Unrelenting Pace
               </h3>
-              <p class="text-sm text-neutral-400 leading-relaxed font-light">
+              <p class="text-sm lg:text-base text-neutral-400 leading-relaxed font-light">
                 Track Wednesdays and Long Run Saturdays. Structured training
                 designed to break barriers and redefine personal bests.
               </p>
@@ -539,25 +570,49 @@ min-height: 100dvh;
         <div class="absolute inset-0 bg-black/50 opacity-0 pointer-events-none transition-opacity duration-300" id="philosophy-overlay"></div>
       </section>
 
-      <!-- Wednesday Speed Session — Video Section -->
-      <section id="section-speed" class="card-stack-item mobile-relative z-[25] bg-neutral-950 border-t border-white/10 shadow-[0_-20px_50px_rgba(0,0,0,0.5)] relative">
-        <video
-          id="speed-video"
-          class="absolute inset-0 w-full h-full object-cover"
-          muted
-          playsinline
-          preload="metadata"
-        >
-          <source src="astoria_park_track.mp4" type="video/mp4">
-        </video>
-        <!-- Dark overlay for text readability -->
-        <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-black/30 to-black/60 pointer-events-none"></div>
-        <!-- Overlay text -->
-        <div class="absolute inset-0 z-10 flex flex-col items-center justify-center text-center px-6">
-          <p class="font-mono text-xs md:text-sm lg:text-lg xl:text-xl tracking-[0.3em] uppercase text-yellow-500/80 mb-3 md:mb-5 speed-reveal">Every Week</p>
-          <h2 class="font-display font-semibold text-5xl md:text-8xl lg:text-9xl xl:text-[10rem] tracking-tightest leading-[0.85] text-white uppercase speed-reveal">Wednesdays</h2>
-          <p class="mt-4 md:mt-6 text-xl md:text-3xl lg:text-5xl xl:text-6xl text-white/90 font-display font-medium tracking-tight speed-reveal">6AM Speed</p>
-          <p class="mt-3 md:mt-4 font-mono text-xs md:text-sm lg:text-lg xl:text-xl tracking-[0.3em] uppercase text-yellow-500 speed-reveal">Astoria Park Track</p>
+      <!-- Weekly Events — Split Screen Video Section -->
+      <section id="section-weekly" class="card-stack-item mobile-relative z-[25] bg-neutral-950 border-t border-white/10 shadow-[0_-20px_50px_rgba(0,0,0,0.5)] relative">
+        <div class="flex flex-col lg:flex-row w-full h-full">
+          <!-- Wednesday Panel -->
+          <div class="weekly-panel relative overflow-hidden h-[50vh] lg:h-full" id="panel-wednesday">
+            <video
+              id="speed-video"
+              class="absolute inset-0 w-full h-full object-cover"
+              muted playsinline preload="metadata"
+            >
+              <source src="astoria_park_track.mp4" type="video/mp4">
+            </video>
+            <div class="absolute inset-0 bg-gradient-to-b from-black/50 via-black/20 to-black/50 pointer-events-none"></div>
+            <div class="absolute inset-0 pointer-events-none" style="background: radial-gradient(ellipse at center, transparent 30%, rgba(10,10,10,0.6) 70%, rgba(10,10,10,0.85) 100%)"></div>
+            <div class="absolute inset-0 z-10 flex flex-col items-center justify-center text-center px-6">
+              <p class="font-mono text-[10px] md:text-xs lg:text-sm tracking-[0.3em] uppercase text-yellow-500/80 mb-2 md:mb-3 speed-reveal">Every Week</p>
+              <h2 class="font-display font-semibold text-4xl md:text-6xl lg:text-6xl xl:text-7xl tracking-tightest leading-[0.85] text-white uppercase speed-reveal">Wednesdays</h2>
+              <p class="mt-3 md:mt-4 text-lg md:text-2xl lg:text-3xl xl:text-4xl text-white/90 font-display font-medium tracking-tight speed-reveal">6AM Speed</p>
+              <p class="mt-2 md:mt-3 font-mono text-[10px] md:text-xs lg:text-sm tracking-[0.3em] uppercase text-yellow-500 speed-reveal">Astoria Park Track</p>
+            </div>
+          </div>
+          <!-- Divider -->
+          <div class="hidden lg:block w-px bg-white/10 z-20 flex-shrink-0"></div>
+          <div class="lg:hidden h-px w-full bg-white/10 z-20 flex-shrink-0"></div>
+          <!-- Saturday Panel -->
+          <div class="weekly-panel relative overflow-hidden h-[50vh] lg:h-full" id="panel-saturday">
+            <video
+              id="longrun-video"
+              class="absolute inset-0 w-full h-full object-cover"
+              muted playsinline preload="metadata"
+            >
+              <source src="saturday_long_run.mp4" type="video/mp4">
+            </video>
+            <div class="absolute inset-0 bg-gradient-to-b from-black/50 via-black/20 to-black/50 pointer-events-none"></div>
+            <div class="absolute inset-0 pointer-events-none" style="background: radial-gradient(ellipse at center, transparent 30%, rgba(10,10,10,0.6) 70%, rgba(10,10,10,0.85) 100%)"></div>
+            <div class="absolute inset-0 z-10 flex flex-col items-center justify-center text-center px-6">
+              <p class="font-mono text-[10px] md:text-xs lg:text-sm tracking-[0.3em] uppercase text-yellow-500/80 mb-2 md:mb-3 longrun-reveal">Every Week</p>
+              <h2 class="font-display font-semibold text-4xl md:text-6xl lg:text-6xl xl:text-7xl tracking-tightest leading-[0.85] text-white uppercase longrun-reveal">Saturdays</h2>
+              <p class="mt-3 md:mt-4 text-lg md:text-2xl lg:text-3xl xl:text-4xl text-white/90 font-display font-medium tracking-tight longrun-reveal">Long Run</p>
+              <p class="mt-2 md:mt-3 font-mono text-[10px] md:text-xs lg:text-sm tracking-[0.3em] uppercase text-yellow-500 longrun-reveal">Location via Instagram</p>
+              <a href="https://instagram.com/svintsrunclub" target="_blank" rel="noopener noreferrer" class="mt-3 md:mt-4 font-mono text-xs md:text-sm lg:text-base tracking-[0.15em] text-white/90 hover:text-yellow-500 transition-colors longrun-reveal">@SVINTSRUNCLUB</a>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -567,7 +622,7 @@ min-height: 100dvh;
         </div>
 
         <div class="md:py-8 flex bg-neutral-950/90 w-full z-20 border-white/5 border-b pt-20 pr-6 pb-20 pl-6 absolute top-0 backdrop-blur-sm items-center justify-between">
-          <h1 class="lg:text-2xl text-xs font-medium text-neutral-100 tracking-[0.2em] font-mono">
+          <h1 class="lg:text-3xl text-xs font-medium text-neutral-100 tracking-[0.2em] font-mono">
             <span class="text-yellow-500 font-sans pr-1">The</span>
             EVENTS ARCHIVE
           </h1>
@@ -592,7 +647,7 @@ min-height: 100dvh;
             The
             <span class="text-yellow-500">Vision</span>
           </h2>
-          <p class="text-neutral-500 text-[10px] md:text-xs font-mono uppercase tracking-[0.3em] opacity-80">
+          <p class="text-neutral-500 text-[10px] md:text-xs lg:text-sm font-mono uppercase tracking-[0.3em] opacity-80">
             Captured by the Club
           </p>
         </div>
@@ -701,19 +756,22 @@ min-height: 100dvh;
       window.addEventListener("scroll", onScroll, { passive: true });
       onScroll();
 
-      /* SPEED VIDEO SECTION — boomerang playback on scroll */
+      /* WEEKLY SPLIT-SCREEN — boomerang playback for both videos */
+      const weeklySection = document.getElementById('section-weekly');
       const speedVideo = document.getElementById('speed-video');
-      const speedSection = document.getElementById('section-speed');
-      const speedReveals = speedSection.querySelectorAll('.speed-reveal');
-      let speedStarted = false;
-      let speedDirection = 1; // 1 = forward, -1 = reverse
-      let speedRafId = null;
-      let speedInView = false;
+      const longrunVideo = document.getElementById('longrun-video');
+      const speedReveals = weeklySection.querySelectorAll('.speed-reveal');
+      const longrunReveals = weeklySection.querySelectorAll('.longrun-reveal');
+
+      let weeklyInView = false;
+      let speedStarted = false, longrunStarted = false;
+      let speedDirection = 1, longrunDirection = 1;
+      let speedRafId = null, longrunRafId = null;
 
       function boomerangStep() {
-        if (!speedInView) return;
+        if (!weeklyInView) return;
         if (speedDirection === -1) {
-          speedVideo.currentTime -= 0.033; // ~30fps step backward
+          speedVideo.currentTime -= 0.033;
           if (speedVideo.currentTime <= 0.05) {
             speedVideo.currentTime = 0;
             speedDirection = 1;
@@ -724,49 +782,68 @@ min-height: 100dvh;
         }
       }
 
+      function longrunBoomerangStep() {
+        if (!weeklyInView) return;
+        if (longrunDirection === -1) {
+          longrunVideo.currentTime -= 0.033;
+          if (longrunVideo.currentTime <= 0.05) {
+            longrunVideo.currentTime = 0;
+            longrunDirection = 1;
+            longrunVideo.play().catch(() => {});
+            return;
+          }
+          longrunRafId = requestAnimationFrame(longrunBoomerangStep);
+        }
+      }
+
       speedVideo.addEventListener('ended', () => {
         speedDirection = -1;
         speedVideo.pause();
         boomerangStep();
       });
 
-      const speedObserver = new IntersectionObserver((entries) => {
+      longrunVideo.addEventListener('ended', () => {
+        longrunDirection = -1;
+        longrunVideo.pause();
+        longrunBoomerangStep();
+      });
+
+      const weeklyObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
-          speedInView = entry.isIntersecting;
-          if (entry.isIntersecting && !speedStarted) {
-            speedStarted = true;
-            speedVideo.play().catch(() => {});
-            speedReveals.forEach((el, i) => {
-              setTimeout(() => el.classList.add('visible'), 200 + i * 150);
-            });
-          } else if (entry.isIntersecting && speedStarted) {
-            // Re-entered view, resume
-            if (speedDirection === 1) speedVideo.play().catch(() => {});
-            else boomerangStep();
+          weeklyInView = entry.isIntersecting;
+          if (entry.isIntersecting) {
+            if (!speedStarted) {
+              speedStarted = true;
+              speedVideo.play().catch(() => {});
+              speedReveals.forEach((el, i) => {
+                setTimeout(() => el.classList.add('visible'), 200 + i * 150);
+              });
+            } else {
+              if (speedDirection === 1) speedVideo.play().catch(() => {});
+              else boomerangStep();
+            }
+            if (!longrunStarted) {
+              longrunStarted = true;
+              longrunVideo.play().catch(() => {});
+              longrunReveals.forEach((el, i) => {
+                setTimeout(() => el.classList.add('visible'), 200 + i * 150);
+              });
+            } else {
+              if (longrunDirection === 1) longrunVideo.play().catch(() => {});
+              else longrunBoomerangStep();
+            }
           } else {
-            // Left view, pause everything
             speedVideo.pause();
+            longrunVideo.pause();
             if (speedRafId) cancelAnimationFrame(speedRafId);
+            if (longrunRafId) cancelAnimationFrame(longrunRafId);
           }
         });
       }, { threshold: 0.3 });
-      speedObserver.observe(speedSection);
+      weeklyObserver.observe(weeklySection);
 
       /* 3D CAROUSEL LOGIC */
       const events = [
-        {
-          id: 2,
-          title: "Saturday Long Run",
-          shortTitle: "Long Run",
-          loc: "The Waterfront",
-          date: "Weekly",
-          desc: "Weekly 8–10 mile community run. Open to all paces.",
-          color: "bg-neutral-900",
-          img: "https://izcimioeuohdofzmnahu.supabase.co/storage/v1/object/public/website-assets/saints-website-collage/longrun.jpg",
-          tag: "WEEKLY",
-          isWeekly: true,
-          galleryLink: "#"
-        },
         {
           id: 3,
           title: "Hispanic Heritage Run",
