@@ -765,84 +765,47 @@ min-height: 100dvh;
 
       let weeklyInView = false;
       let speedStarted = false, longrunStarted = false;
-      let speedDirection = 1, longrunDirection = 1;
-      let speedRafId = null, longrunRafId = null;
+      let speedReversing = false, longrunReversing = false;
 
-      // Check if native reverse playback is supported
-      function supportsNegativePlayback(video) {
-        try {
-          video.playbackRate = -1;
-          const works = video.playbackRate === -1;
-          video.playbackRate = 1;
-          return works;
-        } catch (e) {
-          video.playbackRate = 1;
-          return false;
-        }
-      }
-
-      const canReverseNatively = supportsNegativePlayback(speedVideo);
-
-      // Smooth reverse using native negative playback rate
-      function startNativeReverse(video, onComplete) {
-        video.playbackRate = -1;
-        video.play().catch(() => {});
-        const checkDone = () => {
-          if (video.currentTime <= 0.05) {
-            video.pause();
-            video.playbackRate = 1;
-            video.currentTime = 0;
-            onComplete();
-            return;
-          }
-          requestAnimationFrame(checkDone);
-        };
-        requestAnimationFrame(checkDone);
-      }
-
-      // Fallback: timestamp-based stepping (smoother than fixed 0.033)
-      function startFallbackReverse(video, onComplete) {
+      // Smooth reverse: seek backward in small time-synced steps
+      // Uses a slower step rate and requestAnimationFrame for smoothness
+      function reverseVideo(video, setReversing, onComplete) {
+        setReversing(true);
+        video.pause();
         let lastTime = performance.now();
+
         const step = () => {
           if (!weeklyInView) return;
           const now = performance.now();
-          const delta = (now - lastTime) / 1000; // seconds elapsed
+          const delta = (now - lastTime) / 1000;
           lastTime = now;
-          video.currentTime = Math.max(0, video.currentTime - delta * 0.8);
-          if (video.currentTime <= 0.05) {
+          // Step back at 1x speed, clamped to avoid big jumps
+          const seekStep = Math.min(delta, 0.05);
+          const newTime = video.currentTime - seekStep;
+
+          if (newTime <= 0.1) {
             video.currentTime = 0;
+            setReversing(false);
             onComplete();
             return;
           }
+
+          video.currentTime = newTime;
           requestAnimationFrame(step);
         };
         requestAnimationFrame(step);
       }
 
-      function reverseVideo(video, directionRef, rafRef, setDirection) {
-        if (canReverseNatively) {
-          startNativeReverse(video, () => {
-            setDirection(1);
-            video.play().catch(() => {});
-          });
-        } else {
-          startFallbackReverse(video, () => {
-            setDirection(1);
-            video.play().catch(() => {});
-          });
-        }
-      }
-
       speedVideo.addEventListener('ended', () => {
-        speedDirection = -1;
-        speedVideo.pause();
-        reverseVideo(speedVideo, speedDirection, speedRafId, (d) => { speedDirection = d; });
+        reverseVideo(speedVideo, (v) => { speedReversing = v; }, () => {
+          speedVideo.play().catch(() => {});
+        });
       });
 
       longrunVideo.addEventListener('ended', () => {
-        longrunDirection = -1;
-        longrunVideo.pause();
-        reverseVideo(longrunVideo, longrunDirection, longrunRafId, (d) => { longrunDirection = d; });
+        reverseVideo(longrunVideo, (v) => { longrunReversing = v; }, () => {
+          longrunVideo.play().catch(() => {});
+        });
       });
 
       const weeklyObserver = new IntersectionObserver((entries) => {
@@ -856,8 +819,8 @@ min-height: 100dvh;
                 setTimeout(() => el.classList.add('visible'), 200 + i * 150);
               });
             } else {
-              if (speedDirection === 1) speedVideo.play().catch(() => {});
-              else reverseVideo(speedVideo, speedDirection, speedRafId, (d) => { speedDirection = d; });
+              if (!speedReversing) speedVideo.play().catch(() => {});
+              // If reversing, the rAF loop resumes automatically via weeklyInView
             }
             if (!longrunStarted) {
               longrunStarted = true;
@@ -866,14 +829,11 @@ min-height: 100dvh;
                 setTimeout(() => el.classList.add('visible'), 200 + i * 150);
               });
             } else {
-              if (longrunDirection === 1) longrunVideo.play().catch(() => {});
-              else reverseVideo(longrunVideo, longrunDirection, longrunRafId, (d) => { longrunDirection = d; });
+              if (!longrunReversing) longrunVideo.play().catch(() => {});
             }
           } else {
             speedVideo.pause();
             longrunVideo.pause();
-            if (speedRafId) cancelAnimationFrame(speedRafId);
-            if (longrunRafId) cancelAnimationFrame(longrunRafId);
           }
         });
       }, { threshold: 0.3 });
