@@ -212,6 +212,134 @@
       opacity: 1;
       transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
     }
+
+    /* Product Detail Overlay */
+    .product-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: #0a0a0a;
+      overflow-y: auto;
+      transform: translateY(100%);
+      transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .product-overlay.open {
+      transform: translateY(0);
+    }
+    .product-overlay .detail-stagger {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .product-overlay.open .detail-stagger {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .size-btn {
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 0;
+      color: #E5E2E1;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: transparent;
+    }
+    .size-btn:hover {
+      background: rgba(255,255,255,0.05);
+      border-color: rgba(255,255,255,0.25);
+      color: #fff;
+    }
+    .size-btn.selected {
+      background: #E5E2E1;
+      color: #0a0a0a;
+      border-color: #E5E2E1;
+    }
+    .color-swatch {
+      width: 28px;
+      height: 28px;
+      border-radius: 0;
+      cursor: pointer;
+      border: 2px solid rgba(255,255,255,0.1);
+      transition: all 0.2s;
+      outline: 2px solid transparent;
+      outline-offset: 3px;
+    }
+    .color-swatch:hover {
+      border-color: rgba(255,255,255,0.3);
+    }
+    .color-swatch.selected {
+      outline-color: #EAB308;
+    }
+
+    /* Image zoom overlay */
+    .image-zoom-lens {
+      position: fixed;
+      inset: 0;
+      z-index: 300;
+      background: rgba(10,10,10,0.92);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: zoom-out;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .image-zoom-lens.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .image-zoom-lens img {
+      max-width: 90vw;
+      max-height: 90vh;
+      object-fit: contain;
+      transform: scale(0.8);
+      transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .image-zoom-lens.active img {
+      transform: scale(1);
+    }
+
+    /* Size button ripple */
+    .size-btn {
+      position: relative;
+      overflow: hidden;
+    }
+    .size-ripple {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(234, 179, 8, 0.4);
+      transform: scale(0);
+      animation: sizeRipple 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      pointer-events: none;
+    }
+    @keyframes sizeRipple {
+      0% { transform: scale(0); opacity: 1; }
+      100% { transform: scale(4); opacity: 0; }
+    }
+
+    /* Product image hover tilt */
+    .product-image-wrap {
+      perspective: 800px;
+      cursor: zoom-in;
+    }
+    .product-image-wrap img {
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .rec-card {
+      cursor: pointer;
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .rec-card:hover {
+      transform: translateY(-4px);
+    }
   </style>
 </head>
 <body class="bg-neutral-950 text-neutral-100 overflow-x-hidden selection:bg-yellow-500/30 min-h-[100dvh] flex flex-col grain" style="padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)">
@@ -267,20 +395,20 @@
     </a>
 
     <div class="flex items-center gap-2">
-      <div class="flex p-1 lg:p-2 gap-1 lg:gap-2 bg-neutral-900/50 border border-white/[0.06] rounded-full shadow-[0_8px_32px_-8px_rgba(0,0,0,0.5)] backdrop-blur-md items-center">
-        <a href="https://instagram.com/svintsrunclub" target="_blank" class="w-8 h-8 lg:w-12 lg:h-12 rounded-full hover:bg-white/10 flex items-center justify-center transition-colors duration-200 group">
+      <div class="flex p-1 lg:p-2 gap-1 lg:gap-2 bg-neutral-900/50 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.5)] backdrop-blur-md items-center">
+        <a href="https://instagram.com/svintsrunclub" target="_blank" class="w-8 h-8 lg:w-12 lg:h-12 hover:bg-white/10 flex items-center justify-center transition-colors duration-200 group">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 lg:w-5 lg:h-5 text-neutral-400 group-hover:text-yellow-500 transition-colors duration-200">
             <rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect>
             <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
             <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line>
           </svg>
         </a>
-        <a href="https://www.tiktok.com/@svintsrunclub" target="_blank" class="w-8 h-8 lg:w-12 lg:h-12 rounded-full hover:bg-white/10 flex items-center justify-center transition-colors duration-200 group">
+        <a href="https://www.tiktok.com/@svintsrunclub" target="_blank" class="w-8 h-8 lg:w-12 lg:h-12 hover:bg-white/10 flex items-center justify-center transition-colors duration-200 group">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4 lg:w-5 lg:h-5 text-neutral-400 group-hover:text-yellow-500 transition-colors duration-200">
             <path d="M9 0h1.98c.144.715.54 1.617 1.235 2.512C12.895 3.389 13.797 4 15 4v2c-1.753 0-3.07-.814-4-1.829V11a5 5 0 1 1-5-5v2a3 3 0 1 0 3 3z"></path>
           </svg>
         </a>
-        <a href="https://strava.app.link/lw6PeAun8Vb" target="_blank" class="w-8 h-8 lg:w-12 lg:h-12 rounded-full hover:bg-white/10 flex items-center justify-center transition-colors duration-200 group">
+        <a href="https://strava.app.link/lw6PeAun8Vb" target="_blank" class="w-8 h-8 lg:w-12 lg:h-12 hover:bg-white/10 flex items-center justify-center transition-colors duration-200 group">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4 lg:w-5 lg:h-5 text-neutral-400 group-hover:text-yellow-500 transition-colors duration-200">
             <path d="M6.731 0 2 9.125h2.788L6.73 5.497l1.93 3.628h2.766zm4.694 9.125-1.372 2.756L8.66 9.125H6.547L10.053 16l3.484-6.875z"></path>
           </svg>
@@ -302,7 +430,7 @@
         Limited drops. Once they sell out, they don't come back.
       </p>
     </div>
-    <div class="mt-6 md:mt-14 lg:mt-16 h-px bg-gradient-to-r from-white/10 via-white/5 to-transparent"></div>
+    <div class="mt-6 md:mt-14 lg:mt-16"></div>
   </section>
 
   <!-- Product Grid — asymmetric bento-style -->
@@ -310,8 +438,8 @@
 
     <!-- PRODUCT CARD TEMPLATE (copy & update for each product)
     ============================================================
-    <div class="group card-spotlight stagger-item rounded-2xl bg-neutral-900/40" style="animation-delay: 0.Xs">
-      <div class="aspect-square md:aspect-[4/5] overflow-hidden rounded-t-2xl">
+    <div class="group card-spotlight stagger-item bg-[#131313]" style="animation-delay: 0.Xs">
+      <div class="aspect-square md:aspect-[4/5] overflow-hidden">
         <img
           src="https://izcimioeuohdofzmnahu.supabase.co/storage/v1/object/public/website-assets/merch/PRODUCT_IMAGE.jpg"
           alt="Product Name"
@@ -322,15 +450,15 @@
       <div class="p-5 md:p-6 lg:p-8">
         <div class="flex items-start justify-between gap-4">
           <div>
-            <h3 class="font-display font-medium text-base md:text-lg text-white">Product Name</h3>
+            <h3 class="font-display font-medium text-base md:text-lg text-[#E5E2E1]">Product Name</h3>
             <p class="text-neutral-500 text-sm mt-1">Short description</p>
           </div>
-          <span class="text-yellow-500 font-semibold text-sm md:text-base font-display whitespace-nowrap">$XX</span>
+          <span class="text-yellow-500 font-semibold text-sm md:text-base font-display whitespace-nowrap tracking-wide uppercase">$XX</span>
         </div>
         <a
           href="https://buy.stripe.com/YOUR_PAYMENT_LINK"
           target="_blank"
-          class="btn-magnetic mt-5 inline-block w-full text-center px-6 py-3 bg-yellow-500 text-neutral-950 font-semibold text-sm rounded-xl hover:bg-yellow-400 active:scale-[0.98] uppercase tracking-wide"
+          class="btn-magnetic mt-5 inline-block w-full text-center px-6 py-3 bg-gradient-to-br from-[#FFD165] to-[#EAB308] text-neutral-950 font-semibold text-sm hover:from-[#FFE08A] hover:to-[#EAB308] active:scale-[0.98] uppercase tracking-wide"
         >
           Buy now
         </a>
@@ -342,8 +470,8 @@
     <div class="grid grid-cols-1 md:grid-cols-[1.4fr_1fr] gap-5 md:gap-6 lg:gap-8 mb-5 md:mb-6 lg:mb-8">
 
       <!-- Product 1 — Featured / large -->
-      <div class="group card-spotlight stagger-item rounded-2xl bg-neutral-900/40" style="animation-delay: 0.4s">
-        <div class="aspect-square md:aspect-[3/4] overflow-hidden rounded-t-2xl relative bg-neutral-800/30">
+      <div class="group card-spotlight stagger-item bg-[#131313] cursor-pointer" data-product="singlet" onclick="openProduct('singlet')" style="animation-delay: 0.4s">
+        <div class="aspect-square md:aspect-[3/4] overflow-hidden relative bg-[#2A2A2A]">
           <img
             src="products/src-singlet.png"
             alt="SRC Singlet"
@@ -356,18 +484,18 @@
         <div class="p-5 md:p-6 lg:p-8">
           <div class="flex items-start justify-between gap-4">
             <div>
-              <h3 class="font-display font-medium text-lg md:text-xl lg:text-2xl text-white tracking-tight">SRC Singlet</h3>
+              <h3 class="font-display font-medium text-lg md:text-xl lg:text-2xl text-[#E5E2E1] tracking-tight">SRC Singlet</h3>
               <p class="text-neutral-500 text-sm lg:text-base mt-1 leading-relaxed">Lightweight. Built to race.</p>
             </div>
-            <span class="text-yellow-500 font-semibold text-base lg:text-lg font-display whitespace-nowrap">$35</span>
+            <span class="text-yellow-500 font-semibold text-base lg:text-lg font-display whitespace-nowrap tracking-wide uppercase">$35</span>
           </div>
-          <a href="#" class="btn-magnetic mt-5 lg:mt-6 inline-block w-full text-center px-6 py-3.5 lg:py-4 bg-yellow-500 text-neutral-950 font-semibold text-sm lg:text-base rounded-xl hover:bg-yellow-400 uppercase tracking-wide">Coming soon</a>
+          <span class="btn-magnetic mt-5 lg:mt-6 inline-block w-full text-center px-6 py-3.5 lg:py-4 bg-gradient-to-br from-[#FFD165] to-[#EAB308] text-neutral-950 font-semibold text-sm lg:text-base hover:from-[#FFE08A] hover:to-[#EAB308] uppercase tracking-wide">Coming soon</span>
         </div>
       </div>
 
       <!-- Product 2 — SRC Windbreaker -->
-      <div class="group card-spotlight stagger-item rounded-2xl bg-neutral-900/40" style="animation-delay: 0.55s">
-        <div class="aspect-square md:aspect-[4/5] overflow-hidden rounded-t-2xl relative bg-neutral-800/30">
+      <div class="group card-spotlight stagger-item bg-[#131313] cursor-pointer" data-product="windbreaker" onclick="openProduct('windbreaker')" style="animation-delay: 0.55s">
+        <div class="aspect-square md:aspect-[4/5] overflow-hidden relative bg-[#2A2A2A]">
           <img
             src="products/src-windbreaker.png"
             alt="SRC Windbreaker"
@@ -379,12 +507,12 @@
         <div class="p-5 md:p-6 lg:p-8">
           <div class="flex items-start justify-between gap-4">
             <div>
-              <h3 class="font-display font-medium text-lg lg:text-2xl text-white tracking-tight">SRC Windbreaker</h3>
+              <h3 class="font-display font-medium text-lg lg:text-2xl text-[#E5E2E1] tracking-tight">SRC Windbreaker</h3>
               <p class="text-neutral-500 text-sm lg:text-base mt-1 leading-relaxed">Water-resistant. Packable.</p>
             </div>
-            <span class="text-yellow-500 font-semibold text-base lg:text-lg font-display whitespace-nowrap">$75</span>
+            <span class="text-yellow-500 font-semibold text-base lg:text-lg font-display whitespace-nowrap tracking-wide uppercase">$75</span>
           </div>
-          <a href="#" class="btn-magnetic mt-5 lg:mt-6 inline-block w-full text-center px-6 py-3.5 lg:py-4 bg-yellow-500 text-neutral-950 font-semibold text-sm lg:text-base rounded-xl hover:bg-yellow-400 uppercase tracking-wide">Coming soon</a>
+          <span class="btn-magnetic mt-5 lg:mt-6 inline-block w-full text-center px-6 py-3.5 lg:py-4 bg-gradient-to-br from-[#FFD165] to-[#EAB308] text-neutral-950 font-semibold text-sm lg:text-base hover:from-[#FFE08A] hover:to-[#EAB308] uppercase tracking-wide">Coming soon</span>
         </div>
       </div>
 
@@ -394,8 +522,8 @@
     <div class="grid grid-cols-1 md:grid-cols-[1fr_1.4fr] gap-5 md:gap-6 lg:gap-8">
 
       <!-- Product 3 — SRC Member Socks -->
-      <div class="group card-spotlight stagger-item rounded-2xl bg-neutral-900/40" style="animation-delay: 0.7s">
-        <div class="aspect-square md:aspect-[4/5] overflow-hidden rounded-t-2xl relative bg-neutral-800/30">
+      <div class="group card-spotlight stagger-item bg-[#131313] cursor-pointer" data-product="socks" onclick="openProduct('socks')" style="animation-delay: 0.7s">
+        <div class="aspect-square md:aspect-[4/5] overflow-hidden relative bg-[#2A2A2A]">
           <img
             src="products/src-socks.png"
             alt="SRC Member Socks"
@@ -407,18 +535,18 @@
         <div class="p-5 md:p-6 lg:p-8">
           <div class="flex items-start justify-between gap-4">
             <div>
-              <h3 class="font-display font-medium text-lg lg:text-2xl text-white tracking-tight">SRC Member Socks</h3>
+              <h3 class="font-display font-medium text-lg lg:text-2xl text-[#E5E2E1] tracking-tight">SRC Member Socks</h3>
               <p class="text-neutral-500 text-sm lg:text-base mt-1 leading-relaxed">Crew length. One size fits all.</p>
             </div>
-            <span class="text-yellow-500 font-semibold text-base lg:text-lg font-display whitespace-nowrap">$15</span>
+            <span class="text-yellow-500 font-semibold text-base lg:text-lg font-display whitespace-nowrap tracking-wide uppercase">$15</span>
           </div>
-          <a href="#" class="btn-magnetic mt-5 lg:mt-6 inline-block w-full text-center px-6 py-3.5 lg:py-4 bg-yellow-500 text-neutral-950 font-semibold text-sm lg:text-base rounded-xl hover:bg-yellow-400 uppercase tracking-wide">Coming soon</a>
+          <span class="btn-magnetic mt-5 lg:mt-6 inline-block w-full text-center px-6 py-3.5 lg:py-4 bg-gradient-to-br from-[#FFD165] to-[#EAB308] text-neutral-950 font-semibold text-sm lg:text-base hover:from-[#FFE08A] hover:to-[#EAB308] uppercase tracking-wide">Coming soon</span>
         </div>
       </div>
 
       <!-- Product 4 — SRC Hoodie -->
-      <div class="group card-spotlight stagger-item rounded-2xl bg-neutral-900/40" style="animation-delay: 0.85s">
-        <div class="aspect-square md:aspect-[4/5] overflow-hidden rounded-t-2xl relative bg-neutral-800/30">
+      <div class="group card-spotlight stagger-item bg-[#131313] cursor-pointer" data-product="hoodie" onclick="openProduct('hoodie')" style="animation-delay: 0.85s">
+        <div class="aspect-square md:aspect-[4/5] overflow-hidden relative bg-[#2A2A2A]">
           <img
             src="products/src-hoodie.png"
             alt="SRC Hoodie — front and back view"
@@ -430,12 +558,12 @@
         <div class="p-5 md:p-6 lg:p-8">
           <div class="flex items-start justify-between gap-4">
             <div>
-              <h3 class="font-display font-medium text-lg lg:text-2xl text-white tracking-tight">SRC Hoodie</h3>
+              <h3 class="font-display font-medium text-lg lg:text-2xl text-[#E5E2E1] tracking-tight">SRC Hoodie</h3>
               <p class="text-neutral-500 text-sm lg:text-base mt-1 leading-relaxed">Heavyweight. Front & back print.</p>
             </div>
-            <span class="text-yellow-500 font-semibold text-base lg:text-lg font-display whitespace-nowrap">$65</span>
+            <span class="text-yellow-500 font-semibold text-base lg:text-lg font-display whitespace-nowrap tracking-wide uppercase">$65</span>
           </div>
-          <a href="#" class="btn-magnetic mt-5 lg:mt-6 inline-block w-full text-center px-6 py-3.5 lg:py-4 bg-yellow-500 text-neutral-950 font-semibold text-sm lg:text-base rounded-xl hover:bg-yellow-400 uppercase tracking-wide">Coming soon</a>
+          <span class="btn-magnetic mt-5 lg:mt-6 inline-block w-full text-center px-6 py-3.5 lg:py-4 bg-gradient-to-br from-[#FFD165] to-[#EAB308] text-neutral-950 font-semibold text-sm lg:text-base hover:from-[#FFE08A] hover:to-[#EAB308] uppercase tracking-wide">Coming soon</span>
         </div>
       </div>
 
@@ -443,7 +571,7 @@
   </main>
 
   <!-- Footer -->
-  <footer class="px-4 md:px-8 lg:px-16 py-8 md:py-12 border-t border-white/[0.04]">
+  <footer class="px-4 md:px-8 lg:px-16 py-8 md:py-12 bg-neutral-900/30">
     <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
       <a href="/" class="text-neutral-600 hover:text-white text-sm lg:text-base transition-colors duration-300 font-display tracking-wide uppercase">Back to Saints Run Club</a>
       <p class="text-neutral-700 text-xs tracking-wider">Saints Run Club &mdash; NYC</p>
@@ -451,6 +579,325 @@
   </footer>
 
   </div><!-- /page-content -->
+
+  <!-- Image Zoom Overlay -->
+  <div id="image-zoom" class="image-zoom-lens" onclick="closeZoom()">
+    <img id="zoom-img" src="" alt="">
+  </div>
+
+  <!-- Product Detail Overlay -->
+  <div id="product-overlay" class="product-overlay">
+    <div class="min-h-[100dvh] flex flex-col">
+      <!-- Top bar -->
+      <div class="flex items-center justify-between px-4 md:px-8 lg:px-12 py-4 md:py-6 sticky top-0 z-50 bg-[#0E0E0E]/70 backdrop-blur-[24px]">
+        <button onclick="closeProduct()" class="flex items-center gap-2 text-neutral-500 hover:text-white transition-colors text-sm font-display tracking-wide uppercase">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+          Back to Shop
+        </button>
+        <span class="font-display text-xs md:text-sm tracking-wide text-neutral-600 uppercase">Saints Run Club</span>
+      </div>
+
+      <!-- Main content -->
+      <div class="flex-1 flex flex-col lg:flex-row">
+        <!-- Left: Product Image -->
+        <div class="lg:w-1/2 bg-[#2A2A2A] flex items-center justify-center p-8 md:p-12 lg:p-16 lg:sticky lg:top-0 lg:h-screen">
+          <div class="detail-stagger w-full max-w-lg product-image-wrap" style="transition-delay: 0.1s" id="image-wrap" onclick="zoomImage()">
+            <img id="detail-image" src="" alt="" class="w-full h-auto object-contain">
+          </div>
+        </div>
+
+        <!-- Right: Product Info -->
+        <div class="lg:w-1/2 px-6 md:px-10 lg:px-14 xl:px-16 py-8 md:py-12 lg:py-16">
+          <div class="max-w-lg">
+            <!-- Status & Series -->
+            <div class="detail-stagger flex items-center gap-3 mb-4" style="transition-delay: 0.15s">
+              <span id="detail-status" class="px-3 py-1 text-[10px] tracking-[0.2em] uppercase font-semibold bg-yellow-500 text-neutral-950">Coming Soon</span>
+              <span class="text-neutral-500 text-xs tracking-[0.15em] uppercase">Saints Performance Series</span>
+            </div>
+
+            <!-- Name -->
+            <h1 id="detail-name" class="detail-stagger font-display font-semibold text-3xl md:text-4xl lg:text-5xl tracking-tightest text-[#E5E2E1] uppercase leading-[0.9]" style="transition-delay: 0.2s"></h1>
+
+            <!-- Price -->
+            <p id="detail-price" class="detail-stagger text-yellow-500 font-display font-semibold text-2xl md:text-3xl mt-3" style="transition-delay: 0.25s"></p>
+
+            <!-- Specs -->
+            <div class="detail-stagger grid grid-cols-2 gap-x-8 gap-y-1 mt-8 pb-8" style="transition-delay: 0.3s">
+              <div>
+                <p class="text-neutral-600 text-[10px] tracking-[0.2em] uppercase mb-1">Fabric</p>
+                <p id="detail-fabric" class="text-[#E5E2E1] text-sm"></p>
+              </div>
+              <div>
+                <p class="text-neutral-600 text-[10px] tracking-[0.2em] uppercase mb-1">Fit</p>
+                <p id="detail-fit" class="text-[#E5E2E1] text-sm"></p>
+              </div>
+            </div>
+
+            <!-- Size Selector -->
+            <div class="detail-stagger mt-6" style="transition-delay: 0.35s">
+              <div class="flex items-center justify-between mb-3">
+                <p class="text-[#E5E2E1] text-sm font-medium tracking-wide uppercase">Select Size</p>
+                <button class="text-neutral-500 text-xs underline underline-offset-4 hover:text-white transition-colors">Size Guide</button>
+              </div>
+              <div id="detail-sizes" class="flex gap-2 flex-wrap"></div>
+            </div>
+
+            <!-- Color Selector -->
+            <div class="detail-stagger mt-6" style="transition-delay: 0.4s">
+              <p class="text-[#E5E2E1] text-sm font-medium tracking-wide uppercase mb-3">Color: <span id="detail-color-name" class="text-neutral-400 font-normal normal-case"></span></p>
+              <div id="detail-colors" class="flex gap-3"></div>
+            </div>
+
+            <!-- Add to Cart -->
+            <button id="detail-cta" class="detail-stagger btn-magnetic mt-8 w-full text-center px-[1.4rem] py-[1rem] bg-gradient-to-[135deg] from-[#FFD165] to-[#EAB308] text-neutral-950 font-semibold text-sm hover:from-[#FFE08A] hover:to-[#EAB308] uppercase tracking-wide" style="transition-delay: 0.45s">
+              Add to Cart
+            </button>
+
+            <!-- Description -->
+            <div class="detail-stagger mt-12 pt-10 bg-[#0E0E0E] -mx-6 md:-mx-10 lg:-mx-14 xl:-mx-16 px-6 md:px-10 lg:px-14 xl:px-16 py-8" style="transition-delay: 0.5s">
+              <h3 class="font-display font-medium text-base text-[#E5E2E1] uppercase tracking-wide italic mb-4" id="detail-tagline">Engineered for the Unrelenting</h3>
+              <p id="detail-desc" class="text-neutral-400 text-sm leading-relaxed"></p>
+              <ul id="detail-features" class="mt-6 space-y-3"></ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Complete the Kit -->
+      <div class="px-6 md:px-10 lg:px-14 py-12 md:py-16 bg-[#131313]">
+        <div class="max-w-7xl mx-auto">
+          <div class="flex items-center justify-between mb-8">
+            <h2 class="font-display font-semibold text-2xl md:text-3xl tracking-tightest text-[#E5E2E1] uppercase">Complete the Kit</h2>
+            <span class="text-neutral-600 text-[10px] md:text-xs tracking-[0.2em] uppercase hidden md:block">Curated Recommendations</span>
+          </div>
+          <div id="detail-recs" class="grid grid-cols-3 gap-4 md:gap-6"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // === Product Data ===
+    const productData = {
+      singlet: {
+        name: 'SRC Singlet',
+        price: 35,
+        tagline: 'Engineered for the Unrelenting',
+        description: 'The Saints Athletics Singlet is the pinnacle of our performance engineering. Built from premium moisture-wicking tech-blend, it offers unparalleled temperature regulation during high-intensity intervals. Sharp-cut seams provide an ergonomic fit that moves with the athlete, minimizing friction and maximizing focus.',
+        fabric: '92% Polyester, 8% Spandex',
+        fit: 'Athletic / Slim',
+        sizes: ['XS','S','M','L','XL'],
+        colors: [{name: 'Obsidian Black', hex: '#1a1a1a'}, {name: 'Slate Grey', hex: '#4a4a4a'}],
+        image: 'products/src-singlet.png',
+        features: ['Anti-microbial silver ion technology', '360\u00b0 Reflective Saints logo detailing', 'Reinforced flat-lock stitching'],
+        status: 'coming-soon'
+      },
+      windbreaker: {
+        name: 'SRC Windbreaker',
+        price: 75,
+        tagline: 'Built for the Elements',
+        description: 'The Saints Windbreaker delivers elite weather protection without sacrificing breathability. Engineered with a DWR-coated ripstop shell and mesh-lined ventilation zones, it shields against wind and light rain while keeping you cool during tempo runs.',
+        fabric: '100% Ripstop Nylon, DWR Coated',
+        fit: 'Athletic / Regular',
+        sizes: ['XS','S','M','L','XL'],
+        colors: [{name: 'Obsidian Black', hex: '#1a1a1a'}, {name: 'Storm Grey', hex: '#3a3a3a'}],
+        image: 'products/src-windbreaker.png',
+        features: ['Water-resistant DWR coating', 'Packable into front pocket', 'Reflective SRC branding'],
+        status: 'coming-soon'
+      },
+      socks: {
+        name: 'SRC Member Socks',
+        price: 15,
+        tagline: 'Every Step. Every Mile.',
+        description: 'The official Saints crew sock. Cushioned arch support with reinforced heel and toe construction. Moisture-wicking yarn blend keeps feet dry from the first mile to the last. One size fits all.',
+        fabric: '65% Cotton, 30% Nylon, 5% Spandex',
+        fit: 'One Size Fits All',
+        sizes: ['One Size'],
+        colors: [{name: 'Obsidian Black', hex: '#1a1a1a'}, {name: 'White', hex: '#e5e5e5'}],
+        image: 'products/src-socks.png',
+        features: ['Cushioned arch support', 'Reinforced heel & toe', 'Moisture-wicking blend'],
+        status: 'coming-soon'
+      },
+      hoodie: {
+        name: 'SRC Hoodie',
+        price: 65,
+        tagline: 'Off the Track. On the Streets.',
+        description: 'Heavyweight 400gsm French terry hoodie with Saints Run Club front and back print. Oversized fit with ribbed cuffs and hem. The go-to layer for post-run warmth and everyday wear.',
+        fabric: '80% Cotton, 20% Polyester',
+        fit: 'Oversized / Relaxed',
+        sizes: ['XS','S','M','L','XL'],
+        colors: [{name: 'Obsidian Black', hex: '#1a1a1a'}, {name: 'Charcoal', hex: '#333333'}],
+        image: 'products/src-hoodie.png',
+        features: ['400gsm heavyweight French terry', 'Front & back SRC print', 'Oversized relaxed fit'],
+        status: 'coming-soon'
+      }
+    };
+
+    let currentProduct = null;
+    let selectedSize = null;
+    let selectedColor = 0;
+
+    function openProduct(id) {
+      const product = productData[id];
+      if (!product) return;
+      currentProduct = id;
+      selectedSize = null;
+      selectedColor = 0;
+
+      // Populate overlay
+      document.getElementById('detail-image').src = product.image;
+      document.getElementById('detail-image').alt = product.name;
+      document.getElementById('detail-name').textContent = product.name;
+      document.getElementById('detail-price').textContent = '$' + product.price.toFixed(2);
+      document.getElementById('detail-fabric').textContent = product.fabric;
+      document.getElementById('detail-fit').textContent = product.fit;
+      document.getElementById('detail-tagline').textContent = product.tagline;
+      document.getElementById('detail-desc').textContent = product.description;
+
+      // Status
+      const statusEl = document.getElementById('detail-status');
+      if (product.status === 'coming-soon') {
+        statusEl.textContent = 'Coming Soon';
+        statusEl.className = 'px-3 py-1 text-[10px] tracking-[0.2em] uppercase font-semibold bg-neutral-800 text-neutral-300';
+      } else {
+        statusEl.textContent = 'In Stock';
+        statusEl.className = 'px-3 py-1 text-[10px] tracking-[0.2em] uppercase font-semibold bg-yellow-500 text-neutral-950';
+      }
+
+      // Sizes
+      const sizesEl = document.getElementById('detail-sizes');
+      sizesEl.innerHTML = product.sizes.map((s, i) =>
+        `<button class="size-btn" onclick="selectSize(this, '${s}')">${s}</button>`
+      ).join('');
+
+      // Colors
+      const colorsEl = document.getElementById('detail-colors');
+      colorsEl.innerHTML = product.colors.map((c, i) =>
+        `<button class="color-swatch ${i === 0 ? 'selected' : ''}" style="background:${c.hex};border-color:${c.hex === '#e5e5e5' ? 'rgba(255,255,255,0.3)' : c.hex}" onclick="selectColor(this, ${i}, '${c.name}')" title="${c.name}"></button>`
+      ).join('');
+      document.getElementById('detail-color-name').textContent = product.colors[0].name;
+
+      // CTA
+      const ctaEl = document.getElementById('detail-cta');
+      ctaEl.textContent = product.status === 'coming-soon' ? `Coming Soon \u2014 $${product.price.toFixed(2)}` : `Add to Cart \u2014 $${product.price.toFixed(2)}`;
+
+      // Features
+      const featEl = document.getElementById('detail-features');
+      featEl.innerHTML = product.features.map(f =>
+        `<li class="flex items-start gap-3"><span class="w-2 h-2 rounded-full bg-yellow-500 mt-1.5 shrink-0"></span><span class="text-neutral-400 text-sm">${f}</span></li>`
+      ).join('');
+
+      // Recommendations
+      const recsEl = document.getElementById('detail-recs');
+      const otherProducts = Object.entries(productData).filter(([key]) => key !== id);
+      recsEl.innerHTML = otherProducts.map(([key, p]) =>
+        `<div class="rec-card" onclick="openProduct('${key}')">
+          <div class="aspect-square bg-[#2A2A2A] overflow-hidden mb-3">
+            <img src="${p.image}" alt="${p.name}" class="w-full h-full object-contain p-4 md:p-6">
+          </div>
+          <h4 class="font-display font-medium text-xs md:text-sm text-[#E5E2E1] uppercase tracking-wide">${p.name}</h4>
+          <p class="text-yellow-500 text-xs md:text-sm font-display mt-1">$${p.price.toFixed(2)}</p>
+        </div>`
+      ).join('');
+
+      // Reset stagger
+      document.querySelectorAll('#product-overlay .detail-stagger').forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(20px)';
+      });
+
+      // Open overlay
+      const overlay = document.getElementById('product-overlay');
+      overlay.scrollTop = 0;
+      overlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+
+      // Trigger stagger after slide-up
+      setTimeout(() => {
+        document.querySelectorAll('#product-overlay .detail-stagger').forEach(el => {
+          el.style.opacity = '';
+          el.style.transform = '';
+        });
+      }, 200);
+    }
+
+    function closeProduct() {
+      const overlay = document.getElementById('product-overlay');
+      overlay.classList.remove('open');
+      document.body.style.overflow = '';
+      currentProduct = null;
+    }
+
+    function selectSize(btn, size) {
+      document.querySelectorAll('#detail-sizes .size-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      selectedSize = size;
+
+      // Ripple effect
+      const ripple = document.createElement('span');
+      ripple.className = 'size-ripple';
+      const rect = btn.getBoundingClientRect();
+      const sz = Math.max(rect.width, rect.height);
+      ripple.style.width = ripple.style.height = sz + 'px';
+      ripple.style.left = (rect.width / 2 - sz / 2) + 'px';
+      ripple.style.top = (rect.height / 2 - sz / 2) + 'px';
+      btn.appendChild(ripple);
+      ripple.addEventListener('animationend', () => ripple.remove());
+    }
+
+    function selectColor(btn, index, name) {
+      document.querySelectorAll('#detail-colors .color-swatch').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      selectedColor = index;
+      document.getElementById('detail-color-name').textContent = name;
+    }
+
+    // === Image Zoom ===
+    function zoomImage() {
+      const src = document.getElementById('detail-image').src;
+      const zoomEl = document.getElementById('image-zoom');
+      document.getElementById('zoom-img').src = src;
+      zoomEl.classList.add('active');
+    }
+    function closeZoom() {
+      document.getElementById('image-zoom').classList.remove('active');
+    }
+
+    // === Image Parallax Tilt on Mouse Move ===
+    const imageWrap = document.getElementById('image-wrap');
+    if (imageWrap) {
+      imageWrap.addEventListener('mousemove', (e) => {
+        const rect = imageWrap.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width - 0.5;
+        const y = (e.clientY - rect.top) / rect.height - 0.5;
+        const img = imageWrap.querySelector('img');
+        img.style.transform = `rotateY(${x * 8}deg) rotateX(${-y * 8}deg) scale(1.03)`;
+      });
+      imageWrap.addEventListener('mouseleave', () => {
+        const img = imageWrap.querySelector('img');
+        img.style.transform = '';
+      });
+    }
+
+    // Close on Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        if (document.getElementById('image-zoom').classList.contains('active')) {
+          closeZoom();
+        } else if (currentProduct) {
+          closeProduct();
+        }
+      }
+    });
+
+    // Open from URL hash
+    if (window.location.hash.startsWith('#product-')) {
+      const id = window.location.hash.replace('#product-', '');
+      if (productData[id]) {
+        setTimeout(() => openProduct(id), 2000);
+      }
+    }
+  </script>
 
   <script>
     // === Elements ===
