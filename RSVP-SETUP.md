@@ -35,7 +35,7 @@ confirmation, but nothing is recorded.
    function doPost(e) {
      var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
      if (sheet.getLastRow() === 0) {
-       sheet.appendRow(['Timestamp', 'Name', 'Email', 'Plus One?', 'Guest', 'Total ($)']);
+       sheet.appendRow(['Timestamp', 'Name', 'Email', 'Bring Somebody?', 'Guest', 'Total ($)']);
      }
      var p = e.parameter;
      sheet.appendRow([
