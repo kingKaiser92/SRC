@@ -25,13 +25,12 @@ confirmation, but nothing is recorded.
 1. Signed in as **SRC**, go to **[sheets.new](https://sheets.new)** and create a
    sheet, e.g. **"SRC One Year RSVPs"**.
 2. In that sheet: **Extensions → Apps Script**.
-3. Delete whatever code is there and paste this. **Set `NOTIFY_EMAIL` to the SRC
-   Gmail** (the default below is your Zelle address — change it if the SRC inbox
-   is different):
+3. Delete whatever code is there and paste this (`NOTIFY_EMAIL` is already set to
+   the SRC inbox):
 
    ```javascript
-   // Where RSVP notifications are emailed — set this to your SRC Gmail:
-   var NOTIFY_EMAIL = 'saintsvisionllc@gmail.com';
+   // Where RSVP notifications are emailed — the SRC inbox:
+   var NOTIFY_EMAIL = 'svintsrunclub@gmail.com';
 
    function doPost(e) {
      var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
