@@ -19,8 +19,11 @@ Three requirements drive every decision below:
 
 1. The 3D object must come from `saints_floating_object_app_optimized.glb`.
 2. The page must be optimized for mobile.
-3. Submissions must land in a Google Sheet, following the pattern already
-   established by the anniversary RSVP page (`RSVP-SETUP.md`).
+3. Submissions must be able to land in a Google Sheet, following the pattern
+   already established by the anniversary RSVP page (`RSVP-SETUP.md`). The
+   submission layer is built in full, but **ships unwired by decision**: the
+   Apps Script deploy needs a browser session and is being deferred. See
+   section 8, which also covers how the page behaves honestly in that state.
 
 There is no cart, no card processing, and no inventory. The Sheet is the order
 list; payment reconciliation is manual, matched by name and amount.
@@ -46,7 +49,13 @@ interaction and the warped turntable during that same session. Rotation is now
 the label `DRAG TO ROTATE`, which is currently untrue.
 
 Additionally the config carries `$45 / Sat, Sept 5`, which conflicts with the
-handoff spec, and `endpoint` is empty so no order is recorded anywhere.
+handoff spec.
+
+`endpoint` is also empty, but that is no longer treated as a defect: shipping
+unwired is a deliberate decision (section 8). What *is* a defect today is that
+the empty-endpoint path still renders the full `YOU'RE ON THE LIST` receipt, so
+the page currently tells buyers they are recorded when nothing is. That is
+fixed.
 
 ---
 
@@ -264,9 +273,25 @@ items in a two-column track leave a visible empty bordered cell.
 
 ---
 
-## 8. Form and Google Sheet backend
+## 8. Form and order capture
 
-### Data flow
+### Shipping decision: capture is off at launch
+
+The page ships with `CONFIG.endpoint = ''`. No backend is wired yet. This is a
+deliberate choice, made with the tradeoff understood: deploying an Apps Script
+web app requires a browser session that cannot be automated, and that step is
+being deferred.
+
+The submission layer is still built in full. Going live later is a one-line
+change, and `PREORDER-SETUP.md` documents both routes (section "Wiring a
+backend later"). Nothing about the page needs to be rewritten to enable capture.
+
+**The critical constraint this creates:** with no endpoint, the page must never
+tell a buyer their order was recorded. A silent fake success would lose real
+orders during a drop that closes Fri Sept 4. See "Unwired behavior" below. This
+is the single most important requirement in this section.
+
+### Data flow, once wired
 
 ```
 preorder.html form
@@ -278,6 +303,27 @@ preorder.html form
 `text/plain` avoids a CORS preflight. `no-cors` makes the response opaque, so
 success is assumed when `fetch` does not throw. This mirrors the RSVP page and
 is the correct shape for a static site with no server.
+
+### Unwired behavior (the shipping state)
+
+When `CONFIG.endpoint` is empty, `submit()` skips the network call entirely and
+takes an honest path:
+
+- Validation still runs in full, so the form is genuinely testable.
+- The receipt state still renders, so the design is reviewable.
+- The receipt headline stays `YOU'RE ON THE LIST`, but its body copy is replaced
+  with: `Your order isn't logged automatically yet. Send your Zelle with your
+  full name and size in the memo, then DM @svintsrunclub to confirm. {pickup}`
+- The `ADD ANOTHER ORDER` ghost button is unchanged.
+- The existing `console.warn` guard stays, so the state is obvious in devtools.
+
+The buyer is told the truth and given a path that reaches the club, and the
+Zelle memo (full name plus size) already carries enough to reconstruct the
+order. When `endpoint` is set, this copy swaps back to the spec wording
+automatically, driven by the same condition. No second code path.
+
+This behavior is decided by `CONFIG.endpoint` alone. There is no separate flag
+to keep in sync.
 
 Request body:
 
@@ -291,9 +337,13 @@ JSON.stringify({
 
 ### Sheet
 
-Created ahead of implementation via the connected Google Sheets account:
-**"SRC Singlet Preorders"**, tab `Orders`, header row frozen and formatted
-(ink background, gold text), column H as checkboxes.
+Deferred. No Google Sheet is created as part of this work, because with capture
+off there is nothing to write into it. It is created at wiring time instead, so
+an empty spreadsheet does not sit in Drive being forgotten.
+
+The target shape, when it is created: **"SRC Singlet Preorders"**, tab `Orders`,
+header row frozen and formatted (ink background, gold text), column H as
+checkboxes.
 
 | A | B | C | D | E | F | G | H | I | J |
 |---|---|---|---|---|---|---|---|---|---|
@@ -301,10 +351,10 @@ Created ahead of implementation via the connected Google Sheets account:
 
 `Paid?` is ticked manually once the Zelle transfer is matched.
 
-### Apps Script
+### Apps Script, ready but not deployed
 
-`google-apps-script.gs` ships in the repo root, taken from the handoff with two
-changes:
+`google-apps-script.gs` ships in the repo root so the work is done when it is
+needed. It is the handoff version with two changes:
 
 - `NOTIFY_EMAIL = 'svintsrunclub@gmail.com'`, the same inbox the RSVP page
   notifies.
@@ -318,9 +368,29 @@ Deployment is manual and cannot be automated: Deploy as Web app,
 *Execute as: Me*, *Who has access: Anyone*, then authorize. The resulting
 `/exec` URL goes into `CONFIG.endpoint`.
 
-`PREORDER-SETUP.md` documents this end to end, mirroring `RSVP-SETUP.md`,
-including the re-deploy step (Manage deployments, edit, New version) that keeps
-the URL stable.
+### Wiring a backend later
+
+`PREORDER-SETUP.md` documents both routes end to end, so the choice stays open:
+
+**Route A, Google Apps Script.** Mirrors `RSVP-SETUP.md` exactly, including the
+re-deploy step (Manage deployments, edit, New version) that keeps the URL
+stable. Roughly 5 minutes of browser work. Chosen when the Google Sheet needs to
+be the live system of record.
+
+**Route B, Supabase.** Recorded because it needs no browser session at all and
+the site already depends on this project: `index.html` serves its images from
+`izcimioeuohdofzmnahu`. A `public.singlet_preorders` table with RLS enabled and
+a single INSERT-only policy for the `anon` role, so the publishable key in the
+page can write an order but can never read anyone else's. The page would POST to
+`/rest/v1/singlet_preorders` with `Prefer: return=minimal` and read a real
+status code, which is strictly better than the opaque `no-cors` response Route A
+forces. The deadline and honeypot become a `BEFORE INSERT` trigger, which a
+client cannot bypass. The Google Sheet is then populated as a mirror rather than
+being written to live.
+
+Both routes terminate at the same one-line change: set `CONFIG.endpoint`. Route
+B additionally needs the publishable key and a different request shape, which
+`PREORDER-SETUP.md` gives verbatim.
 
 ### Two production gaps closed
 
@@ -352,9 +422,8 @@ button, which reserves `min-height: 18px` so nothing shifts.
 
 Network throw: `Couldn't reach the list. Try again, or DM us on Instagram.`
 
-Empty `endpoint`: the existing `console.warn` guard stays, and the note line
-states the order was not recorded. Design review must never look like a
-successful capture.
+Empty `endpoint`: no network call is attempted and the receipt copy changes, per
+"Unwired behavior" above. Validation is unaffected and still runs in full.
 
 ---
 
@@ -362,7 +431,7 @@ successful capture.
 
 ```js
 var CONFIG = {
-  endpoint:    '',                                    // set after Apps Script deploy
+  endpoint:    '',                                    // intentionally blank at launch, see section 8
   price:       50,
   sizes:       ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
   maxQty:      6,
@@ -418,13 +487,13 @@ Countdown renders `{d}d HH:MM:SS`, drops the day part under 24h, and reads
 
 | File | Change |
 |---|---|
-| `preorder.html` | Config updated, honeypot added, hard close added, model path confirmed |
+| `preorder.html` | Config updated, honeypot added, hard close added, unwired receipt copy added, model path confirmed |
 | `singlet-assets/singlet.glb` | Replaced: 1.27 MB derivative of the client GLB |
 | `singlet-assets/singlet-mobile.glb` | Deleted |
 | `singlet-assets/singlet-viewer.js` | Merged: handoff motion math plus repo decoder and rAF work |
 | `singlet-assets/README.md` | Rewritten for the new source, pipeline, and measurements |
-| `google-apps-script.gs` | Added, with notify email, honeypot, and deadline rejection |
-| `PREORDER-SETUP.md` | Added, mirroring `RSVP-SETUP.md` |
+| `google-apps-script.gs` | Added, with notify email, honeypot, and deadline rejection. Ready, not deployed |
+| `PREORDER-SETUP.md` | Added. Route A (Apps Script) mirrors `RSVP-SETUP.md`; Route B (Supabase) documented as the no-browser alternative |
 | `_redirects` | No change, `/preorder` rule already present |
 
 ---
@@ -443,12 +512,21 @@ Countdown renders `{d}d HH:MM:SS`, drops the day part under 24h, and reads
 6. rAF loop stops when the hero leaves the viewport, confirmed by instrumenting
    the tick.
 7. All three validation paths produce their exact copy; a keystroke clears it.
-8. Honeypot submission shows the receipt and writes no row.
+8. Honeypot field is present, visually hidden, skipped by keyboard tabbing, and
+   ignored by autofill.
 9. With `closesAt` moved into the past, the form is fully disabled and the CTA
    reads `PREORDER CLOSED`.
-10. One real end-to-end order against the deployed `/exec` URL appends a
-    correctly typed row and sends the notification email.
+10. **Unwired receipt check.** With `endpoint` empty, a valid submission makes no
+    network request (confirmed in the Network panel) and the receipt tells the
+    buyer to DM to confirm rather than claiming they are recorded. Setting
+    `endpoint` to any non-empty string restores the spec receipt copy and issues
+    the POST. This is the one behavior that keeps the launch honest, so it is
+    checked in both directions.
 11. Lighthouse mobile pass on the deployed page.
+
+Deferred to whenever a backend is wired, and written into `PREORDER-SETUP.md`
+as its final step rather than dropped: one real end-to-end order appends a
+correctly typed row and sends the notification email.
 
 ---
 
