@@ -325,7 +325,11 @@ await page.mouse.move(box.x + box.width / 2 + 220, box.y + box.height / 2, { ste
 await page.mouse.up();
 const after = await page.evaluate(() => document.querySelector('singlet-viewer')._userY);
 check(Math.abs(after) > 0.05, `drag accumulates _userY (${after.toFixed(3)})`);
-check(typeof before === 'number', 'pivot rotation readable');
+// The offset must actually reach the pivot, not just sit in a field.
+await page.waitForTimeout(120);
+const rotAfter = await page.evaluate(() => document.querySelector('singlet-viewer')._pivot.rotation.y);
+check(Number.isFinite(before) && Number.isFinite(rotAfter) && rotAfter !== before,
+  `drag moved pivot.rotation.y (${before.toFixed(3)} -> ${rotAfter.toFixed(3)})`);
 
 // 4. The loop stops when the hero is offscreen.
 await page.evaluate(() => document.getElementById('preorder').scrollIntoView());
