@@ -754,17 +754,29 @@ const browser = await chromium.launch();
   check((await page.textContent('#zelle-handle')).trim() === 'saintsvisionllc@gmail.com', 'zelle handle is the email');
 
   // Honeypot must exist, be off-screen, and be skipped by tabbing.
+  // Measure the .hp WRAPPER, not the input. An element's own
+  // getBoundingClientRect() reports its natural layout box regardless of an
+  // ancestor's clipping, so the input reads ~177px wide even when hidden.
   const hp = await page.evaluate(() => {
     const el = document.getElementById('f-company');
     if (!el) return null;
     const cs = getComputedStyle(el);
-    return { tab: el.tabIndex, ac: el.autocomplete, display: cs.display, r: el.getBoundingClientRect().width };
+    const wrap = el.closest('.hp');
+    const wcs = getComputedStyle(wrap);
+    const box = wrap.getBoundingClientRect();
+    return {
+      tab: el.tabIndex, ac: el.autocomplete, display: cs.display,
+      r: box.width, h: box.height, ov: wcs.overflow
+    };
   });
   check(hp !== null, 'honeypot #f-company exists');
   check(hp && hp.tab === -1, 'honeypot is tabindex -1');
-  check(hp && hp.autocomplete === 'off', 'honeypot has autocomplete off');
+  check(hp && hp.ac === 'off', 'honeypot has autocomplete off');
   check(hp && hp.display !== 'none', 'honeypot is not display:none (bots skip those)');
-  check(hp && hp.r <= 2, 'honeypot is visually hidden');
+  check(hp && hp.r <= 2 && hp.h <= 2, `honeypot wrapper is collapsed (${hp && hp.r}x${hp && hp.h})`);
+  // width:1px with overflow:visible would still render the input in plain
+  // sight, so the clip is the assertion that actually matters.
+  check(hp && hp.ov === 'hidden', `honeypot wrapper clips its overflow (${hp && hp.ov})`);
 
   // A valid submission with no endpoint must make NO network request and must
   // not claim the order was recorded.
