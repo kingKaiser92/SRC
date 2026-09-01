@@ -37,6 +37,11 @@ five minutes, all of it in a browser.
    repo.
 4. **Run → setupSheet**, and authorize when prompted. This writes the formatted
    header row and turns column H into checkboxes.
+
+   > Rerunning `setupSheet` once orders exist is refused, on purpose — it
+   > would otherwise wipe every preorder already captured, with real Zelle
+   > payments made against those rows.
+
 5. **Deploy → New deployment**, gear icon → **Web app**.
 6. **Execute as: Me**, **Who has access: Anyone**. This is what lets the page
    post anonymously; the script only appends a row and emails you.
@@ -107,10 +112,10 @@ create policy "anon can insert orders"
   to anon with check (true);
 ```
 
-**Deadline and honeypot, enforced where a client cannot reach:**
+**Deadline, enforced where a client cannot reach:**
 
 ```sql
-create function public.reject_late_or_bot() returns trigger as $$
+create function public.reject_late_orders() returns trigger as $$
 begin
   if now() >= timestamptz '2026-09-04T09:00:00-04:00' then
     raise exception 'preorder closed';
@@ -121,7 +126,7 @@ $$ language plpgsql;
 
 create trigger singlet_preorders_guard
   before insert on public.singlet_preorders
-  for each row execute function public.reject_late_or_bot();
+  for each row execute function public.reject_late_orders();
 ```
 
 The honeypot is dropped client-side before the request is built, so it never

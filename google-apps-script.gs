@@ -16,6 +16,21 @@ var HEADERS = [
 function setupSheet() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var sh = ss.getSheetByName(SHEET_NAME) || ss.insertSheet(SHEET_NAME);
+
+  // This is a one-time setup step, but nothing stops someone from running it
+  // again months later to fix formatting or re-authorize. sh.clear() below
+  // would silently wipe every preorder captured so far, and real Zelle
+  // payments have already been made against those rows. Refuse instead.
+  var dataRows = sh.getLastRow() - 1; // rows below the header
+  if (dataRows > 0) {
+    throw new Error(
+      'setupSheet refused to run: sheet "' + SHEET_NAME + '" already has ' +
+      dataRows + ' order row(s). Running setup again would erase them. ' +
+      'If you genuinely want to start over, delete or rename this sheet ' +
+      'first, then run setupSheet again to create a fresh one.'
+    );
+  }
+
   sh.clear();
   sh.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS])
     .setFontWeight('bold').setBackground('#0A0A0A').setFontColor('#FFC30B');
