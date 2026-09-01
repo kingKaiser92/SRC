@@ -429,7 +429,12 @@ Replace the entire contents of `singlet-assets/singlet-viewer.js` with:
       this._visible = true;
       if ('IntersectionObserver' in window) {
         this._io = new IntersectionObserver((entries) => {
-          this._visible = entries[0].isIntersecting;
+          // Newest entry, not entries[0]. A delivery flushes every queued
+          // entry for the target, so a fast scroll past and back batches a
+          // false and a true together; taking the oldest latches _visible
+          // false while the element is on screen and freezes the loop.
+          const e = entries[entries.length - 1];
+          this._visible = e.isIntersecting;
           if (this._visible) this._loop();
           else if (this._raf) { cancelAnimationFrame(this._raf); this._raf = 0; }
         }, { threshold: 0 });
