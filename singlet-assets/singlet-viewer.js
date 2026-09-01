@@ -52,7 +52,8 @@
       this._visible = true;
       if ('IntersectionObserver' in window) {
         this._io = new IntersectionObserver((entries) => {
-          this._visible = entries[0].isIntersecting;
+          const e = entries[entries.length - 1];
+          this._visible = e.isIntersecting;
           if (this._visible) this._loop();
           else if (this._raf) { cancelAnimationFrame(this._raf); this._raf = 0; }
         }, { threshold: 0 });
@@ -169,7 +170,6 @@
             side: THREE.DoubleSide, emissiveMap: src.map,
             emissive: new THREE.Color(0xffffff), emissiveIntensity: 0.34
           });
-          this._textured = true;
           return;
         }
         if (!mat) {
