@@ -18,7 +18,7 @@ Every task's requirements implicitly include this section. Values are copied ver
 - **Source GLB (read-only, outside the repo):** `/c/Users/Shadman Kaiser/Desktop/SRC Website 2/saints_floating_object_app_optimized.glb`, md5 `d45da0cd9cdeca882f2f7208993722a7`, 7,509,168 bytes. Never edit it. Never ship it directly. Never substitute a different model.
 - **No em-dashes** anywhere in shipped HTML, CSS, JS, or their comments. Use a period, a comma, or a colon. This is an existing convention in these files.
 - **No `window.addEventListener('scroll', ...)`** anywhere. Scroll-derived values are read inside a rAF tick or via `IntersectionObserver`.
-- **No media queries** in `preorder.html`. Responsiveness comes from `clamp()` and `flex: 1 1 <basis>`.
+- **No responsive media queries** in `preorder.html`. Layout reflows via `clamp()` and `flex: 1 1 <basis>`, never viewport breakpoints. User-preference queries such as `@media (prefers-reduced-motion: reduce)` are permitted and expected: the ban is on breakpoints, not on accessibility.
 - **No ancestor of the sticky hero stage may set `overflow-x: hidden`.** It computes `overflow-y: auto` and silently kills `position: sticky`. Use `overflow-x: clip`.
 - **Config values (final):** price `50`, `closesOn` `'Fri, Sept 4 · 9AM'`, `closesAt` `'2026-09-04T09:00:00-04:00'`, `zelleHandle` `'saintsvisionllc@gmail.com'`, `zelleUrl` `'https://www.zellepay.com/'`, sizes `XS,S,M,L,XL,XXL`, `maxQty` `6`, `pickup` `'Pickup at a Saturday long run, early October.'`, `item` `'Race Day Singlet Vol. 01'`, `endpoint` `''`.
 - **`CONFIG.endpoint` ships empty.** It is the single condition that decides both receipt copy and whether a network call happens. Do not add a second flag.
@@ -1106,7 +1106,7 @@ Expected: every line `PASS`, exit 0.
 ```bash
 grep -c "—" preorder.html
 grep -n "addEventListener('scroll'" preorder.html && echo "FAIL: scroll listener" || echo "PASS: no scroll listeners"
-grep -n "@media" preorder.html && echo "FAIL: media query" || echo "PASS: no media queries"
+grep -nE "@media[^{]*\((min-width|max-width|min-device-width|orientation|aspect-ratio)" preorder.html && echo "FAIL: responsive media query" || echo "PASS: no responsive media queries"
 grep -n "overflow-x: *hidden" preorder.html && echo "FAIL: kills position:sticky" || echo "PASS: no overflow-x hidden"
 ```
 
