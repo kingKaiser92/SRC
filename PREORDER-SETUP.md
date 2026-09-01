@@ -36,7 +36,8 @@ five minutes, all of it in a browser.
 3. Delete the sample code and paste all of `google-apps-script.gs` from this
    repo.
 4. **Run → setupSheet**, and authorize when prompted. This writes the formatted
-   header row and turns column H into checkboxes.
+   header row. Column H becomes a checkbox on each row automatically as
+   orders come in — there is nothing to check yet on a fresh sheet.
 
    > Rerunning `setupSheet` once orders exist is refused, on purpose — it
    > would otherwise wipe every preorder already captured, with real Zelle

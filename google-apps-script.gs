@@ -21,7 +21,18 @@ function setupSheet() {
   // again months later to fix formatting or re-authorize. sh.clear() below
   // would silently wipe every preorder captured so far, and real Zelle
   // payments have already been made against those rows. Refuse instead.
-  var dataRows = sh.getLastRow() - 1; // rows below the header
+  // sh.getLastRow() alone is not a safe signal here: it counts any non-blank
+  // cell in the sheet, and column H carries checkbox true/false state, which
+  // is not order data. Column A only ever holds a real order's timestamp, so
+  // count non-empty cells there instead.
+  var lastRow = sh.getLastRow();
+  var dataRows = 0;
+  if (lastRow > 1) {
+    var timestamps = sh.getRange(2, 1, lastRow - 1, 1).getValues();
+    for (var i = 0; i < timestamps.length; i++) {
+      if (timestamps[i][0] !== '') dataRows++;
+    }
+  }
   if (dataRows > 0) {
     throw new Error(
       'setupSheet refused to run: sheet "' + SHEET_NAME + '" already has ' +
@@ -35,7 +46,6 @@ function setupSheet() {
   sh.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS])
     .setFontWeight('bold').setBackground('#0A0A0A').setFontColor('#FFC30B');
   sh.setFrozenRows(1);
-  sh.getRange('H2:H').insertCheckboxes();
   sh.autoResizeColumns(1, HEADERS.length);
 }
 
