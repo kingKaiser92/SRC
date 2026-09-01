@@ -652,8 +652,8 @@
     <span class="label">Saints Run Club</span>
   </div>
   <div class="status">
-    <span class="dot" aria-hidden="true"></span>
-    <span class="status-text">Preorder open</span>
+    <span class="dot" id="status-dot" aria-hidden="true"></span>
+    <span class="status-text" id="status-text">Preorder open</span>
     <span class="status-time tnum" id="countdown" aria-live="off">&nbsp;</span>
   </div>
 </header>
@@ -804,7 +804,7 @@
     </form>
 
     <div class="receipt" id="receipt" hidden>
-      <span class="eyebrow">You're on the list</span>
+      <span class="eyebrow" id="receipt-eyebrow">You're on the list</span>
       <div class="receipt-line" id="receipt-line"></div>
       <p id="receipt-body"></p>
       <button type="button" class="btn btn-ghost" id="reset">Add another order</button>
@@ -863,7 +863,9 @@
 
   // With no endpoint the page must never tell a buyer they are on a list that
   // does not exist. Same condition gates the network call below, so there is
-  // one source of truth and no flag to keep in sync.
+  // one source of truth and no flag to keep in sync. The eyebrow above the
+  // receipt is driven off this same ternary, not a second flag.
+  $('receipt-eyebrow').textContent = CONFIG.endpoint ? "You're on the list" : 'Almost there';
   $('receipt-body').textContent = CONFIG.endpoint
     ? "We'll confirm your Zelle payment and email you when pickup opens. " + CONFIG.pickup
     : "Your order isn't logged automatically yet. Send your Zelle with your full name and size in the memo, then DM @svintsrunclub to confirm. " + CONFIG.pickup;
@@ -907,11 +909,16 @@
 
   // ---- countdown ----
   var closeAt = new Date(CONFIG.closesAt).getTime();
+  if (Number.isNaN(closeAt)) {
+    // A bad CONFIG.closesAt must never leave the form silently open. isClosed()
+    // below returns true in this case, so the drop fails closed instead of open.
+    console.error('[preorder] CONFIG.closesAt ("' + CONFIG.closesAt + '") is not a valid date. Preorder will stay closed until this is fixed.');
+  }
   var cdEl = $('countdown');
   function pad(n) { return String(n).padStart(2, '0'); }
   function tickCountdown() {
+    if (isClosed()) { cdEl.textContent = 'Closed'; return; }
     var d = closeAt - Date.now();
-    if (!(d > 0)) { cdEl.textContent = 'Closed'; return; }
     var days = Math.floor(d / 864e5),
         h = Math.floor(d / 36e5) % 24,
         m = Math.floor(d / 6e4) % 60,
@@ -923,10 +930,16 @@
   // kept taking orders after the deadline. Re-checked on every tick as well as
   // at load, so a page left open past 9AM closes itself.
   var ctaEl = $('hero-cta');
-  function isClosed() { return Date.now() >= closeAt; }
+  var statusTextEl = $('status-text');
+  var statusDotEl = $('status-dot');
+  function isClosed() { return Number.isNaN(closeAt) || Date.now() >= closeAt; }
+  // No idempotency guard: every write below is already idempotent, and a guard
+  // here previously let a post-deadline reset (#reset lives outside formEl, so
+  // its own controls are never disabled by the querySelectorAll below) leave the
+  // form half re-enabled with no way for this function to ever repair it. Safe
+  // to call every second and from the reset handler.
   function applyClosed() {
-    if (!isClosed() || formEl.dataset.closed === 'true') return;
-    formEl.dataset.closed = 'true';
+    if (!isClosed()) return;
     Array.prototype.forEach.call(
       formEl.querySelectorAll('button, input'),
       function (el) { el.disabled = true; }
@@ -939,6 +952,8 @@
       ctaEl.removeAttribute('href');
       ctaEl.setAttribute('aria-disabled', 'true');
     }
+    if (statusTextEl) statusTextEl.textContent = 'Preorder closed';
+    if (statusDotEl) statusDotEl.style.animation = 'none';
   }
 
   tickCountdown();
@@ -999,7 +1014,10 @@
 
     // A filled honeypot means a bot. Show the ordinary receipt and send
     // nothing: a visible rejection would just teach the next pass to skip it.
-    if (hpEl.value) { done(); return; }
+    // The console.warn keeps this silent-to-the-bot drop auditable in devtools,
+    // same as the empty-endpoint branch below, so an autofill false positive
+    // once an endpoint is wired does not vanish without a trace.
+    if (hpEl.value) { console.warn('[preorder] honeypot field was filled: order silently rejected as a bot submission.'); done(); return; }
 
     // No endpoint means nothing is recorded anywhere. The receipt copy already
     // says so (see receipt-body above); this is the audit trail for whoever is
@@ -1036,6 +1054,9 @@
     $('receipt').hidden = true;
     formEl.hidden = false;
     document.getElementById('preorder').scrollIntoView({ block: 'start', behavior: 'smooth' });
+    // If the deadline passed while the receipt was showing, this repairs the
+    // form the reset just re-enabled instead of leaving it half-live.
+    applyClosed();
   });
 
   // ---- header goes solid once body copy starts passing under it ----
