@@ -683,7 +683,7 @@
         <div class="hero-buy">
           <div>
             <span class="micro" style="display:block;margin-bottom:6px">Preorder</span>
-            <span class="display hero-price tnum" id="hero-price">$45</span>
+            <span class="display hero-price tnum" id="hero-price">$50</span>
           </div>
           <a class="btn btn-gold" id="hero-cta" href="#preorder">Reserve yours →</a>
         </div>
@@ -731,9 +731,9 @@
   <section class="preorder" id="preorder" aria-labelledby="preorder-title">
     <div class="preorder-head">
       <h2 id="preorder-title">Preorder</h2>
-      <span class="closes">Closes <span id="closes-on">Sat, Sept 5</span></span>
+      <span class="closes">Closes <span id="closes-on">Fri, Sept 4 · 9AM</span></span>
     </div>
-    <p class="preorder-sub">Pay by Zelle, then log your order below so we cut the right size for you. Nothing is charged twice. The form is just the list.</p>
+    <p class="preorder-sub" id="preorder-sub">Pay by Zelle, then log your order below so we cut the right size for you. Nothing is charged twice. The form is just the list.</p>
 
     <form class="panels reveal" id="order-form" novalidate>
 
@@ -756,7 +756,7 @@
 
         <div class="row row-total panel-foot">
           <span class="label">Send exactly</span>
-          <span class="total tnum" id="total">$45</span>
+          <span class="total tnum" id="total">$50</span>
         </div>
       </div>
 
@@ -856,6 +856,13 @@
 
   function money(n) { return '$' + (Number.isInteger(n) ? n : n.toFixed(2)); }
 
+  // scrollIntoView's own `behavior: 'smooth'` ignores the page's CSS
+  // `scroll-behavior: auto` set under prefers-reduced-motion, so read the
+  // preference directly here too.
+  function scrollBehavior() {
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+  }
+
   // ---- static config into the DOM ----
   $('hero-price').textContent = money(CONFIG.price);
   $('closes-on').textContent = CONFIG.closesOn;
@@ -869,6 +876,15 @@
   $('receipt-body').textContent = CONFIG.endpoint
     ? "We'll confirm your Zelle payment and email you when pickup opens. " + CONFIG.pickup
     : "Your order isn't logged automatically yet. Send your Zelle with your full name and size in the memo, then DM @svintsrunclub to confirm. " + CONFIG.pickup;
+  // Same condition as the receipt above, so the promise the buyer reads BEFORE
+  // paying never gets ahead of what actually happens after they submit.
+  $('preorder-sub').textContent = CONFIG.endpoint
+    ? 'Pay by Zelle, then log your order below so we cut the right size for you. Nothing is charged twice. The form is just the list.'
+    : 'Pay by Zelle with your full name and size in the memo. That memo is your order. Fill in the form below and DM @svintsrunclub so we can confirm your size.';
+  // One label, read by both the initial paint below and resetSubmitButton(),
+  // so the button never changes text just because a submit happened.
+  var submitLabel = CONFIG.endpoint ? 'Add me to the list' : 'Send my details';
+  $('submit').textContent = submitLabel;
   $('zelle-link').href = CONFIG.zelleUrl;
   $('zelle-handle').textContent = CONFIG.zelleHandle;
 
@@ -933,26 +949,44 @@
   var statusTextEl = $('status-text');
   var statusDotEl = $('status-dot');
   function isClosed() { return Number.isNaN(closeAt) || Date.now() >= closeAt; }
-  // No idempotency guard: every write below is already idempotent, and a guard
-  // here previously let a post-deadline reset (#reset lives outside formEl, so
-  // its own controls are never disabled by the querySelectorAll below) leave the
-  // form half re-enabled with no way for this function to ever repair it. Safe
-  // to call every second and from the reset handler.
+  // The hero CTA keeps its href even once closed: an <a> with no href drops
+  // out of the accessibility tree as a link (not focusable, no role), so
+  // aria-disabled on it would announce nothing. Keeping href lets it stay a
+  // real, focusable link that reads as disabled; this handler is what
+  // actually stops the navigation.
+  if (ctaEl) {
+    ctaEl.addEventListener('click', function (e) {
+      if (isClosed()) e.preventDefault();
+    });
+  }
+  // Only writes when the value actually differs from what's already there.
+  function setText(el, text) {
+    if (el && el.textContent !== text) el.textContent = text;
+  }
+  // No idempotency guard: a guard here previously let a post-deadline reset
+  // (#reset lives outside formEl, so its own controls are never disabled by
+  // the querySelectorAll below) leave the form half re-enabled with no way
+  // for this function to ever repair it. Safe to call every second and from
+  // the reset handler. Each write below is instead its own no-op once the
+  // page is already in the closed state, via setText above and the
+  // already-disabled check below, so the 1s interval stops mutating #note
+  // (a role="status" live region) once the closed message is in place.
   function applyClosed() {
     if (!isClosed()) return;
-    Array.prototype.forEach.call(
-      formEl.querySelectorAll('button, input'),
-      function (el) { el.disabled = true; }
-    );
-    submitEl.textContent = 'Preorder closed';
-    noteEl.textContent = 'Preorder closed ' + CONFIG.closesOn + '. DM us on Instagram if you missed it.';
+    var controls = formEl.querySelectorAll('button, input');
+    var alreadyDisabled = controls.length > 0 &&
+      Array.prototype.every.call(controls, function (el) { return el.disabled; });
+    if (!alreadyDisabled) {
+      Array.prototype.forEach.call(controls, function (el) { el.disabled = true; });
+    }
+    setText(submitEl, 'Preorder closed');
+    setText(noteEl, 'Preorder closed ' + CONFIG.closesOn + '. DM us on Instagram if you missed it.');
     noteEl.removeAttribute('data-error');
     if (ctaEl) {
-      ctaEl.textContent = 'Preorder closed';
-      ctaEl.removeAttribute('href');
+      setText(ctaEl, 'Preorder closed');
       ctaEl.setAttribute('aria-disabled', 'true');
     }
-    if (statusTextEl) statusTextEl.textContent = 'Preorder closed';
+    setText(statusTextEl, 'Preorder closed');
     if (statusDotEl) statusDotEl.style.animation = 'none';
   }
 
@@ -1005,7 +1039,7 @@
       $('receipt-line').textContent = state.qty + ' × Size ' + state.size;
       formEl.hidden = true;
       $('receipt').hidden = false;
-      $('receipt').scrollIntoView({ block: 'center', behavior: 'smooth' });
+      $('receipt').scrollIntoView({ block: 'center', behavior: scrollBehavior() });
       resetSubmitButton();
     };
     var failed = function () {
@@ -1042,7 +1076,7 @@
   function resetSubmitButton() {
     state.sending = false;
     submitEl.dataset.sending = 'false';
-    submitEl.textContent = 'Add me to the list';
+    submitEl.textContent = submitLabel;
   }
 
   $('reset').addEventListener('click', function () {
@@ -1054,7 +1088,7 @@
     clearError();
     $('receipt').hidden = true;
     formEl.hidden = false;
-    document.getElementById('preorder').scrollIntoView({ block: 'start', behavior: 'smooth' });
+    document.getElementById('preorder').scrollIntoView({ block: 'start', behavior: scrollBehavior() });
     // If the deadline passed while the receipt was showing, this repairs the
     // form the reset just re-enabled instead of leaving it half-live.
     applyClosed();

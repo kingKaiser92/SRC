@@ -59,6 +59,15 @@ five minutes, all of it in a browser.
 
 10. Commit and deploy the site.
 
+> **`no-cors` caveat.** The page posts to this endpoint with `mode: 'no-cors'`,
+> which keeps the request preflight-free but makes the response opaque: the
+> page cannot read a status code, only whether the request threw. In practice
+> that means the page shows the buyer a success receipt whenever the network
+> request itself succeeds, even if the Apps Script side rejected or failed to
+> write the row (closed deadline, quota, a bug in the script, etc). Treat the
+> sheet, not the receipt, as the source of truth for what was actually
+> recorded.
+
 Sheet columns: `Timestamp, Name, Email, Size, Quantity, Total ($), Zelle Code,
 Paid?, Item, Source`. **Paid?** is a checkbox you tick by hand once you match
 the Zelle transfer.
@@ -108,9 +117,16 @@ alter table public.singlet_preorders enable row level security;
 -- Insert only. The publishable key sits in the page, so it must never be able
 -- to read the table back: that would expose every buyer's email to anyone who
 -- opened devtools.
+--
+-- with check (paid = false), not (true): `with check (true)` is
+-- column-unrestricted, so anyone with the publishable key (it's in the page
+-- source) could insert a row claiming paid = true or total = 0 by calling the
+-- REST endpoint directly instead of going through the form. Pinning paid to
+-- false on insert means every row still has to be marked paid by hand, from
+-- the Supabase dashboard, after someone actually matches the Zelle transfer.
 create policy "anon can insert orders"
   on public.singlet_preorders for insert
-  to anon with check (true);
+  to anon with check (paid = false);
 ```
 
 **Deadline, enforced where a client cannot reach:**
@@ -177,6 +193,12 @@ Submit one real order and confirm:
 1. A row appears with the right size, quantity, and total.
 2. The notification email arrives (Route A).
 3. The receipt shows the normal wording, not the "not logged automatically" copy.
+4. If a real order ever seems to go missing after the endpoint is wired: check
+   the honeypot. A password manager can autofill the hidden `company` field
+   (it's a real, named `<input>`, just visually hidden, so some autofill
+   heuristics catch it), which makes the page treat a genuine buyer as a bot,
+   show them the normal success receipt, and silently skip the POST. Nothing
+   in the UI tells the buyer this happened.
 
 ---
 

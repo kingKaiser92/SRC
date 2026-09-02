@@ -19,7 +19,7 @@ That file is byte-identical to `assets/singlet.glb` in the
 | File | Size | Notes |
 |---|---|---|
 | `singlet.glb` | 1.27 MB | 150,000 tris, 2048x2048 WebP baseColor. Serves every device. |
-| `singlet-viewer.js` | 11 KB | Turntable custom element. |
+| `singlet-viewer.js` | 13 KB | Turntable custom element. |
 | `preview.html` | 2 KB | Local harness. Serve this folder over HTTP and scroll. |
 
 Extensions used: `EXT_meshopt_compression`, `EXT_texture_webp`,

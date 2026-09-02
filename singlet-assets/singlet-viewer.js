@@ -118,6 +118,30 @@
     }
 
     async _boot() {
+      try {
+        await this._bootThree();
+      } catch (err) {
+        // new THREE.WebGLRenderer(...) throws whenever a WebGL context cannot
+        // be created (older phones, GPU blocklists, webgl.disabled, tabs past
+        // the context limit). Without this catch, data-ready never gets set,
+        // the element stays at opacity:0 (see preorder.html), and the reader
+        // scrolls roughly three screen-heights of frozen headline where the
+        // product reveal should be. Fall back to a static image instead.
+        console.error('[singlet-viewer] 3D boot failed, falling back to a static image:', err);
+        this.innerHTML = '';
+        const img = document.createElement('img');
+        // A plain relative string here resolves against the page's own URL
+        // (document baseURI), not this script's location, which is what
+        // matters since preorder.html and singlet-assets/ are siblings.
+        img.src = 'singlet-assets/singlet-front.png';
+        img.alt = 'Race Day Singlet, front view';
+        img.style.cssText = 'display:block;width:100%;height:100%;object-fit:contain';
+        this.appendChild(img);
+        this.setAttribute('data-ready', '');
+      }
+    }
+
+    async _bootThree() {
       const THREE = await import('three');
       const { GLTFLoader } = await import('three/addons/loaders/GLTFLoader.js');
       const { MeshoptDecoder } = await import('three/addons/libs/meshopt_decoder.module.js');
