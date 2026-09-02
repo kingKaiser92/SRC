@@ -19,7 +19,7 @@ That file is byte-identical to `assets/singlet.glb` in the
 | File | Size | Notes |
 |---|---|---|
 | `singlet.glb` | 1.27 MB | 150,000 tris, 2048x2048 WebP baseColor. Serves every device. |
-| `singlet-viewer.js` | 13 KB | Turntable custom element. |
+| `singlet-viewer.js` | 14 KB | Turntable custom element. |
 | `preview.html` | 2 KB | Local harness. Serve this folder over HTTP and scroll. |
 
 Extensions used: `EXT_meshopt_compression`, `EXT_texture_webp`,
@@ -71,3 +71,22 @@ map, and 22 MB is fine on any phone from the last six years, so fidelity wins.
 - Near planar: bounds are roughly `[1.417, 1.904, 0.156]`, so depth is about 8%
   of height. This is why the viewer warps its rotation rate instead of turning
   at a constant speed. See `singlet-viewer.js`.
+
+## Raster assets
+
+The four PNGs are palette-quantized, not stored as full RGBA. They had few
+enough unique colors to make that lossless in practice, and it took them from
+519 KB to 44 KB combined:
+
+| File | Before | After | Note |
+|---|---|---|---|
+| `zelle-qr.png` | 254 KB | 12 KB | 651x651 kept. Do not downscale: it has to stay scannable. |
+| `src-mark-dark.png` | 116 KB | 6 KB | Also resized 699x660 to 212x200. It renders at 34 to 40px. |
+| `singlet-front.png` | 69 KB | 12 KB | 470x610 kept, displayed at up to 280px. |
+| `singlet-back.png` | 81 KB | 14 KB | Same. |
+
+If you re-export any of them from the source art, re-quantize before committing
+or the page silently gets heavy again. `src-mark-dark.png`'s dimensions are also
+declared as `width`/`height` on the two `<img>` tags in `preorder.html`; changing
+the file's size means changing those too, or the reserved box gets the wrong
+aspect ratio and the header shifts on load.

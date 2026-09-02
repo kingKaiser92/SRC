@@ -2,7 +2,10 @@
 (function () {
   const IMPORTMAP = {
     imports: {
-      three: 'https://unpkg.com/three@0.184.0/build/three.module.js',
+      // Minified build: 365 KB against 649 KB for three.module.js. The download
+      // matters less than the parse and compile cost, which is what a phone CPU
+      // actually spends time on before the hero can render.
+      three: 'https://unpkg.com/three@0.184.0/build/three.module.min.js',
       'three/addons/loaders/GLTFLoader.js': 'https://unpkg.com/three@0.184.0/examples/jsm/loaders/GLTFLoader.js',
       'three/addons/libs/meshopt_decoder.module.js': 'https://unpkg.com/three@0.184.0/examples/jsm/libs/meshopt_decoder.module.js'
     }
