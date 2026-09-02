@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Race Day Singlet · Saints Run Club</title>
-<meta name="description" content="Limited drop. Perforated performance knit, unisex race cut. Preorder by Zelle, pick up at a Saturday long run.">
+<meta name="description" content="Limited drop. Perforated performance knit, men's and women's race cut. Preorder by Zelle, pick up at a Saturday long run.">
 <link rel="icon" href="https://izcimioeuohdofzmnahu.supabase.co/storage/v1/object/public/website-assets/winged-foot.png">
 <meta property="og:title" content="Race Day Singlet · Saints Run Club">
 <meta property="og:description" content="Limited drop. Preorder open.">
@@ -441,6 +441,16 @@
 
   /* A fixed 3-across block. Free-wrapping six chips in a third-width panel
      leaves a ragged 4 + 2 orphan row. */
+  .field-label { display: block; margin-bottom: 12px; color: var(--muted); }
+  /* The panel asks two questions now, so each chip group is labelled. Cuts get
+     two columns; sizes keep three. Both reuse the .size chip styling so the
+     selected state, contrast, and tap targets stay identical. */
+  .cuts {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin-bottom: 26px;
+  }
   .sizes {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -697,7 +707,7 @@
           <figcaption class="micro">Back</figcaption>
         </figure>
       </div>
-      <p class="art-note">Production sample. Final trim and stitching may vary.</p>
+      <p class="art-note">Shown in the men's cut. Production sample, final trim and stitching may vary.</p>
     </div>
 
     <dl class="spec-list">
@@ -707,7 +717,7 @@
       </div>
       <div class="spec-item reveal">
         <dt class="micro">Fit</dt>
-        <dd>Unisex race cut. Cropped hem, wide armhole, no chafe.</dd>
+        <dd>Men's and women's race cut. Cropped hem, wide armhole, no chafe.</dd>
       </div>
       <div class="spec-item reveal">
         <dt class="micro">Pickup</dt>
@@ -721,16 +731,20 @@
       <h2 id="preorder-title">Preorder</h2>
       <span class="closes">Closes <span id="closes-on">Fri, Sept 4 · 9AM</span></span>
     </div>
-    <p class="preorder-sub" id="preorder-sub">Pay by Zelle with your full name and size in the memo. That memo is your order. Fill in the form below and DM @svintsrunclub so we can confirm your size.</p>
+    <p class="preorder-sub" id="preorder-sub">Pay by Zelle with your full name, cut and size in the memo. That memo is your order. Fill in the form below and DM @svintsrunclub so we can confirm your size.</p>
 
     <form class="panels reveal" id="order-form" novalidate>
 
       <div class="panel">
         <div class="panel-head">
           <span class="step">01</span>
-          <span class="label">Pick your size</span>
+          <span class="label">Pick your fit</span>
         </div>
 
+        <span class="micro field-label">Cut</span>
+        <div class="cuts" id="cuts" role="group" aria-label="Cut"></div>
+
+        <span class="micro field-label">Size</span>
         <div class="sizes" id="sizes" role="group" aria-label="Size"></div>
 
         <div class="row">
@@ -756,7 +770,7 @@
         <a class="qr" id="zelle-link" href="https://www.zellepay.com/" target="_blank" rel="noopener">
           <img src="singlet-assets/zelle-qr.png" alt="Zelle QR code for Saints Vision LLC">
         </a>
-        <p class="panel-copy">Scan this code in your bank's app to pay <strong>Saints Vision LLC</strong>. Put <strong>your full name + size</strong> in the memo.</p>
+        <p class="panel-copy">Scan this code in your bank's app to pay <strong>Saints Vision LLC</strong>. Put <strong>your full name, cut and size</strong> in the memo.</p>
         <div class="row panel-foot" style="margin-top:20px;align-items:baseline">
           <span class="micro">Send to</span>
           <span style="font-size:14px;color:var(--bone);text-align:right;word-break:break-word" id="zelle-handle">Saints Vision LLC</span>
@@ -829,6 +843,7 @@
     // what the receipt tells the buyer. See PREORDER-SETUP.md.
     endpoint:    'https://script.google.com/macros/s/AKfycbyfof-RDRSonbzwq4CGMl1XSZjB6xeBL0W6G5L2pddzneIt6CUnAUga5CsWr_NhtTG1/exec',
     price:       50,
+    fits:        ["Men's", "Women's"],
     sizes:       ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
     maxQty:      6,
     zelleUrl:    'https://www.zellepay.com/',
@@ -840,7 +855,7 @@
   };
 
   var $ = function (id) { return document.getElementById(id); };
-  var state = { size: '', qty: 1, sending: false };
+  var state = { fit: '', size: '', qty: 1, sending: false };
 
   function money(n) { return '$' + (Number.isInteger(n) ? n : n.toFixed(2)); }
 
@@ -863,12 +878,12 @@
   $('receipt-eyebrow').textContent = CONFIG.endpoint ? "You're on the list" : 'Almost there';
   $('receipt-body').textContent = CONFIG.endpoint
     ? "We'll confirm your Zelle payment and email you when pickup opens. " + CONFIG.pickup
-    : "Your order isn't logged automatically yet. Send your Zelle with your full name and size in the memo, then DM @svintsrunclub to confirm. " + CONFIG.pickup;
+    : "Your order isn't logged automatically yet. Send your Zelle with your full name, cut and size in the memo, then DM @svintsrunclub to confirm. " + CONFIG.pickup;
   // Same condition as the receipt above, so the promise the buyer reads BEFORE
   // paying never gets ahead of what actually happens after they submit.
   $('preorder-sub').textContent = CONFIG.endpoint
     ? 'Pay by Zelle, then log your order below so we cut the right size for you. Nothing is charged twice. The form is just the list.'
-    : 'Pay by Zelle with your full name and size in the memo. That memo is your order. Fill in the form below and DM @svintsrunclub so we can confirm your size.';
+    : 'Pay by Zelle with your full name, cut and size in the memo. That memo is your order. Fill in the form below and DM @svintsrunclub so we can confirm your size.';
   // One label, read by both the initial paint below and resetSubmitButton(),
   // so the button never changes text just because a submit happened.
   var submitLabel = CONFIG.endpoint ? 'Add me to the list' : 'Send my details';
@@ -876,23 +891,37 @@
   $('zelle-link').href = CONFIG.zelleUrl;
   $('zelle-handle').textContent = CONFIG.zelleHandle;
 
-  // ---- size chips ----
-  var sizesEl = $('sizes');
-  CONFIG.sizes.forEach(function (label) {
-    var b = document.createElement('button');
-    b.type = 'button';
-    b.className = 'size';
-    b.textContent = label;
-    b.setAttribute('aria-pressed', 'false');
-    b.addEventListener('click', function () {
-      state.size = label;
-      Array.prototype.forEach.call(sizesEl.children, function (c) {
-        c.setAttribute('aria-pressed', String(c === b));
+  // ---- cut and size chips ----
+  // One renderer for both groups. Neither has a default: a pre-selected cut is
+  // the kind of thing a buyer taps past, and the cost is the wrong garment.
+  var cutsEl = $('cuts'), sizesEl = $('sizes');
+
+  function renderChips(host, values, assign) {
+    values.forEach(function (label) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'size';
+      b.textContent = label;
+      b.setAttribute('aria-pressed', 'false');
+      b.addEventListener('click', function () {
+        assign(label);
+        Array.prototype.forEach.call(host.children, function (c) {
+          c.setAttribute('aria-pressed', String(c === b));
+        });
+        clearError();
       });
-      clearError();
+      host.appendChild(b);
     });
-    sizesEl.appendChild(b);
-  });
+  }
+
+  function clearChips(host) {
+    Array.prototype.forEach.call(host.children, function (c) {
+      c.setAttribute('aria-pressed', 'false');
+    });
+  }
+
+  renderChips(cutsEl, CONFIG.fits, function (v) { state.fit = v; });
+  renderChips(sizesEl, CONFIG.sizes, function (v) { state.size = v; });
 
   // ---- quantity ----
   var qtyEl = $('qty'), decEl = $('qty-dec'), incEl = $('qty-inc'), totalEl = $('total');
@@ -1001,6 +1030,7 @@
     if (state.sending) return;
     if (isClosed()) { applyClosed(); return; }
 
+    if (!state.fit) return setError('Pick a cut first.');
     if (!state.size) return setError('Pick a size first.');
     if (!nameEl.value.trim()) return setError('We need your name to match the payment.', nameEl);
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(emailEl.value)) return setError('That email looks off.', emailEl);
@@ -1019,12 +1049,12 @@
       total: CONFIG.price * state.qty,
       zelleCode: codeEl.value.trim(),
       company: hpEl.value,
-      item: CONFIG.item,
+      item: CONFIG.item + ' (' + state.fit + ')',
       source: 'saintsrunclub.com/preorder'
     };
 
     var done = function () {
-      $('receipt-line').textContent = state.qty + ' × Size ' + state.size;
+      $('receipt-line').textContent = state.qty + ' × ' + state.fit + ', Size ' + state.size;
       formEl.hidden = true;
       $('receipt').hidden = false;
       $('receipt').scrollIntoView({ block: 'center', behavior: scrollBehavior() });
@@ -1068,9 +1098,11 @@
   }
 
   $('reset').addEventListener('click', function () {
+    state.fit = '';
     state.size = '';
     state.qty = 1;
-    Array.prototype.forEach.call(sizesEl.children, function (c) { c.setAttribute('aria-pressed', 'false'); });
+    clearChips(cutsEl);
+    clearChips(sizesEl);
     nameEl.value = emailEl.value = codeEl.value = hpEl.value = '';
     renderQty();
     clearError();
