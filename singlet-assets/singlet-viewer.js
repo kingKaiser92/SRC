@@ -128,6 +128,10 @@
         // scrolls roughly three screen-heights of frozen headline where the
         // product reveal should be. Fall back to a static image instead.
         console.error('[singlet-viewer] 3D boot failed, falling back to a static image:', err);
+        // Stop first. If the throw came from _start() the renderer already
+        // exists and a scheduled frame would keep rendering into a canvas
+        // this is about to detach.
+        this._stop();
         this.innerHTML = '';
         const img = document.createElement('img');
         // A plain relative string here resolves against the page's own URL
