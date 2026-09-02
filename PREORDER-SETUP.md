@@ -3,21 +3,23 @@
 The singlet preorder page lives at **`preorder.html`** and is reachable at
 **`https://saintsrunclub.com/preorder`** (clean URL via `_redirects`).
 
-## Current state: orders are NOT being recorded
+## Current state: LIVE, capturing to Google Sheets (Route A)
 
-`CONFIG.endpoint` in `preorder.html` is empty. That is deliberate, not an
-oversight. Until you wire one of the two routes below:
+`CONFIG.endpoint` in `preorder.html` points at the deployed Apps Script web app,
+so submitted orders append a row to the **Orders** tab and email
+`svintsrunclub@gmail.com`.
 
-- The form validates, and shows a receipt.
-- **Nothing is written anywhere.** No sheet, no database, no email.
-- The receipt says so. It reads *"Your order isn't logged automatically yet.
-  Send your Zelle with your full name and size in the memo, then DM
-  @svintsrunclub to confirm."* Buyers are told the truth, and the Zelle memo
-  (full name plus size) carries enough to reconstruct the order by hand.
-- `console.warn` fires on every submission, so it is visible in devtools.
+Sheet: https://docs.google.com/spreadsheets/d/1ovfWa2K9HAZkhEVvlO_CXKQRjSFNIOtsPydhJ3ZgsmY/edit
 
-Setting `CONFIG.endpoint` swaps the receipt back to the normal wording and
-starts POSTing. One value controls both. There is no second flag.
+If you ever need to take capture offline, set `endpoint` back to `''`. That one
+value also flips the pre-payment copy, the submit button label, and the receipt
+to their honest unwired wording, which tells buyers to put their name and size
+in the Zelle memo and DM to confirm. There is no second flag to remember.
+
+**The endpoint is an unauthenticated open write.** "Who has access: Anyone" is
+what lets the page post without a login, and the only things standing in front
+of it are the honeypot field and the deadline check. That is proportionate for a
+three-day club drop; it would not be for anything longer-lived.
 
 ---
 
