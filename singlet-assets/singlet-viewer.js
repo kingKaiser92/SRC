@@ -78,9 +78,26 @@
 
     _loop() {
       if (this._raf || !this._running || !this._visible) return;
-      const tick = () => {
+      // Restarting (after the IntersectionObserver pause, or a reconnect) must
+      // not resume with a stale timestamp, or the first frame back applies a
+      // huge delta.
+      this._last = 0;
+      const tick = (now) => {
         this._raf = 0;
         if (!this._running || !this._visible) return;
+        // Every rate below is expressed per 1/60s frame and scaled by `f`, so
+        // motion is paced by elapsed time rather than by how many frames
+        // happened to render. Without this the model literally slows down when
+        // the frame rate dips, which is what makes it look jittery during a
+        // scroll: scrolling is exactly when frame pacing degrades. Clamped so a
+        // backgrounded tab does not resume with one enormous jump, and 0 on the
+        // first frame because there is no previous timestamp to measure from.
+        // The cap is 100ms rather than a couple of frames: it has to sit below
+        // the worst frame rate a real device might hit, or it saturates and the
+        // motion goes back to being frame-coupled exactly when things are
+        // already struggling.
+        const f = this._last ? Math.min((now - this._last) / 16.667, 6) : 0;
+        this._last = now;
         // Measured inside the frame rather than from a scroll listener. The
         // listener version ran this same rect read outside rAF on every scroll
         // event, which is a forced-layout risk.
@@ -89,20 +106,23 @@
         // Reduced motion drops the autonomous turntable and the bob. Drag still
         // works: that is direct manipulation, not motion inflicted on a reader.
         const quiet = this._calm.matches;
-        this._cur += (this._target - this._cur) * (quiet ? 1 : 0.09);
+        this._cur += (this._target - this._cur) * (quiet ? 1 : 1 - Math.pow(1 - 0.09, f));
         const c = this._cur;
         if (!this._dragging) {
           // Inertia after a flick, then ease the offset back toward the idle
           // float so the piece never parks edge-on.
-          this._userY += this._velY;
-          this._userX = Math.max(-0.55, Math.min(0.55, this._userX + this._velX));
-          this._velY *= 0.94; this._velX *= 0.94;
+          this._userY += this._velY * f;
+          this._userX = Math.max(-0.55, Math.min(0.55, this._userX + this._velX * f));
+          const decay = Math.pow(0.94, f);
+          this._velY *= decay; this._velX *= decay;
           if (Math.abs(this._velY) < 0.0004) this._velY = 0;
           if (Math.abs(this._velX) < 0.0004) this._velX = 0;
-          if (!this._velY && !this._velX) { this._userY *= 0.985; this._userX *= 0.97; }
+          if (!this._velY && !this._velX) {
+            this._userY *= Math.pow(0.985, f); this._userX *= Math.pow(0.97, f);
+          }
         }
         const t = performance.now() * 0.001;
-        if (!quiet) this._spin += 0.0042;
+        if (!quiet) this._spin += 0.0042 * f;
         // The mesh is near planar (depth is about 8% of height), so a linear
         // turn parks it edge-on and invisible for seconds twice per revolution.
         // Warping theta to theta - k*sin(2*theta) keeps a true 360 degree
