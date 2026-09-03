@@ -222,9 +222,17 @@ duplicate rows share a name and email but not a timestamp.
 
 ## Payments
 
-Manual, no processor. Zelle to **Saints Vision LLC**
-(`saintsvisionllc@gmail.com`), and buyers are told to put their full name, cut and
-size in the memo. Match incoming payments to orders by name and amount.
+Manual, no processor. Two ways in, both set in `CONFIG`:
+
+- **Zelle** to **Saints Vision LLC** (`saintsvisionllc@gmail.com`). The QR tile
+  shows on desktop only; on a phone the email has a one-tap copy button.
+- **Venmo** to `@ericsvntiago` via the profile link
+  `https://venmo.com/u/ericsvntiago`, which opens the Venmo app on a phone.
+
+Buyers are told to put their full name in the note, then the line summary the
+page builds for them ("Men's S, Women's M ×2"). Match incoming payments to
+orders by name and amount in whichever app they used; the sheet does not
+record which one.
 
 ## Editing content
 

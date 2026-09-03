@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Race Day Singlet · Saints Run Club</title>
-<meta name="description" content="Limited drop. Perforated performance knit, men's and women's race cut. Preorder by Zelle, pick up at any Wednesday speed session or Saturday long run.">
+<meta name="description" content="Limited drop. Perforated performance knit, men's and women's race cut. Preorder by Zelle or Venmo, pick up at any Wednesday speed session or Saturday long run.">
 <link rel="icon" href="https://izcimioeuohdofzmnahu.supabase.co/storage/v1/object/public/website-assets/winged-foot.png">
 <meta property="og:title" content="Race Day Singlet · Saints Run Club">
 <meta property="og:description" content="Limited drop. Preorder open.">
@@ -574,9 +574,11 @@
   .panel-copy { font-size: 14px; line-height: 1.6; color: var(--muted); text-wrap: pretty; }
   .panel-copy strong { color: var(--bone); font-weight: 600; }
 
-  /* The Zelle handle is a button, because on a phone the QR is a picture of
-     the device you are holding: it cannot be scanned. One tap copies the
-     email; the cue confirms in place and the live region says so aloud. */
+  /* Payment rows. The Zelle handle is a button, because on a phone the QR is
+     a picture of the device you are holding: it cannot be scanned. One tap
+     copies the email; the cue confirms in place and the live region says so
+     aloud. The Venmo row is the same component as a link, straight into the
+     app on a phone. The memo row copies the line summary. */
   .pay-to { border-top: 1px solid var(--hairline); padding-top: 20px; }
   .pay-to .micro { display: block; margin-bottom: 10px; }
   .copy {
@@ -599,7 +601,7 @@
     cursor: pointer;
     transition: border-color .18s var(--ease);
   }
-  .copy:hover { border-color: var(--muted-deep); }
+  .copy:hover { border-color: var(--muted-deep); color: var(--bone); }
   .copy:disabled { opacity: .38; cursor: not-allowed; }
   .copy[data-copied="true"] { border-color: var(--gold); }
   .copy-value { min-width: 0; overflow-wrap: anywhere; }
@@ -754,6 +756,9 @@
        clipping the order total and the + button. */
     .panel { padding: 30px 22px 34px; }
     .receipt { padding: 44px 22px; }
+    /* A QR on the screen of the phone you are paying from cannot be scanned.
+       The rows below it are the whole payment step on a phone. */
+    .qr { display: none; }
   }
 
 
@@ -853,7 +858,7 @@
       <h2 id="preorder-title">Preorder</h2>
       <span class="closes">Closes <span id="closes-on">Wed, Sept 9 · 9PM</span></span>
     </div>
-    <p class="preorder-sub" id="preorder-sub">Pay by Zelle with your full name, cut and size in the memo. That memo is your order. Fill in the form below and DM @svintsrunclub so we can confirm your size.</p>
+    <p class="preorder-sub" id="preorder-sub">Pay by Zelle or Venmo with your full name, cut and size in the memo. That memo is your order. Fill in the form below and DM @svintsrunclub so we can confirm your size.</p>
 
     <form class="panels reveal" id="order-form" novalidate>
 
@@ -894,18 +899,23 @@
       <div class="panel">
         <div class="panel-head">
           <span class="step">02</span>
-          <span class="label">Zelle the total</span>
+          <span class="label">Pay the total</span>
         </div>
         <a class="qr" id="zelle-link" href="https://www.zellepay.com/" target="_blank" rel="noopener">
           <img src="singlet-assets/zelle-qr.png" alt="Zelle QR code for Saints Vision LLC">
         </a>
-        <p class="panel-copy">Open your bank's app, choose Zelle and send to the email below. It will show as <strong>Saints Vision LLC</strong>. On a computer, scan the code instead. Put <strong>your full name</strong> in the memo, then the line below.</p>
+        <p class="panel-copy">Zelle or Venmo, whichever you have. Zelle shows the recipient as <strong>Saints Vision LLC</strong>. Put <strong>your full name</strong> in the note, then the line below.</p>
         <div class="pay-to panel-foot">
-          <span class="micro">Send to</span>
+          <span class="micro">Zelle · send to</span>
           <button type="button" class="copy" id="copy-handle" data-copied="false">
             <span class="copy-value" id="zelle-handle">saintsvisionllc@gmail.com</span>
             <span class="copy-cue" aria-hidden="true">Copy</span>
           </button>
+          <span class="micro">Venmo</span>
+          <a class="copy" id="venmo-link" href="https://venmo.com/u/ericsvntiago" target="_blank" rel="noopener" aria-label="Pay @ericsvntiago on Venmo, opens in a new tab">
+            <span class="copy-value" id="venmo-handle">@ericsvntiago</span>
+            <span class="copy-cue" aria-hidden="true">Open →</span>
+          </a>
           <span class="micro">For the memo</span>
           <button type="button" class="copy" id="copy-memo" data-copied="false" data-empty="true" disabled>
             <span class="copy-value" id="memo-value">Pick a cut and size first</span>
@@ -923,7 +933,7 @@
         <div class="fields">
           <label class="field">
             <span class="micro">Full name</span>
-            <input id="f-name" name="name" type="text" autocomplete="name" placeholder="As it appears on Zelle" required>
+            <input id="f-name" name="name" type="text" autocomplete="name" placeholder="Name on your payment" required>
           </label>
           <label class="field">
             <span class="micro">Email</span>
@@ -938,7 +948,7 @@
             <input id="f-company" name="company" type="text" tabindex="-1" autocomplete="off">
           </div>
           <button type="submit" class="btn btn-gold submit" id="submit" data-sending="false">Send my details</button>
-          <p class="note" id="note" role="status" aria-live="polite">Submit once you have sent the Zelle. We match by name + amount.</p>
+          <p class="note" id="note" role="status" aria-live="polite">Submit once you have paid. We match by name + amount.</p>
         </div>
       </div>
     </form>
@@ -985,6 +995,10 @@
     maxQty:      6,   // per order, across every line
     zelleUrl:    'https://www.zellepay.com/',
     zelleHandle: 'saintsvisionllc@gmail.com',
+    // The profile share link from the Venmo app. On a phone it opens the app
+    // on the recipient; on a computer it opens the web profile with Pay.
+    venmoUrl:    'https://venmo.com/u/ericsvntiago',
+    venmoHandle: '@ericsvntiago',
     closesOn:    'Wed, Sept 9 · 9PM',
     closesAt:    '2026-09-09T21:00:00-04:00',
     pickup:      'Pickup at any Wednesday speed session or Saturday long run, early October.',
@@ -1016,19 +1030,21 @@
   // receipt is driven off this same ternary, not a second flag.
   $('receipt-eyebrow').textContent = CONFIG.endpoint ? "You're on the list" : 'Almost there';
   $('receipt-body').textContent = CONFIG.endpoint
-    ? "We'll confirm your Zelle payment and email you when pickup opens. " + CONFIG.pickup
-    : "Your order isn't logged automatically yet. Send your Zelle with your full name, cut and size in the memo, then DM @svintsrunclub to confirm. " + CONFIG.pickup;
+    ? "We'll confirm your payment and email you when pickup opens. " + CONFIG.pickup
+    : "Your order isn't logged automatically yet. Send your Zelle or Venmo with your full name, cut and size in the memo, then DM @svintsrunclub to confirm. " + CONFIG.pickup;
   // Same condition as the receipt above, so the promise the buyer reads BEFORE
   // paying never gets ahead of what actually happens after they submit.
   $('preorder-sub').textContent = CONFIG.endpoint
-    ? 'Pay by Zelle, then log your order below so we cut the right size for you. Nothing is charged twice. The form is just the list.'
-    : 'Pay by Zelle with your full name, cut and size in the memo. That memo is your order. Fill in the form below and DM @svintsrunclub so we can confirm your size.';
+    ? 'Pay by Zelle or Venmo, then log your order below so we cut the right size for you. Nothing is charged twice. The form is just the list.'
+    : 'Pay by Zelle or Venmo with your full name, cut and size in the memo. That memo is your order. Fill in the form below and DM @svintsrunclub so we can confirm your size.';
   // One label, read by both the initial paint below and resetSubmitButton(),
   // so the button never changes text just because a submit happened.
   var submitLabel = CONFIG.endpoint ? 'Add me to the list' : 'Send my details';
   $('submit').textContent = submitLabel;
   $('zelle-link').href = CONFIG.zelleUrl;
   $('zelle-handle').textContent = CONFIG.zelleHandle;
+  $('venmo-link').href = CONFIG.venmoUrl;
+  $('venmo-handle').textContent = CONFIG.venmoHandle;
 
   // ---- cut and size chips ----
   // One renderer for both groups. Neither has a default: a pre-selected cut is
@@ -1168,7 +1184,7 @@
   // ---- validation + submit ----
   var noteEl = $('note'), formEl = $('order-form'), submitEl = $('submit');
   var nameEl = $('f-name'), emailEl = $('f-email'), codeEl = $('f-code');
-  var DEFAULT_NOTE = 'Submit once you have sent the Zelle. We match by name + amount.';
+  var DEFAULT_NOTE = 'Submit once you have paid. We match by name + amount.';
 
   // ---- countdown ----
   var closeAt = new Date(CONFIG.closesAt).getTime();
