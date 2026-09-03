@@ -906,6 +906,11 @@
         </a>
         <p class="panel-copy">Zelle or Venmo, whichever you have. Zelle shows the recipient as <strong>Saints Vision LLC</strong>. Put <strong>your full name</strong> in the note, then the line below.</p>
         <div class="pay-to panel-foot">
+          <span class="micro">For the memo</span>
+          <button type="button" class="copy" id="copy-memo" data-copied="false" data-empty="true" disabled>
+            <span class="copy-value" id="memo-value">Pick a cut and size first</span>
+            <span class="copy-cue" aria-hidden="true">Copy</span>
+          </button>
           <span class="micro">Zelle · send to</span>
           <button type="button" class="copy" id="copy-handle" data-copied="false">
             <span class="copy-value" id="zelle-handle">saintsvisionllc@gmail.com</span>
@@ -916,11 +921,6 @@
             <span class="copy-value" id="venmo-handle">@ericsvntiago</span>
             <span class="copy-cue" aria-hidden="true">Open →</span>
           </a>
-          <span class="micro">For the memo</span>
-          <button type="button" class="copy" id="copy-memo" data-copied="false" data-empty="true" disabled>
-            <span class="copy-value" id="memo-value">Pick a cut and size first</span>
-            <span class="copy-cue" aria-hidden="true">Copy</span>
-          </button>
           <span class="sr-only" id="copy-status" role="status" aria-live="polite"></span>
         </div>
       </div>
