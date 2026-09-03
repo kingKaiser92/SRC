@@ -1,0 +1,182 @@
+{
+  "PREORDER-SETUP.md": {
+    "mtime": 1788472478.12657,
+    "seen": 1788473038.2591221,
+    "ast_hash": "a7107c7a00d01a293deaeef5cd7ba032",
+    "semantic_hash": "a7107c7a00d01a293deaeef5cd7ba032"
+  },
+  "RSVP-SETUP.md": {
+    "mtime": 1788472478.53057,
+    "seen": 1788473038.259126,
+    "ast_hash": "d030ffab4f1f8151b2f2abb3e2744ed4",
+    "semantic_hash": "d030ffab4f1f8151b2f2abb3e2744ed4"
+  },
+  "docs/superpowers/plans/2026-09-01-singlet-preorder-page.md": {
+    "mtime": 1788472478.6988573,
+    "seen": 1788473038.2591276,
+    "ast_hash": "03c62e21458468f9c7a3a7bdb11f4648",
+    "semantic_hash": "03c62e21458468f9c7a3a7bdb11f4648"
+  },
+  "docs/superpowers/specs/2026-08-19-strava-support-page-design.md": {
+    "mtime": 1788472478.6988573,
+    "seen": 1788473038.2591288,
+    "ast_hash": "aec1ee1b057a706823ab85f03c7dfde8",
+    "semantic_hash": "aec1ee1b057a706823ab85f03c7dfde8"
+  },
+  "docs/superpowers/specs/2026-09-01-singlet-preorder-page-design.md": {
+    "mtime": 1788472478.7005508,
+    "seen": 1788473038.25913,
+    "ast_hash": "23463752bbc8259fe7bca264ff0f5b8e",
+    "semantic_hash": "23463752bbc8259fe7bca264ff0f5b8e"
+  },
+  "docs/superpowers/specs/2026-09-02-mens-womens-fit-design.md": {
+    "mtime": 1788472478.7005508,
+    "seen": 1788473038.2591312,
+    "ast_hash": "a941d17f8eb51427669d558344e0ccb4",
+    "semantic_hash": "a941d17f8eb51427669d558344e0ccb4"
+  },
+  "index.html": {
+    "mtime": 1788472478.7005508,
+    "seen": 1788473038.2591324,
+    "ast_hash": "194c7140fa2aa94a4894c728f889f6c9",
+    "semantic_hash": "194c7140fa2aa94a4894c728f889f6c9"
+  },
+  "preorder.html": {
+    "mtime": 1788472478.75857,
+    "seen": 1788473038.2591405,
+    "ast_hash": "7e3f41d0e48556fa3d7f74caf9b9f59e",
+    "semantic_hash": "7e3f41d0e48556fa3d7f74caf9b9f59e"
+  },
+  "privacy.html": {
+    "mtime": 1788472478.75857,
+    "seen": 1788473038.2591422,
+    "ast_hash": "3f3472a90709d9763d55f6776c3ac5f9",
+    "semantic_hash": "3f3472a90709d9763d55f6776c3ac5f9"
+  },
+  "rsvp.html": {
+    "mtime": 1788472478.76257,
+    "seen": 1788473038.2591434,
+    "ast_hash": "1afa8663df665de69d14cfeb0f0a7cc4",
+    "semantic_hash": "1afa8663df665de69d14cfeb0f0a7cc4"
+  },
+  "shop.html": {
+    "mtime": 1788472478.8185701,
+    "seen": 1788473038.2591445,
+    "ast_hash": "f2905bb8c906c8a7f22a9f093dd36b8f",
+    "semantic_hash": "f2905bb8c906c8a7f22a9f093dd36b8f"
+  },
+  "singlet-assets/README.md": {
+    "mtime": 1788472478.8185701,
+    "seen": 1788473038.2591455,
+    "ast_hash": "ae5009330568c5718722b03e91f3271c",
+    "semantic_hash": "ae5009330568c5718722b03e91f3271c"
+  },
+  "strava-assets/README.md": {
+    "mtime": 1788472478.82257,
+    "seen": 1788473038.2591462,
+    "ast_hash": "8b799bb462f0e5a2ba25ec1ebe383131",
+    "semantic_hash": "8b799bb462f0e5a2ba25ec1ebe383131"
+  },
+  "strava.html": {
+    "mtime": 1788472478.82257,
+    "seen": 1788473038.259147,
+    "ast_hash": "d354e37ed5f1793d80e48298a0b0aa03",
+    "semantic_hash": "d354e37ed5f1793d80e48298a0b0aa03"
+  },
+  "support.html": {
+    "mtime": 1788472478.82257,
+    "seen": 1788473038.259148,
+    "ast_hash": "31bbd7e74893505a6d548d1902ba479d",
+    "semantic_hash": "31bbd7e74893505a6d548d1902ba479d"
+  },
+  "terms.html": {
+    "mtime": 1788472478.82257,
+    "seen": 1788473038.2591486,
+    "ast_hash": "8921331fe094600b9a874f32ff78dca4",
+    "semantic_hash": "8921331fe094600b9a874f32ff78dca4"
+  },
+  "Products/src-hoodie.png": {
+    "mtime": 1788472478.21057,
+    "seen": 1788473038.2591496,
+    "ast_hash": "377595d220975cbfcc7ef2d8e393448f",
+    "semantic_hash": "377595d220975cbfcc7ef2d8e393448f"
+  },
+  "Products/src-singlet.png": {
+    "mtime": 1788472478.33457,
+    "seen": 1788473038.25915,
+    "ast_hash": "093ad67cad6717490ff17a08e6c85573",
+    "semantic_hash": "093ad67cad6717490ff17a08e6c85573"
+  },
+  "Products/src-socks.png": {
+    "mtime": 1788472478.43857,
+    "seen": 1788473038.2591512,
+    "ast_hash": "c315f3dc439c90870a5bf17c40fd3930",
+    "semantic_hash": "c315f3dc439c90870a5bf17c40fd3930"
+  },
+  "Products/src-windbreaker.png": {
+    "mtime": 1788472478.52657,
+    "seen": 1788473038.2591522,
+    "ast_hash": "fe2d771f9a3acc08db561e79a9200094",
+    "semantic_hash": "fe2d771f9a3acc08db561e79a9200094"
+  },
+  "og-image.png": {
+    "mtime": 1788472478.75457,
+    "seen": 1788473038.259153,
+    "ast_hash": "74447a8139da547b9911546efff8c780",
+    "semantic_hash": "74447a8139da547b9911546efff8c780"
+  },
+  "rsvp-assets/winged-foot-site.png": {
+    "mtime": 1788472478.75857,
+    "seen": 1788473038.2591536,
+    "ast_hash": "ec9ede64c32d388b6ba8170bec177ac1",
+    "semantic_hash": "ec9ede64c32d388b6ba8170bec177ac1"
+  },
+  "singlet-assets/singlet-back.png": {
+    "mtime": 1788472478.8220496,
+    "seen": 1788473038.259155,
+    "ast_hash": "d39f9ac33a58f69a7999d2239aa40803",
+    "semantic_hash": "d39f9ac33a58f69a7999d2239aa40803"
+  },
+  "singlet-assets/singlet-front.png": {
+    "mtime": 1788472478.8220496,
+    "seen": 1788473038.2591558,
+    "ast_hash": "cfa363843236590ec33bf7e783f537c1",
+    "semantic_hash": "cfa363843236590ec33bf7e783f537c1"
+  },
+  "singlet-assets/src-mark-dark.png": {
+    "mtime": 1788472478.8220496,
+    "seen": 1788473038.2591565,
+    "ast_hash": "ce942d3dcbdf9e4cdda7f8547d370ba2",
+    "semantic_hash": "ce942d3dcbdf9e4cdda7f8547d370ba2"
+  },
+  "singlet-assets/src-mark.png": {
+    "mtime": 1788472478.82257,
+    "seen": 1788473038.2591572,
+    "ast_hash": "79b1989e0a01955780c24220176393d3",
+    "semantic_hash": "79b1989e0a01955780c24220176393d3"
+  },
+  "singlet-assets/zelle-qr.png": {
+    "mtime": 1788472478.82257,
+    "seen": 1788473038.2591584,
+    "ast_hash": "553d871737b754ae71c281053943ca6b",
+    "semantic_hash": "553d871737b754ae71c281053943ca6b"
+  },
+  "astoria_park_track.mp4": {
+    "mtime": 1788472478.69457,
+    "seen": 1788473038.2591593,
+    "ast_hash": "9c70dcbd2dd8364b7222f8bc3e1fa018",
+    "semantic_hash": "9c70dcbd2dd8364b7222f8bc3e1fa018"
+  },
+  "nyc-drop-in.mp4": {
+    "mtime": 1788472478.75457,
+    "seen": 1788473038.25916,
+    "ast_hash": "f34dcc8fabbbd20d7bddcd1cee541cbb",
+    "semantic_hash": "f34dcc8fabbbd20d7bddcd1cee541cbb"
+  },
+  "saturday_long_run.mp4": {
+    "mtime": 1788472478.8185701,
+    "seen": 1788473038.2591608,
+    "ast_hash": "466496c7e25fc18f917c1f2241de0133",
+    "semantic_hash": "466496c7e25fc18f917c1f2241de0133"
+  }
+}
