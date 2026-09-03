@@ -6,7 +6,7 @@
 
 var SHEET_NAME   = 'Orders';
 var NOTIFY_EMAIL = 'svintsrunclub@gmail.com';  // '' to disable the heads-up email
-var CLOSES_AT    = '2026-09-04T09:00:00-04:00'; // must match CONFIG.closesAt
+var CLOSES_AT    = '2026-09-09T21:00:00-04:00'; // must match CONFIG.closesAt
 
 var HEADERS = [
   'Timestamp', 'Name', 'Email', 'Size', 'Quantity',

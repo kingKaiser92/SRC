@@ -10,6 +10,8 @@
       'three/addons/libs/meshopt_decoder.module.js': 'https://unpkg.com/three@0.184.0/examples/jsm/libs/meshopt_decoder.module.js'
     }
   };
+  // preorder.html ships this map statically (ahead of its modulepreloads);
+  // the injection below is for preview.html and any page that does not.
   if (!document.querySelector('script[type="importmap"]')) {
     const s = document.createElement('script');
     s.type = 'importmap';
@@ -169,9 +171,13 @@
     }
 
     async _bootThree() {
-      const THREE = await import('three');
-      const { GLTFLoader } = await import('three/addons/loaders/GLTFLoader.js');
-      const { MeshoptDecoder } = await import('three/addons/libs/meshopt_decoder.module.js');
+      // Fetched together. Awaiting these one after another serialised three
+      // CDN round trips before a byte of geometry could decode.
+      const [THREE, { GLTFLoader }, { MeshoptDecoder }] = await Promise.all([
+        import('three'),
+        import('three/addons/loaders/GLTFLoader.js'),
+        import('three/addons/libs/meshopt_decoder.module.js')
+      ]);
 
       const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
       renderer.setPixelRatio(Math.min(devicePixelRatio, 2));

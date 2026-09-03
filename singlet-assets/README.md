@@ -72,6 +72,16 @@ map, and 22 MB is fine on any phone from the last six years, so fidelity wins.
   of height. This is why the viewer warps its rotation rate instead of turning
   at a constant speed. See `singlet-viewer.js`.
 
+## Fonts
+
+`fonts/` holds the two latin subsets the page uses, taken from Google Fonts:
+Archivo v25 (the variable cut, so one 35 KB file carries every weight) and
+Archivo Black v23 (10 KB). They are self-hosted because the Google Fonts
+stylesheet was render-blocking on a third-party origin: on a slow mobile fetch
+it held first paint, and every script on the page behind it, for several
+seconds. `preorder.html` preloads both and declares them in its own
+`@font-face` rules.
+
 ## Raster assets
 
 The four PNGs are palette-quantized, not stored as full RGBA. They had few

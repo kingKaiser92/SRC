@@ -136,7 +136,7 @@ create policy "anon can insert orders"
 ```sql
 create function public.reject_late_orders() returns trigger as $$
 begin
-  if now() >= timestamptz '2026-09-04T09:00:00-04:00' then
+  if now() >= timestamptz '2026-09-09T21:00:00-04:00' then
     raise exception 'preorder closed';
   end if;
   return new;
@@ -207,7 +207,7 @@ Submit one real order and confirm:
 ## Payments
 
 Manual, no processor. Zelle to **Saints Vision LLC**
-(`saintsvisionllc@gmail.com`), and buyers are told to put their full name plus
+(`saintsvisionllc@gmail.com`), and buyers are told to put their full name, cut and
 size in the memo. Match incoming payments to orders by name and amount.
 
 ## Editing content

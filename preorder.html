@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Race Day Singlet · Saints Run Club</title>
-<meta name="description" content="Limited drop. Perforated performance knit, men's and women's race cut. Preorder by Zelle, pick up at a Saturday long run.">
+<meta name="description" content="Limited drop. Perforated performance knit, men's and women's race cut. Preorder by Zelle, pick up at any Wednesday speed session or Saturday long run.">
 <link rel="icon" href="https://izcimioeuohdofzmnahu.supabase.co/storage/v1/object/public/website-assets/winged-foot.png">
 <meta property="og:title" content="Race Day Singlet · Saints Run Club">
 <meta property="og:description" content="Limited drop. Preorder open.">
@@ -13,11 +13,45 @@
 <meta property="og:image:height" content="630">
 <meta property="og:type" content="website">
 <meta name="theme-color" content="#0A0A0A">
+<!-- Fonts are self-hosted. The Google Fonts stylesheet was render-blocking on
+     a third-party origin: on a slow mobile fetch it held first paint, and
+     every script on the page behind it, for 5 to 7 seconds. Two latin
+     subsets, 45 KB, on the connection the HTML already opened. -->
+<link rel="preload" as="font" type="font/woff2" href="singlet-assets/fonts/archivo-latin.woff2" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="singlet-assets/fonts/archivo-black-latin.woff2" crossorigin>
 <link rel="preload" as="fetch" type="model/gltf-binary" href="singlet-assets/singlet.glb" crossorigin>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Archivo+Black&display=swap" rel="stylesheet">
+<!-- three.js. The import map sits here, ahead of the modulepreloads, because
+     Chrome rejects a map inserted after any module fetch has begun;
+     singlet-viewer.js only injects its own when none exists. These six URLs
+     are exactly the files the pinned build pulls in. Preloading them turns a
+     five-hop serial chain (each hop a CDN round trip before the next could
+     even start) into one parallel fetch that begins at HTML parse. -->
+<link rel="preconnect" href="https://unpkg.com" crossorigin>
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.184.0/build/three.module.min.js","three/addons/loaders/GLTFLoader.js":"https://unpkg.com/three@0.184.0/examples/jsm/loaders/GLTFLoader.js","three/addons/libs/meshopt_decoder.module.js":"https://unpkg.com/three@0.184.0/examples/jsm/libs/meshopt_decoder.module.js"}}</script>
+<link rel="modulepreload" href="https://unpkg.com/three@0.184.0/build/three.module.min.js">
+<link rel="modulepreload" href="https://unpkg.com/three@0.184.0/build/three.core.min.js">
+<link rel="modulepreload" href="https://unpkg.com/three@0.184.0/examples/jsm/loaders/GLTFLoader.js">
+<link rel="modulepreload" href="https://unpkg.com/three@0.184.0/examples/jsm/utils/BufferGeometryUtils.js">
+<link rel="modulepreload" href="https://unpkg.com/three@0.184.0/examples/jsm/utils/SkeletonUtils.js">
+<link rel="modulepreload" href="https://unpkg.com/three@0.184.0/examples/jsm/libs/meshopt_decoder.module.js">
 <style>
+  /* Archivo is Google's variable cut: one file carries the 400/500/600 the
+     page uses. Archivo Black is a single weight. See singlet-assets/README.md. */
+  @font-face {
+    font-family: 'Archivo';
+    font-style: normal;
+    font-weight: 100 900;
+    font-display: swap;
+    src: url("singlet-assets/fonts/archivo-latin.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: 'Archivo Black';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url("singlet-assets/fonts/archivo-black-latin.woff2") format("woff2");
+  }
+
   :root {
     --ink:        #0A0A0A;
     --panel:      #141310;
@@ -302,6 +336,7 @@
     font-weight: 600;
     letter-spacing: .18em;
     text-transform: uppercase;
+    white-space: nowrap; /* "Reserve yours →" was dropping its arrow to a second line on phones */
     padding: 16px 26px;
     border-radius: 2px;
     border: none;
@@ -480,6 +515,7 @@
 
   .row {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
     gap: 16px;
@@ -506,7 +542,7 @@
   .step-btn:active:not(:disabled) { transform: translateY(1px); }
   .step-btn:disabled { opacity: .38; cursor: not-allowed; }
   .qty {
-    min-width: 52px;
+    min-width: 44px;
     text-align: center;
     font-family: 'Archivo Black', Archivo, sans-serif;
     font-size: 18px;
@@ -537,6 +573,46 @@
   .panel-copy { font-size: 14px; line-height: 1.6; color: var(--muted); text-wrap: pretty; }
   .panel-copy strong { color: var(--bone); font-weight: 600; }
 
+  /* The Zelle handle is a button, because on a phone the QR is a picture of
+     the device you are holding: it cannot be scanned. One tap copies the
+     email; the cue confirms in place and the live region says so aloud. */
+  .pay-to { border-top: 1px solid var(--hairline); padding-top: 20px; }
+  .pay-to .micro { display: block; margin-bottom: 10px; }
+  .copy {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px 12px;
+    width: 100%;
+    min-height: 48px;
+    padding: 12px 14px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    color: var(--bone);
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 1.4;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color .18s var(--ease);
+  }
+  .copy:hover { border-color: var(--muted-deep); }
+  .copy:disabled { opacity: .38; cursor: not-allowed; }
+  .copy[data-copied="true"] { border-color: var(--gold); }
+  .copy-value { min-width: 0; overflow-wrap: anywhere; }
+  .copy-cue {
+    flex: none;
+    margin-left: auto;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .24em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+  .copy[data-copied="true"] .copy-cue { color: var(--bone); }
+
   .fields { display: flex; flex-direction: column; gap: 14px; }
   .field { display: flex; flex-direction: column; gap: 7px; }
   .field input {
@@ -544,7 +620,9 @@
     border: 1px solid var(--border);
     color: var(--bone);
     font-family: inherit;
-    font-size: 15px;
+    /* 16px is the floor at which iOS Safari stops zooming the viewport when a
+       field takes focus. At 15px every tap into the form left the page zoomed. */
+    font-size: 16px;
     padding: 14px;
     border-radius: 2px;
     outline: none;
@@ -562,7 +640,7 @@
 
   /* Honeypot. Deliberately not display:none: bots skip those, and skipping is
      the whole point of the field. Off-screen and untabbable instead. */
-  .hp {
+  .hp, .sr-only {
     position: absolute;
     width: 1px; height: 1px;
     padding: 0; margin: -1px;
@@ -619,6 +697,38 @@
     font-size: 11px;
     letter-spacing: .2em;
     text-transform: uppercase;
+  }
+  /* 11px text is a 12px tap target. Pad the hit area, not the type. */
+  .footer-links a { display: inline-flex; align-items: center; min-height: 44px; }
+
+  /* ---------- phones ---------- */
+
+  /* The one breakpoint on the page. Everything wider flows on flex-wrap
+     alone; these are the things a 320 to 600px screen needs that wrapping
+     cannot express. Most buyers arrive here from an Instagram link. */
+  @media (max-width: 600px) {
+    :root { --pad-x: 20px; }
+
+    /* The wordmark wrapped onto three lines beside the mark and pushed the
+       header to 83px. The mark is the brand; the status and countdown are
+       what a buyer glances up to check, so they get the width. */
+    .brand .label { display: none; }
+    .status-text, .status-time { white-space: nowrap; }
+
+    /* 280dvh pins the garment for 1.8 screens after the reveal, which on a
+       phone reads as the page being stuck. One screen of pin, then release:
+       the buy form arrives a full screen sooner. */
+    .hero { height: 200dvh; }
+    .hero-buy { gap: 20px; }
+    #hero-cta { padding: 16px 18px; }
+
+    .detail { padding-block: 64px 72px; }
+    .preorder { padding-block: 72px 96px; }
+    .preorder-sub { margin-bottom: 40px; }
+    /* 32px of panel padding inside 28px of page padding left a 320px screen
+       clipping the order total and the + button. */
+    .panel { padding: 30px 22px 34px; }
+    .receipt { padding: 44px 22px; }
   }
 
   /* ---------- entrance ---------- */
@@ -721,7 +831,7 @@
       </div>
       <div class="spec-item reveal">
         <dt class="micro">Pickup</dt>
-        <dd id="spec-pickup">Pickup at a Saturday long run, early October.</dd>
+        <dd id="spec-pickup">Pickup at any Wednesday speed session or Saturday long run, early October.</dd>
       </div>
     </dl>
   </section>
@@ -729,7 +839,7 @@
   <section class="preorder" id="preorder" aria-labelledby="preorder-title">
     <div class="preorder-head">
       <h2 id="preorder-title">Preorder</h2>
-      <span class="closes">Closes <span id="closes-on">Fri, Sept 4 · 9AM</span></span>
+      <span class="closes">Closes <span id="closes-on">Wed, Sept 9 · 9PM</span></span>
     </div>
     <p class="preorder-sub" id="preorder-sub">Pay by Zelle with your full name, cut and size in the memo. That memo is your order. Fill in the form below and DM @svintsrunclub so we can confirm your size.</p>
 
@@ -770,10 +880,14 @@
         <a class="qr" id="zelle-link" href="https://www.zellepay.com/" target="_blank" rel="noopener">
           <img src="singlet-assets/zelle-qr.png" alt="Zelle QR code for Saints Vision LLC">
         </a>
-        <p class="panel-copy">Scan this code in your bank's app to pay <strong>Saints Vision LLC</strong>. Put <strong>your full name, cut and size</strong> in the memo.</p>
-        <div class="row panel-foot" style="margin-top:20px;align-items:baseline">
+        <p class="panel-copy">Open your bank's app, choose Zelle and send to the email below. It will show as <strong>Saints Vision LLC</strong>. On a computer, scan the code instead. Put <strong>your full name, cut and size</strong> in the memo.</p>
+        <div class="pay-to panel-foot">
           <span class="micro">Send to</span>
-          <span style="font-size:14px;color:var(--bone);text-align:right;word-break:break-word" id="zelle-handle">Saints Vision LLC</span>
+          <button type="button" class="copy" id="copy-handle" data-copied="false">
+            <span class="copy-value" id="zelle-handle">saintsvisionllc@gmail.com</span>
+            <span class="copy-cue" id="copy-cue" aria-hidden="true">Copy</span>
+          </button>
+          <span class="sr-only" id="copy-status" role="status" aria-live="polite"></span>
         </div>
       </div>
 
@@ -793,7 +907,7 @@
           </label>
           <label class="field">
             <span class="micro">Zelle confirmation code (optional)</span>
-            <input id="f-code" name="code" type="text" class="mono" placeholder="Speeds up matching">
+            <input id="f-code" name="code" type="text" class="mono" placeholder="Speeds up matching" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false">
           </label>
           <div class="hp" aria-hidden="true">
             <label for="f-company">Company</label>
@@ -848,9 +962,9 @@
     maxQty:      6,
     zelleUrl:    'https://www.zellepay.com/',
     zelleHandle: 'saintsvisionllc@gmail.com',
-    closesOn:    'Fri, Sept 4 · 9AM',
-    closesAt:    '2026-09-04T09:00:00-04:00',
-    pickup:      'Pickup at a Saturday long run, early October.',
+    closesOn:    'Wed, Sept 9 · 9PM',
+    closesAt:    '2026-09-09T21:00:00-04:00',
+    pickup:      'Pickup at any Wednesday speed session or Saturday long run, early October.',
     item:        'Race Day Singlet'
   };
 
@@ -961,7 +1075,7 @@
   // ---- hard close ----
   // The countdown reaching zero used to change nothing but a label, so the form
   // kept taking orders after the deadline. Re-checked on every tick as well as
-  // at load, so a page left open past 9AM closes itself.
+  // at load, so a page left open past the deadline closes itself.
   var ctaEl = $('hero-cta');
   var statusTextEl = $('status-text');
   var statusDotEl = $('status-dot');
@@ -1112,6 +1226,47 @@
     // If the deadline passed while the receipt was showing, this repairs the
     // form the reset just re-enabled instead of leaving it half-live.
     applyClosed();
+  });
+
+  // ---- copy the Zelle handle ----
+  // On a phone the QR is a picture of the device in your hand, so the email
+  // is the payment path. Clipboard API first; the textarea + execCommand
+  // route covers older WebViews. Either way the email stays on screen.
+  var copyEl = $('copy-handle'), copyCue = $('copy-cue'), copyStatus = $('copy-status');
+  var copyTimer = 0;
+  function fallbackCopy(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0';
+    document.body.appendChild(ta);
+    ta.select();
+    var ok = false;
+    try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+    document.body.removeChild(ta);
+    return ok;
+  }
+  function showCopied(ok) {
+    copyEl.dataset.copied = String(ok);
+    copyCue.textContent = ok ? 'Copied' : "Couldn't copy";
+    copyStatus.textContent = ok ? 'Copied ' + CONFIG.zelleHandle : "Couldn't copy. The email is " + CONFIG.zelleHandle;
+    clearTimeout(copyTimer);
+    copyTimer = setTimeout(function () {
+      copyEl.dataset.copied = 'false';
+      copyCue.textContent = 'Copy';
+      copyStatus.textContent = '';
+    }, 2200);
+  }
+  copyEl.addEventListener('click', function () {
+    var text = CONFIG.zelleHandle;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(
+        function () { showCopied(true); },
+        function () { showCopied(fallbackCopy(text)); }
+      );
+    } else {
+      showCopied(fallbackCopy(text));
+    }
   });
 
   // ---- header goes solid once body copy starts passing under it ----
