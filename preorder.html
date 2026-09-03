@@ -19,21 +19,6 @@
      subsets, 45 KB, on the connection the HTML already opened. -->
 <link rel="preload" as="font" type="font/woff2" href="singlet-assets/fonts/archivo-latin.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="singlet-assets/fonts/archivo-black-latin.woff2" crossorigin>
-<link rel="preload" as="fetch" type="model/gltf-binary" href="singlet-assets/singlet.glb" crossorigin>
-<!-- three.js. The import map sits here, ahead of the modulepreloads, because
-     Chrome rejects a map inserted after any module fetch has begun;
-     singlet-viewer.js only injects its own when none exists. These six URLs
-     are exactly the files the pinned build pulls in. Preloading them turns a
-     five-hop serial chain (each hop a CDN round trip before the next could
-     even start) into one parallel fetch that begins at HTML parse. -->
-<link rel="preconnect" href="https://unpkg.com" crossorigin>
-<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.184.0/build/three.module.min.js","three/addons/loaders/GLTFLoader.js":"https://unpkg.com/three@0.184.0/examples/jsm/loaders/GLTFLoader.js","three/addons/libs/meshopt_decoder.module.js":"https://unpkg.com/three@0.184.0/examples/jsm/libs/meshopt_decoder.module.js"}}</script>
-<link rel="modulepreload" href="https://unpkg.com/three@0.184.0/build/three.module.min.js">
-<link rel="modulepreload" href="https://unpkg.com/three@0.184.0/build/three.core.min.js">
-<link rel="modulepreload" href="https://unpkg.com/three@0.184.0/examples/jsm/loaders/GLTFLoader.js">
-<link rel="modulepreload" href="https://unpkg.com/three@0.184.0/examples/jsm/utils/BufferGeometryUtils.js">
-<link rel="modulepreload" href="https://unpkg.com/three@0.184.0/examples/jsm/utils/SkeletonUtils.js">
-<link rel="modulepreload" href="https://unpkg.com/three@0.184.0/examples/jsm/libs/meshopt_decoder.module.js">
 <style>
   /* Archivo is Google's variable cut: one file carries the 400/500/600 the
      page uses. Archivo Black is a single weight. See singlet-assets/README.md. */
@@ -81,7 +66,6 @@
 
     --z-grain:  999;
     --z-header: 50;
-    --z-stage:  1;
 
     /* The palette is a committed dark brand, not a preference. Declaring it
        keeps native controls, scrollbars and form UI from rendering light. */
@@ -228,7 +212,19 @@
 
   /* ---------- hero ---------- */
 
-  .hero { position: relative; height: 280dvh; }
+  /* A full-height product board. The two production renders are the product
+     photo; they sit on bone plates because the garment is navy and vanishes
+     on ink. No sticky stage, no scroll choreography: headline, garment,
+     price, button, in one screen. */
+  .hero {
+    position: relative;
+    min-height: 100dvh;
+    max-width: var(--shell);
+    margin-inline: auto;
+    padding: 92px var(--pad-x) 30px;
+    display: flex;
+    flex-direction: column;
+  }
 
   /* Watched by an IntersectionObserver so the header can flip to solid without
      a scroll handler firing on every frame. */
@@ -241,90 +237,79 @@
     pointer-events: none;
   }
 
-  .stage {
-    position: sticky;
-    top: 0;
-    height: 100dvh;
-    display: grid;
-    /* Type owns the top band, the garment owns the rest. They overlap only at
-       the shoulders, so the chest mark stays clear of the headline. */
-    grid-template-rows: auto 1fr auto;
-    overflow: hidden;
-  }
-
-  .glow {
-    position: absolute;
-    inset: 0;
-    background:
-      radial-gradient(46% 40% at 50% 56%, rgba(255, 195, 11, .13), rgba(10, 10, 10, 0) 72%),
-      radial-gradient(70% 60% at 50% 50%, rgba(120, 132, 160, .10), rgba(10, 10, 10, 0) 70%);
-  }
-
-  .model {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding-top: 132px;
-    z-index: var(--z-stage);
-  }
-  singlet-viewer {
-    width: min(88vw, 660px);
-    height: min(70dvh, 660px);
-    transition: opacity .6s var(--ease);
-  }
-  singlet-viewer:not([data-ready]) { opacity: 0; }
-
-  .scrim {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    z-index: 2;
-    background: linear-gradient(180deg,
-      rgba(10, 10, 10, .95) 0%,
-      rgba(10, 10, 10, .62) 20%,
-      rgba(10, 10, 10, 0)   38%,
-      rgba(10, 10, 10, 0)   64%,
-      rgba(10, 10, 10, .74) 86%,
-      rgba(10, 10, 10, .96) 100%);
-  }
-
-  .hero-type {
-    position: relative;
-    z-index: 3;
-    text-align: center;
-    padding: 92px 24px 0;
-    pointer-events: none;
-  }
+  .hero-type { text-align: center; }
   .hero-type .eyebrow { display: block; margin-bottom: 16px; }
   .hero-type h1 {
     margin: 0;
     font-family: 'Archivo Black', Archivo, sans-serif;
-    font-size: clamp(44px, 10.5vw, 152px);
+    font-size: clamp(44px, 7.5vw, 104px);
     line-height: .86;
     letter-spacing: -.03em;
     text-transform: uppercase;
     text-wrap: balance;
     color: var(--bone);
-    text-shadow: 0 6px 40px rgba(10, 10, 10, .85);
   }
 
-  .hero-foot {
+  .gallery {
     position: relative;
-    z-index: 3;
+    flex: 1 1 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    padding-block: 28px 18px;
+  }
+  /* A faint gold cast behind the plates: the one thing kept from the old
+     stage, and the only colour on the board apart from the marks. */
+  .gallery::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(50% 60% at 50% 50%, rgba(255, 195, 11, .09), rgba(10, 10, 10, 0) 72%);
+  }
+  .plate {
+    position: relative;
+    margin: 0;
+    /* Sized from the viewport height so headline, board, price and button
+       share the first screen on every display. Width follows the render's
+       47:61 ratio. 620px is the ceiling because the renders are 470px wide
+       and there is no larger master. */
+    height: clamp(240px, calc(100dvh - 340px), 620px);
+    aspect-ratio: 47 / 61;
+    flex: 0 0 auto;
+    background: var(--bone);
+    border-radius: 3px;
+    padding: 22px 18px 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  /* The back plate drops a touch so the pair reads as two objects on a
+     board rather than one wide image. */
+  .plate:nth-child(2) { transform: translateY(20px); }
+  .plate img {
+    display: block;
+    flex: 1 1 0;
+    min-height: 0;
+    width: 100%;
+    object-fit: contain;
+  }
+  .plate figcaption { flex: none; color: var(--on-bone); }
+
+  .hero-foot {
     display: flex;
     align-items: flex-end;
     justify-content: space-between;
-    gap: 24px;
+    gap: 20px 32px;
     flex-wrap: wrap;
-    width: 100%;
-    padding: 0 var(--pad-x) 30px;
+    margin-top: 12px;
   }
   .hero-buy { display: flex; align-items: flex-end; gap: 36px; }
   .hero-price { font-size: 34px; line-height: 1; }
 
-  /* ---------- buttons ---------- */
+
 
   .btn {
     display: inline-flex;
@@ -361,44 +346,31 @@
 
   /* ---------- product detail ---------- */
 
-  /* A split composition, deliberately not another hairline-gap cell row: the
-     preorder panels below already own that layout family, and running it twice
-     made the whole lower page read as one long table. This also finally puts
-     the garment itself on the page. */
+  /* Three facts in a row. The garment lives in the hero now, so this strip is
+     only what a buyer checks before paying. Ruled columns on a wide screen,
+     ruled rows on a phone, from one flex-wrap. */
   .detail {
     border-top: 1px solid var(--hairline);
     max-width: var(--shell);
     margin-inline: auto;
-    padding: 92px var(--pad-x) 100px;
+    padding: 64px var(--pad-x) 72px;
+  }
+  .spec-list {
+    margin: 0;
     display: flex;
     flex-wrap: wrap;
-    align-items: flex-start;
-    gap: clamp(36px, 6vw, 76px);
+    gap: 0 clamp(36px, 6vw, 76px);
   }
-  /* Uneven flex bases carry the asymmetry and wrapping carries the mobile
-     collapse, so the page still needs no media queries. */
-  .detail-art { flex: 1.15 1 380px; min-width: 0; }
-  .spec-list  { flex: 1 1 320px; min-width: 0; margin: 0; }
-
-  .art-tiles { display: flex; flex-wrap: wrap; gap: 2px; }
-  /* The garment is navy with gold marks and vanishes on ink, so these two
-     tiles are bone on purpose. Contained product surfaces, not a theme flip:
-     the section background stays dark. */
-  .tile {
-    flex: 1 1 170px;
-    margin: 0;
-    background: var(--bone);
-    border-radius: 3px;
-    padding: 26px 22px 18px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 16px;
+  .spec-item {
+    flex: 1 1 240px;
+    min-width: 0;
+    padding: 22px 0 26px;
+    border-top: 1px solid var(--hairline);
   }
-  .tile img { display: block; width: 100%; height: auto; max-width: 280px; }
-  .tile figcaption { color: var(--on-bone); }
+  .spec-item dt { display: block; margin-bottom: 12px; }
+  .spec-item dd { margin: 0; font-size: 20px; line-height: 1.35; text-wrap: pretty; }
   .art-note {
-    margin: 16px 0 0;
+    margin: 26px 0 0;
     font-size: 11px;
     line-height: 1.5;
     letter-spacing: .16em;
@@ -406,14 +378,7 @@
     color: var(--muted-deep);
   }
 
-  .spec-item { padding: 24px 0; }
-  .spec-item:first-child { padding-top: 0; }
-  .spec-item:last-child { padding-bottom: 0; }
-  .spec-item + .spec-item { border-top: 1px solid var(--hairline); }
-  .spec-item dt { display: block; margin-bottom: 12px; }
-  .spec-item dd { margin: 0; font-size: 20px; line-height: 1.35; text-wrap: pretty; }
 
-  /* ---------- preorder ---------- */
 
   .preorder {
     padding: 100px var(--pad-x) 120px;
@@ -512,6 +477,42 @@
     color: var(--ink);
     border-color: var(--gold);
   }
+
+  /* The order list. One row per singlet added, each removable. Hidden until
+     the first "Add and pick another", so a one-singlet order never sees it. */
+  .add-line { width: 100%; margin-top: 22px; }
+  .lines { margin-top: 28px; }
+  .line-list { list-style: none; margin: 0; padding: 0; }
+  .line {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+    border-top: 1px solid var(--hairline);
+    font-size: 14px;
+    color: var(--bone);
+  }
+  .line:first-child { border-top: 0; padding-top: 0; }
+  .line-desc { flex: 1 1 auto; min-width: 0; }
+  .line-desc .tnum { color: var(--muted); }
+  .line-total { flex: none; }
+  .line-remove {
+    flex: none;
+    width: 40px;
+    height: 40px;
+    margin-right: -10px;
+    background: none;
+    border: 1px solid transparent;
+    border-radius: 2px;
+    color: var(--muted);
+    font-family: inherit;
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    transition: color .18s var(--ease), border-color .18s var(--ease);
+  }
+  .line-remove:hover { color: var(--bone); border-color: var(--border); }
+  .line-remove:disabled { opacity: .38; cursor: not-allowed; }
 
   .row {
     display: flex;
@@ -612,6 +613,8 @@
     color: var(--gold);
   }
   .copy[data-copied="true"] .copy-cue { color: var(--bone); }
+  .copy[data-empty="true"] .copy-value { color: var(--muted-deep); }
+  .pay-to .copy + .micro { margin-top: 18px; }
 
   .fields { display: flex; flex-direction: column; gap: 14px; }
   .field { display: flex; flex-direction: column; gap: 7px; }
@@ -715,14 +718,36 @@
     .brand .label { display: none; }
     .status-text, .status-time { white-space: nowrap; }
 
-    /* 280dvh pins the garment for 1.8 screens after the reveal, which on a
-       phone reads as the page being stuck. One screen of pin, then release:
-       the buy form arrives a full screen sooner. */
-    .hero { height: 200dvh; }
+    /* The board becomes a swipe row: the front plate takes most of the
+       width and the back peeks in from the right, so the second view
+       announces itself without a control. Plates are sized so the price and
+       button still land inside the first screen. */
+    .hero { padding-top: 84px; }
+    .gallery {
+      justify-content: flex-start;
+      gap: 12px;
+      padding-block: 20px 14px;
+      margin-inline: calc(-1 * var(--pad-x));
+      padding-inline: var(--pad-x);
+      scroll-padding-inline: var(--pad-x);
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+    .gallery::-webkit-scrollbar { display: none; }
+    .gallery::before { display: none; }
+    .plate {
+      height: clamp(200px, calc(100dvh - 320px), 460px);
+      scroll-snap-align: start;
+      padding: 16px 14px 12px;
+    }
+    .plate:nth-child(2) { transform: none; }
     .hero-buy { gap: 20px; }
     #hero-cta { padding: 16px 18px; }
 
-    .detail { padding-block: 64px 72px; }
+    .detail { padding-block: 40px 48px; }
     .preorder { padding-block: 72px 96px; }
     .preorder-sub { margin-bottom: 40px; }
     /* 32px of panel padding inside 28px of page padding left a 320px screen
@@ -731,7 +756,7 @@
     .receipt { padding: 44px 22px; }
   }
 
-  /* ---------- entrance ---------- */
+
 
   /* Scoped to .js so a script failure can never leave the order form invisible:
      without JS these elements simply render in place. */
@@ -775,51 +800,37 @@
 
   <section class="hero" aria-labelledby="drop-title">
     <div class="hero-sentinel" aria-hidden="true"></div>
-    <div class="stage">
-      <div class="glow" aria-hidden="true"></div>
 
-      <div class="model">
-        <singlet-viewer src="singlet-assets/singlet.glb" progress-target=".hero"></singlet-viewer>
-      </div>
+    <div class="hero-type">
+      <span class="eyebrow">Limited Drop</span>
+      <h1 id="drop-title">Race Day Singlet</h1>
+    </div>
 
-      <div class="scrim" aria-hidden="true"></div>
+    <div class="gallery" role="group" aria-label="Front and back of the singlet">
+      <figure class="plate">
+        <img src="singlet-assets/singlet-front.png" width="470" height="610" fetchpriority="high" decoding="async"
+             alt="Front of the Race Day Singlet: navy body with a gold starburst and the SAINTS RUN CLUB wordmark at the left chest.">
+        <figcaption class="micro">Front</figcaption>
+      </figure>
+      <figure class="plate">
+        <img src="singlet-assets/singlet-back.png" width="470" height="610" fetchpriority="high" decoding="async"
+             alt="Back of the Race Day Singlet: navy body with a gold starburst and BUILT FOR TAKEOFF running vertically down the spine.">
+        <figcaption class="micro">Back</figcaption>
+      </figure>
+    </div>
 
-      <div class="hero-type">
-        <span class="eyebrow">Limited Drop</span>
-        <h1 id="drop-title">Race Day<br>Singlet</h1>
-      </div>
-
-      <div class="stage-gap" aria-hidden="true"></div>
-
-      <div class="hero-foot">
-        <div class="hero-buy">
-          <div>
-            <span class="micro" style="display:block;margin-bottom:6px">Preorder</span>
-            <span class="display hero-price tnum" id="hero-price">$50</span>
-          </div>
-          <a class="btn btn-gold" id="hero-cta" href="#preorder">Reserve yours →</a>
+    <div class="hero-foot">
+      <div class="hero-buy">
+        <div>
+          <span class="micro" style="display:block;margin-bottom:6px">Preorder</span>
+          <span class="display hero-price tnum" id="hero-price">$50</span>
         </div>
+        <a class="btn btn-gold" id="hero-cta" href="#preorder">Reserve yours →</a>
       </div>
     </div>
   </section>
 
   <section class="detail" aria-label="Product detail">
-    <div class="detail-art">
-      <div class="art-tiles">
-        <figure class="tile reveal">
-          <img src="singlet-assets/singlet-front.png" width="470" height="610" loading="lazy" decoding="async"
-               alt="Front of the Race Day Singlet: navy body with a gold starburst and the SAINTS RUN CLUB wordmark at the left chest.">
-          <figcaption class="micro">Front</figcaption>
-        </figure>
-        <figure class="tile reveal">
-          <img src="singlet-assets/singlet-back.png" width="470" height="610" loading="lazy" decoding="async"
-               alt="Back of the Race Day Singlet: navy body with a gold starburst and BUILT FOR TAKEOFF running vertically down the spine.">
-          <figcaption class="micro">Back</figcaption>
-        </figure>
-      </div>
-      <p class="art-note">Shown in the men's cut. Production sample, final trim and stitching may vary.</p>
-    </div>
-
     <dl class="spec-list">
       <div class="spec-item reveal">
         <dt class="micro">Fabric</dt>
@@ -834,6 +845,7 @@
         <dd id="spec-pickup">Pickup at any Wednesday speed session or Saturday long run, early October.</dd>
       </div>
     </dl>
+    <p class="art-note">Shown in the men's cut. Production sample, final trim and stitching may vary.</p>
   </section>
 
   <section class="preorder" id="preorder" aria-labelledby="preorder-title">
@@ -866,6 +878,13 @@
           </div>
         </div>
 
+        <button type="button" class="btn btn-ghost add-line" id="add-line" disabled>Add and pick another</button>
+
+        <div class="lines" id="lines" hidden>
+          <span class="micro field-label">Your order</span>
+          <ul class="line-list" id="line-list" aria-live="polite"></ul>
+        </div>
+
         <div class="row row-total panel-foot">
           <span class="label">Send exactly</span>
           <span class="total tnum" id="total">$50</span>
@@ -880,12 +899,17 @@
         <a class="qr" id="zelle-link" href="https://www.zellepay.com/" target="_blank" rel="noopener">
           <img src="singlet-assets/zelle-qr.png" alt="Zelle QR code for Saints Vision LLC">
         </a>
-        <p class="panel-copy">Open your bank's app, choose Zelle and send to the email below. It will show as <strong>Saints Vision LLC</strong>. On a computer, scan the code instead. Put <strong>your full name, cut and size</strong> in the memo.</p>
+        <p class="panel-copy">Open your bank's app, choose Zelle and send to the email below. It will show as <strong>Saints Vision LLC</strong>. On a computer, scan the code instead. Put <strong>your full name</strong> in the memo, then the line below.</p>
         <div class="pay-to panel-foot">
           <span class="micro">Send to</span>
           <button type="button" class="copy" id="copy-handle" data-copied="false">
             <span class="copy-value" id="zelle-handle">saintsvisionllc@gmail.com</span>
-            <span class="copy-cue" id="copy-cue" aria-hidden="true">Copy</span>
+            <span class="copy-cue" aria-hidden="true">Copy</span>
+          </button>
+          <span class="micro">For the memo</span>
+          <button type="button" class="copy" id="copy-memo" data-copied="false" data-empty="true" disabled>
+            <span class="copy-value" id="memo-value">Pick a cut and size first</span>
+            <span class="copy-cue" aria-hidden="true">Copy</span>
           </button>
           <span class="sr-only" id="copy-status" role="status" aria-live="polite"></span>
         </div>
@@ -946,7 +970,6 @@
   </nav>
 </footer>
 
-<script src="singlet-assets/singlet-viewer.js"></script>
 <script>
 (function () {
   'use strict';
@@ -959,7 +982,7 @@
     price:       50,
     fits:        ["Men's", "Women's"],
     sizes:       ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
-    maxQty:      6,
+    maxQty:      6,   // per order, across every line
     zelleUrl:    'https://www.zellepay.com/',
     zelleHandle: 'saintsvisionllc@gmail.com',
     closesOn:    'Wed, Sept 9 · 9PM',
@@ -969,7 +992,9 @@
   };
 
   var $ = function (id) { return document.getElementById(id); };
-  var state = { fit: '', size: '', qty: 1, sending: false };
+  // fit/size/qty is the picker: the singlet being chosen right now. lines is
+  // everything already added with "Add and pick another".
+  var state = { fit: '', size: '', qty: 1, lines: [], sending: false };
 
   function money(n) { return '$' + (Number.isInteger(n) ? n : n.toFixed(2)); }
 
@@ -1008,6 +1033,7 @@
   // ---- cut and size chips ----
   // One renderer for both groups. Neither has a default: a pre-selected cut is
   // the kind of thing a buyer taps past, and the cost is the wrong garment.
+  // A pressed chip toggles off again, so a half-picked singlet can be cleared.
   var cutsEl = $('cuts'), sizesEl = $('sizes');
 
   function renderChips(host, values, assign) {
@@ -1018,11 +1044,13 @@
       b.textContent = label;
       b.setAttribute('aria-pressed', 'false');
       b.addEventListener('click', function () {
-        assign(label);
+        var on = b.getAttribute('aria-pressed') === 'true';
+        assign(on ? '' : label);
         Array.prototype.forEach.call(host.children, function (c) {
-          c.setAttribute('aria-pressed', String(c === b));
+          c.setAttribute('aria-pressed', String(!on && c === b));
         });
         clearError();
+        renderOrder();
       });
       host.appendChild(b);
     });
@@ -1037,17 +1065,105 @@
   renderChips(cutsEl, CONFIG.fits, function (v) { state.fit = v; });
   renderChips(sizesEl, CONFIG.sizes, function (v) { state.size = v; });
 
-  // ---- quantity ----
+  // ---- quantity and the order lines ----
+  // "Add and pick another" moves the picker into state.lines and clears it.
+  // A complete picker that was never added still counts, so a one-singlet
+  // buyer never has to learn the button exists. Everything below reads the
+  // same view of the order: added lines, plus the picker if it is complete.
   var qtyEl = $('qty'), decEl = $('qty-dec'), incEl = $('qty-inc'), totalEl = $('total');
-  function renderQty() {
-    qtyEl.textContent = state.qty;
-    totalEl.textContent = money(CONFIG.price * state.qty);
-    decEl.disabled = state.qty <= 1;
-    incEl.disabled = state.qty >= CONFIG.maxQty;
+  var addEl = $('add-line'), linesEl = $('lines'), lineListEl = $('line-list');
+  var memoBtnEl = $('copy-memo'), memoValueEl = $('memo-value');
+  var MEMO_EMPTY = 'Pick a cut and size first';
+
+  function pickerComplete() { return !!(state.fit && state.size); }
+  function sumQty(lines) { return lines.reduce(function (n, l) { return n + l.qty; }, 0); }
+  function orderLines() {
+    return pickerComplete()
+      ? state.lines.concat([{ fit: state.fit, size: state.size, qty: state.qty }])
+      : state.lines.slice();
   }
-  decEl.addEventListener('click', function () { state.qty = Math.max(1, state.qty - 1); renderQty(); });
-  incEl.addEventListener('click', function () { state.qty = Math.min(CONFIG.maxQty, state.qty + 1); renderQty(); });
-  renderQty();
+  function lineLabel(l) { return l.fit + ' ' + l.size + (l.qty > 1 ? ' ×' + l.qty : ''); }
+  function memoText(lines) { return lines.map(lineLabel).join(', '); }
+
+  // Same cut and size merges into the existing line rather than repeating it.
+  function addLine() {
+    if (!pickerComplete()) return false;
+    if (sumQty(state.lines) + state.qty > CONFIG.maxQty) {
+      setError(CONFIG.maxQty + ' per order, max.');
+      return false;
+    }
+    var hit = null;
+    state.lines.forEach(function (l) { if (l.fit === state.fit && l.size === state.size) hit = l; });
+    if (hit) hit.qty += state.qty;
+    else state.lines.push({ fit: state.fit, size: state.size, qty: state.qty });
+    state.fit = ''; state.size = ''; state.qty = 1;
+    clearChips(cutsEl);
+    clearChips(sizesEl);
+    clearError();
+    renderOrder();
+    return true;
+  }
+
+  function removeLine(i) {
+    state.lines.splice(i, 1);
+    clearError();
+    renderOrder();
+  }
+
+  function renderLines() {
+    lineListEl.textContent = '';
+    state.lines.forEach(function (l, i) {
+      var li = document.createElement('li');
+      li.className = 'line';
+      var desc = document.createElement('span');
+      desc.className = 'line-desc';
+      desc.textContent = l.fit + ' · ' + l.size + ' ';
+      var q = document.createElement('span');
+      q.className = 'tnum';
+      q.textContent = '× ' + l.qty;
+      desc.appendChild(q);
+      var tot = document.createElement('span');
+      tot.className = 'line-total tnum';
+      tot.textContent = money(CONFIG.price * l.qty);
+      var rm = document.createElement('button');
+      rm.type = 'button';
+      rm.className = 'line-remove';
+      rm.setAttribute('aria-label', 'Remove ' + lineLabel(l));
+      rm.textContent = '×';
+      rm.disabled = isClosed();
+      rm.addEventListener('click', function () { removeLine(i); });
+      li.appendChild(desc);
+      li.appendChild(tot);
+      li.appendChild(rm);
+      lineListEl.appendChild(li);
+    });
+    linesEl.hidden = state.lines.length === 0;
+  }
+
+  function renderMemo(lines) {
+    var text = memoText(lines);
+    memoValueEl.textContent = text || MEMO_EMPTY;
+    memoBtnEl.disabled = !text || isClosed();
+    memoBtnEl.dataset.empty = String(!text);
+  }
+
+  function renderOrder() {
+    var lines = orderLines();
+    var room = Math.max(1, CONFIG.maxQty - sumQty(state.lines));
+    if (state.qty > room) state.qty = room;
+    qtyEl.textContent = state.qty;
+    decEl.disabled = state.qty <= 1;
+    incEl.disabled = state.qty >= room;
+    addEl.disabled = !pickerComplete() || isClosed();
+    // Before anything is picked the total is a price hint at the current
+    // quantity, exactly as it always was.
+    totalEl.textContent = money(CONFIG.price * (lines.length ? sumQty(lines) : state.qty));
+    renderLines();
+    renderMemo(lines);
+  }
+  decEl.addEventListener('click', function () { state.qty = Math.max(1, state.qty - 1); renderOrder(); });
+  incEl.addEventListener('click', function () { state.qty = state.qty + 1; renderOrder(); });
+  addEl.addEventListener('click', addLine);
 
   // ---- validation + submit ----
   var noteEl = $('note'), formEl = $('order-form'), submitEl = $('submit');
@@ -1121,6 +1237,9 @@
     if (statusDotEl) statusDotEl.style.animation = 'none';
   }
 
+  // First paint of the order panel happens here, after closeAt exists, so
+  // the disabled states it derives from isClosed() are right from the start.
+  renderOrder();
   tickCountdown();
   setInterval(function () { tickCountdown(); applyClosed(); }, 1000);
   applyClosed();
@@ -1144,8 +1263,13 @@
     if (state.sending) return;
     if (isClosed()) { applyClosed(); return; }
 
-    if (!state.fit) return setError('Pick a cut first.');
-    if (!state.size) return setError('Pick a size first.');
+    // A complete picker is a singlet the buyer wants: fold it in. If that
+    // fails it was the per-order cap, and setError has already said so.
+    if (pickerComplete() && !addLine()) return;
+    if (!state.lines.length) {
+      if (!state.fit) return setError('Pick a cut first.');
+      return setError('Pick a size first.');
+    }
     if (!nameEl.value.trim()) return setError('We need your name to match the payment.', nameEl);
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(emailEl.value)) return setError('That email looks off.', emailEl);
 
@@ -1154,21 +1278,37 @@
     submitEl.dataset.sending = 'true';
     submitEl.textContent = 'Adding you…';
 
-    var payload = {
-      timestamp: new Date().toISOString(),
-      name: nameEl.value.trim(),
-      email: emailEl.value.trim(),
-      size: state.size,
-      quantity: state.qty,
-      total: CONFIG.price * state.qty,
-      zelleCode: codeEl.value.trim(),
-      company: hpEl.value,
-      item: CONFIG.item + ' (' + state.fit + ')',
-      source: 'saintsrunclub.com/preorder'
-    };
+    // One POST per line, in the shape the endpoint has always taken, so a
+    // two-singlet order lands as two rows sharing one timestamp. That holds
+    // whether or not the deployed script has been updated; a single POST
+    // carrying an array would silently drop every line but the first on an
+    // older script. orderTotal, lineIndex and lineCount ride along for a
+    // script that knows to read them. See PREORDER-SETUP.md.
+    var lines = state.lines.slice();
+    var stamp = new Date().toISOString();
+    var orderTotal = CONFIG.price * sumQty(lines);
+    var payloads = lines.map(function (l, i) {
+      return {
+        timestamp: stamp,
+        name: nameEl.value.trim(),
+        email: emailEl.value.trim(),
+        size: l.size,
+        quantity: l.qty,
+        total: CONFIG.price * l.qty,
+        zelleCode: codeEl.value.trim(),
+        company: hpEl.value,
+        item: CONFIG.item + ' (' + l.fit + ')',
+        source: 'saintsrunclub.com/preorder',
+        orderTotal: orderTotal,
+        lineIndex: i,
+        lineCount: lines.length
+      };
+    });
 
     var done = function () {
-      $('receipt-line').textContent = state.qty + ' × ' + state.fit + ', Size ' + state.size;
+      $('receipt-line').textContent = lines.length === 1
+        ? lines[0].qty + ' × ' + lines[0].fit + ', Size ' + lines[0].size
+        : lines.map(function (l) { return l.qty + ' × ' + l.fit + ' ' + l.size; }).join(' · ');
       formEl.hidden = true;
       $('receipt').hidden = false;
       $('receipt').scrollIntoView({ block: 'center', behavior: scrollBehavior() });
@@ -1195,14 +1335,16 @@
       return;
     }
 
-    // no-cors keeps the Apps Script call preflight-free; the response is opaque,
-    // so a resolved fetch is the only success signal available.
-    fetch(CONFIG.endpoint, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify(payload)
-    }).then(done, failed);
+    // no-cors keeps the Apps Script calls preflight-free; the responses are
+    // opaque, so every fetch resolving is the only success signal available.
+    Promise.all(payloads.map(function (p) {
+      return fetch(CONFIG.endpoint, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(p)
+      });
+    })).then(done, failed);
   });
 
   function resetSubmitButton() {
@@ -1215,10 +1357,11 @@
     state.fit = '';
     state.size = '';
     state.qty = 1;
+    state.lines = [];
     clearChips(cutsEl);
     clearChips(sizesEl);
     nameEl.value = emailEl.value = codeEl.value = hpEl.value = '';
-    renderQty();
+    renderOrder();
     clearError();
     $('receipt').hidden = true;
     formEl.hidden = false;
@@ -1228,12 +1371,13 @@
     applyClosed();
   });
 
-  // ---- copy the Zelle handle ----
+  // ---- copy buttons: the Zelle handle and the memo line ----
   // On a phone the QR is a picture of the device in your hand, so the email
-  // is the payment path. Clipboard API first; the textarea + execCommand
-  // route covers older WebViews. Either way the email stays on screen.
-  var copyEl = $('copy-handle'), copyCue = $('copy-cue'), copyStatus = $('copy-status');
-  var copyTimer = 0;
+  // is the payment path, and the memo line is the thing nobody wants to type
+  // twice. Clipboard API first; the textarea + execCommand route covers older
+  // WebViews. Either way the text stays on screen.
+  var copyStatus = $('copy-status');
+  var copyTimer = 0, copyActive = null;
   function fallbackCopy(text) {
     var ta = document.createElement('textarea');
     ta.value = text;
@@ -1246,28 +1390,39 @@
     document.body.removeChild(ta);
     return ok;
   }
-  function showCopied(ok) {
-    copyEl.dataset.copied = String(ok);
-    copyCue.textContent = ok ? 'Copied' : "Couldn't copy";
-    copyStatus.textContent = ok ? 'Copied ' + CONFIG.zelleHandle : "Couldn't copy. The email is " + CONFIG.zelleHandle;
+  function resetCopyCue(btn) {
+    btn.dataset.copied = 'false';
+    btn.querySelector('.copy-cue').textContent = 'Copy';
+  }
+  function showCopied(btn, ok, text) {
+    if (copyActive && copyActive !== btn) resetCopyCue(copyActive);
+    copyActive = btn;
+    btn.dataset.copied = String(ok);
+    btn.querySelector('.copy-cue').textContent = ok ? 'Copied' : "Couldn't copy";
+    copyStatus.textContent = ok ? 'Copied ' + text : "Couldn't copy. It reads " + text;
     clearTimeout(copyTimer);
     copyTimer = setTimeout(function () {
-      copyEl.dataset.copied = 'false';
-      copyCue.textContent = 'Copy';
+      resetCopyCue(btn);
       copyStatus.textContent = '';
+      copyActive = null;
     }, 2200);
   }
-  copyEl.addEventListener('click', function () {
-    var text = CONFIG.zelleHandle;
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text).then(
-        function () { showCopied(true); },
-        function () { showCopied(fallbackCopy(text)); }
-      );
-    } else {
-      showCopied(fallbackCopy(text));
-    }
-  });
+  function bindCopy(btn, getText) {
+    btn.addEventListener('click', function () {
+      var text = getText();
+      if (!text) return;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(
+          function () { showCopied(btn, true, text); },
+          function () { showCopied(btn, fallbackCopy(text), text); }
+        );
+      } else {
+        showCopied(btn, fallbackCopy(text), text);
+      }
+    });
+  }
+  bindCopy($('copy-handle'), function () { return CONFIG.zelleHandle; });
+  bindCopy(memoBtnEl, function () { return memoText(orderLines()); });
 
   // ---- header goes solid once body copy starts passing under it ----
   // Driven off a 1px marker at 60dvh rather than a scroll handler: the

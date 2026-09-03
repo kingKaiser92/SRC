@@ -1,76 +1,31 @@
-# Race Day Singlet: web 3D asset
+# Race Day Singlet: web assets
 
-`singlet.glb` is a compressed derivative of the client's model. It is not a
-different model, and it must never be replaced by one.
+`preorder.html` is a static page; everything it loads from this folder is
+listed here.
 
-**Source of truth** (kept outside the repo, 7.5 MB is too heavy to version):
+## Product renders
 
-```
-saints_floating_object_app_optimized.glb
-md5 d45da0cd9cdeca882f2f7208993722a7
-7,509,168 bytes
-```
+`singlet-front.png` and `singlet-back.png` are the production renders of the
+garment: 470x610, transparent background, from the manufacturer's sample.
+They are the hero images. The body is navy and disappears against the ink
+page, so the page shows them on bone plates. There is no larger master in the
+repo; the hero sizes the plates from the viewport height and caps them at
+620px tall for that reason. If a higher-resolution export ever arrives, drop
+it in at the same filenames and lift that cap.
 
-That file is byte-identical to `assets/singlet.glb` in the
-`Saints Run Club Merchandise Setup` design handoff. They are the same object.
+## Retired: the 3D turntable
 
-## What ships
-
-| File | Size | Notes |
-|---|---|---|
-| `singlet.glb` | 1.27 MB | 150,000 tris, 2048x2048 WebP baseColor. Serves every device. |
-| `singlet-viewer.js` | 14 KB | Turntable custom element. |
-| `preview.html` | 2 KB | Local harness. Serve this folder over HTTP and scroll. |
-
-Extensions used: `EXT_meshopt_compression`, `EXT_texture_webp`,
-`KHR_mesh_quantization`, `KHR_materials_unlit`. three.js supports all four
-natively; only meshopt needs a decoder, which `singlet-viewer.js` registers.
-
-## Rebuilding
-
-Requires `@gltf-transform/cli` (via `npx`, no install needed).
+Until commit `c36541b` the hero was a scroll-driven three.js turntable of a
+meshopt-compressed GLB (`singlet.glb`, 1.27 MB, with `singlet-viewer.js` and
+`preview.html`). It was replaced by the renders above on 2026-09-03. To bring
+it back:
 
 ```bash
-gltf-transform webp    saints_floating_object_app_optimized.glb a.glb \
-                       --slots baseColorTexture --quality 82
-gltf-transform meshopt a.glb singlet.glb --level medium
+git checkout c36541b -- singlet-assets/singlet.glb singlet-assets/singlet-viewer.js singlet-assets/preview.html
 ```
 
-Measured at each stage:
-
-| Stage | Size |
-|---|---|
-| Source | 7,509,168 B |
-| After WebP texture | 4,908,200 B |
-| After meshopt | 1,271,000 B |
-
-83% smaller. The texture does the heavy lifting: 2.72 MB PNG becomes 122 KB
-WebP at the same 2048x2048. Meshopt then quantizes positions to `i16_norm` and
-UVs to `u16_norm`. **No decimation happens.** All 150,000 triangles survive, so
-this is the client's geometry exactly.
-
-## Two things deliberately not done
-
-**Draco.** WebP + Draco reaches 472 KB, but costs a ~200 KB decoder download
-and materially slower CPU decode. Meshopt's decoder is ~5 KB and decodes
-near-instantly. On mid-range phones the constraint is CPU, not bandwidth, so
-meshopt wins. Swap only if you re-measure and disagree.
-
-**KTX2 / Basis.** The WebP texture still decodes to roughly 22 MB of VRAM, and
-KTX2 would cut that to about 5.6 MB. ETC1S is visibly lossy on a baked color
-map, and 22 MB is fine on any phone from the last six years, so fidelity wins.
-
-## Source characteristics worth knowing
-
-- No `NORMAL` attribute: positions and UVs only. The viewer calls
-  `computeVertexNormals()` on load, or `MeshStandardMaterial` would shade
-  against a normal that does not exist.
-- Declares `KHR_materials_unlit`, which three.js instantiates as
-  `MeshBasicMaterial`. Unlit, it is unreadable against the `#0A0A0A` page, so
-  the viewer swaps in a lit material that keeps the baked map.
-- Near planar: bounds are roughly `[1.417, 1.904, 0.156]`, so depth is about 8%
-  of height. This is why the viewer warps its rotation rate instead of turning
-  at a constant speed. See `singlet-viewer.js`.
+and read that commit's version of this README for the build notes, the
+meshopt/Draco/KTX2 trade-offs, and the source-of-truth checksum.
 
 ## Fonts
 
@@ -92,7 +47,7 @@ enough unique colors to make that lossless in practice, and it took them from
 |---|---|---|---|
 | `zelle-qr.png` | 254 KB | 12 KB | 651x651 kept. Do not downscale: it has to stay scannable. |
 | `src-mark-dark.png` | 116 KB | 6 KB | Also resized 699x660 to 212x200. It renders at 34 to 40px. |
-| `singlet-front.png` | 69 KB | 12 KB | 470x610 kept, displayed at up to 280px. |
+| `singlet-front.png` | 69 KB | 12 KB | 470x610 kept. Now the hero image, shown up to ~480px wide. |
 | `singlet-back.png` | 81 KB | 14 KB | Same. |
 
 If you re-export any of them from the source art, re-quantize before committing
@@ -100,3 +55,5 @@ or the page silently gets heavy again. `src-mark-dark.png`'s dimensions are also
 declared as `width`/`height` on the two `<img>` tags in `preorder.html`; changing
 the file's size means changing those too, or the reserved box gets the wrong
 aspect ratio and the header shifts on load.
+
+`src-mark.png` (178 KB) is not referenced by the page.

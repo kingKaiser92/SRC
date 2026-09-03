@@ -80,13 +80,21 @@ function doPost(e) {
     sh.getRange(sh.getLastRow(), 8).insertCheckboxes();
 
     // Wrapped: a mail quota failure must never cost the row that was written.
-    if (NOTIFY_EMAIL) {
+    // A multi-singlet order arrives as one POST per line (see
+    // PREORDER-SETUP.md), each carrying lineIndex, so only the first line
+    // sends the heads-up. Older single-line posts have no lineIndex and
+    // still send.
+    var firstLine = d.lineIndex === undefined || d.lineIndex === 0;
+    if (NOTIFY_EMAIL && firstLine) {
       try {
         MailApp.sendEmail(
           NOTIFY_EMAIL,
           'Singlet preorder - ' + (d.name || 'unknown'),
-          [d.name, d.email, 'Size ' + d.size + ' x ' + d.quantity,
-           '$' + d.total, 'Zelle code: ' + (d.zelleCode || '-')].join('\n')
+          [d.name, d.email,
+           (d.item || 'Singlet') + ', size ' + d.size + ' x ' + d.quantity,
+           'Order total: $' + (d.orderTotal || d.total) +
+             (d.lineCount > 1 ? ' across ' + d.lineCount + ' lines' : ''),
+           'Zelle code: ' + (d.zelleCode || '-')].join('\n')
         );
       } catch (mailErr) {}
     }

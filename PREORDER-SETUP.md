@@ -204,6 +204,22 @@ Submit one real order and confirm:
 
 ---
 
+## Multi-singlet orders
+
+A buyer can add several singlets to one order (say a men's S and a women's
+M). The page sends **one POST per line**, in the same shape as a single
+order, so each line is its own row in the sheet. Rows from one order share
+the same timestamp, name, email and Zelle code. Every payload also carries
+`orderTotal`, `lineIndex` and `lineCount`; the script uses those to send
+one heads-up email per order instead of one per row. A script deployed before
+this change still records every row correctly, it just emails once per row.
+
+To match a Zelle payment, add up the `Total ($)` of the rows with that name
+and timestamp; that sum is the amount the buyer was told to send. To tally
+sizes for the manufacturer, pivot on `Item` and `Size` summing
+`Quantity`. If a buyer's network dropped mid-submit and they retried, the
+duplicate rows share a name and email but not a timestamp.
+
 ## Payments
 
 Manual, no processor. Zelle to **Saints Vision LLC**
