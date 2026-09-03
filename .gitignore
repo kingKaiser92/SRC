@@ -1,0 +1,7 @@
+# graphify working files — intermediate extraction state, caches and transcripts.
+# The published map (graph.json, GRAPH_REPORT.md, graph.html) is committed.
+graphify-out/.graphify_*
+graphify-out/cost.json
+graphify-out/transcripts/
+graphify-out/memory/
+graphify-out/reflections/
